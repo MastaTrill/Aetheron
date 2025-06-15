@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheron Block Explorer</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f8f8; }
+    h1 { color: #4CAF50; }
+    .block { background: #fff; margin: 10px 0; padding: 10px; border-radius: 5px; box-shadow: 0 2px 4px #ccc; }
+    .tx { margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Aetheron Block Explorer</h1>
+  <div id="blocks"></div>
+  <script>
+    async function loadBlocks() {
+      const res = await fetch('http://localhost:3000/chain');
+      const chain = await res.json();
+      const blocksDiv = document.getElementById('blocks');
+      blocksDiv.innerHTML = '';
+      chain.forEach((block, i) => {
+        const blockDiv = document.createElement('div');
+        blockDiv.className = 'block';
+        blockDiv.innerHTML = `<b>Block #${i}</b><br>Hash: ${block.hash}<br>Prev: ${block.previousHash}<br>Txs:<br>`;
+        block.transactions.forEach(tx => {
+          blockDiv.innerHTML += `<div class='tx'>From: ${tx.sender}<br>To: ${tx.receiver}<br>Amount: ${tx.amount}<br>Fee: ${tx.fee || 0}</div>`;
+        });
+        blocksDiv.appendChild(blockDiv);
+      });
+    }
+    loadBlocks();
+  </script>
+</body>
+</html>

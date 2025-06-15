@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheron Admin Dashboard</title>
+  <link rel="stylesheet" href="aetheron-dashboard.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Share+Tech+Mono&display=swap');
+    /* Only keep minimal overrides or dynamic styles here */
+    body { font-family: 'Share Tech Mono', monospace; background: linear-gradient(120deg, #232526, #0f2027 80%); margin: 0; }
+    header { background: #111; color: #fff; padding: 20px; text-align: center; }
+    main { max-width: 1100px; margin: 30px auto; background: rgba(20, 24, 36, 0.98); border-radius: 12px; box-shadow: 0 4px 24px #111; padding: 30px; }
+    h2 { color: #00eaff; font-family: 'Orbitron', Arial, sans-serif; }
+    section { margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 24px; }
+    label { display: block; margin-top: 10px; color: #b2ebf2; }
+    input, select, button { margin-top: 5px; padding: 8px; border-radius: 4px; border: 1px solid #333; background: #181c2a; color: #e0e0e0; }
+    button { background: #00eaff; color: #181c2a; border: none; cursor: pointer; font-family: 'Orbitron', Arial, sans-serif; font-weight: bold; }
+    button:hover { background: #00bcd4; }
+    #export-data { margin-top: 10px; }
+    .result { background: #1a2636; color: #b2ebf2; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.95em; }
+    .flex { display: flex; gap: 20px; }
+    .flex > div { flex: 1; }
+    pre { background: #181c2a; color: #b2ebf2; padding: 10px; border-radius: 4px; }
+    ::selection { background: #00eaff33; }
+    input:focus, select:focus { outline: 2px solid #00eaff; }    /* Moved from inline style */
+    #space-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+    
+    /* Header styles */
+    .main-header {
+      background: linear-gradient(90deg, #0f2027, #2c5364);
+      box-shadow: 0 2px 8px #222;
+    }
+    
+    .main-header h1 {
+      font-family: 'Orbitron', Arial, sans-serif;
+      letter-spacing: 2px;
+    }
+    
+    .main-header p {
+      font-family: 'Share Tech Mono', monospace;
+      color: #b2ebf2;
+    }
+    
+    /* Login modal styles */
+    #login-modal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(10, 20, 40, 0.95);
+      z-index: 1000;
+    }
+    
+    #login-form {
+      background: #181c2a;
+      padding: 32px 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 16px #111;
+      min-width: 320px;
+    }
+    
+    #login-form h2 {
+      color: #00eaff;
+      text-align: center;
+    }
+    
+    #login-form button[type="submit"] {
+      width: 100%;
+      margin-top: 16px;
+    }
+    
+    #login-error {
+      color: #ff5252;
+      margin-top: 10px;
+      text-align: center;
+    }
+      /* Sidebar styles */
+    #sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 180px;
+      background: rgba(15, 32, 39, 0.98);
+      color: #b2ebf2;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+      box-shadow: 2px 0 12px #111;
+    }
+    
+    #sidebar h3 {
+      font-family: 'Orbitron', Arial, sans-serif;
+      color: #00eaff;
+    }
+    
+    #sidebar a {
+      color: #b2ebf2;
+      margin: 10px 0;
+      text-decoration: none;
+    }
+    
+    #sidebar a:hover {
+      color: #00eaff;
+    }
+    
+    #sidebar button {
+      margin-top: 10px;
+    }
+    
+    /* Widget controls */
+    #widget-controls {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      z-index: 1001;
+      background: rgba(20, 24, 36, 0.95);
+      padding: 10px 18px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #111;
+    }
+    
+    /* Main content */
+    main {
+      background: rgba(20, 24, 36, 0.98);
+      color: #e0e0e0;
+    }
+    
+    /* Feed styles */
+    #feed-list {
+      max-height: 180px;
+      overflow-y: auto;
+      background: #181c2a;
+      border-radius: 6px;
+      padding: 10px 16px;
+    }
+    
+    /* User management */
+    #user-search {
+      margin: 10px 0;
+      width: 220px;
+    }
+    
+    #user-table {
+      width: 100%;
+      margin-top: 10px;
+      background: #181c2a;
+      color: #b2ebf2;
+      border-radius: 6px;
+    }
+    
+    /* Log controls */
+    .log-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .log-controls .clear-btn {
+      background: #ff5252;
+    }
+    
+    .log-controls select {
+      margin-left: auto;
+    }
+    
+    /* Tables */
+    .data-table {
+      width: 100%;
+      margin-top: 10px;
+      background: #181c2a;
+      color: #b2ebf2;
+      border-radius: 6px;
+    }
+    
+    .data-table th {
+      padding: 12px;
+    }
+    
+    /* Plugin market */
+    #plugin-list {
+      background: #181c2a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      min-height: 80px;
+      margin-bottom: 12px;
+    }
+    
+    #plugin-install-form {
+      display: flex;
+      gap: 8px;
+    }
+    
+    #plugin-url {
+      flex: 1;
+    }
+    
+    /* AI Chat */
+    #ai-chat {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 340px;
+      max-width: 90vw;
+      z-index: 2000;
+      background: rgba(20, 24, 36, 0.98);
+      border-radius: 12px;
+      box-shadow: 0 4px 24px #111;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .ai-chat-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .ai-chat-title {
+      color: #00eaff;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    
+    .ai-chat-close {
+      background: none;
+      border: none;
+      color: #b2ebf2;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    
+    #ai-holo-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    #ai-holo {
+      background: transparent;
+    }
+    
+    #ai-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      min-height: 120px;
+    }
+    
+    #ai-chat-form {
+      display: flex;
+      border-top: 1px solid #222;
+    }
+    
+    #ai-chat-input {
+      flex: 1;
+      padding: 10px;
+      background: #181c2a;
+      color: #e0e0e0;
+      border: none;
+      border-radius: 0 0 0 12px;
+    }
+    
+    #ai-chat-form button[type="submit"] {
+      background: #00eaff;
+      color: #181c2a;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 0 0 12px 0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>    <canvas id="space-bg"></canvas>
+  <header class="main-header">
+    <h1>Aetheron Admin Dashboard</h1>
+    <p>Decentralized Control Center</p>
+  </header>  <div id="login-modal">
+    <form id="login-form">
+      <h2>Admin Login</h2>
+      <label>Username <input name="user" required></label>
+      <label>Password <input name="pass" type="password" required></label>
+      <button type="submit">Login</button>
+      <div id="login-error"></div>
+    </form>
+  </div>  <nav id="sidebar">
+    <h3>Modules</h3>
+    <a href="#dex">DEX</a>
+    <a href="#dao">DAO</a>
+    <a href="#social">Social</a>
+    <a href="#rep">Reputation</a>
+    <a href="#carbon">Carbon</a>
+    <a href="#edu">Education</a>
+    <a href="#defi">DeFi</a>
+    <a href="#game">Gaming</a>
+    <a href="#crowd">Crowdfunding</a>
+    <a href="#analytics">Analytics</a>
+    <button id="export-data">Export Data</button>
+    <button id="export-data-2">Export Data</button>
+    <button id="import-data">Import Data</button>
+  </nav>  <nav id="widget-controls">
+    <label><input type="checkbox" data-widget="user-management" checked> Users</label>
+    <label><input type="checkbox" data-widget="logs" checked> Logs</label>
+    <label><input type="checkbox" data-widget="activity-feed" checked> Activity</label>
+    <label><input type="checkbox" data-widget="analytics" checked> Analytics</label>
+    <label><input type="checkbox" data-widget="dex" checked> DEX</label>
+    <label><input type="checkbox" data-widget="dao" checked> DAO</label>
+    <label><input type="checkbox" data-widget="social" checked> Social</label>
+    <label><input type="checkbox" data-widget="rep" checked> Reputation</label>
+    <label><input type="checkbox" data-widget="carbon" checked> Carbon</label>
+    <label><input type="checkbox" data-widget="edu" checked> Education</label>
+    <label><input type="checkbox" data-widget="defi" checked> DeFi</label>
+    <label><input type="checkbox" data-widget="game" checked> Gaming</label>
+    <label><input type="checkbox" data-widget="crowd" checked> Crowdfunding</label>
+  </nav>
+  <main>
+    <section id="dex">
+      <h2>DEX: Add Liquidity / Swap</h2>
+      <form id="dex-liquidity-form">
+        <label>Token A <input name="tokenA" required></label>
+        <label>Token B <input name="tokenB" required></label>
+        <label>Amount A <input name="amountA" type="number" required></label>
+        <label>Amount B <input name="amountB" type="number" required></label>
+        <button type="submit">Add Liquidity</button>
+      </form>
+      <form id="dex-swap-form">
+        <label>Token A <input name="tokenA" required></label>
+        <label>Token B <input name="tokenB" required></label>
+        <label>Amount A <input name="amountA" type="number" required></label>
+        <button type="submit">Swap</button>
+      </form>
+      <div id="dex-result" class="result"></div>
+    </section>
+    <section id="dao">
+      <h2>DAO: Propose / Vote</h2>
+      <form id="dao-propose-form">
+        <label>Description <input name="description" required></label>
+        <button type="submit">Propose</button>
+      </form>
+      <form id="dao-vote-form">
+        <label>Proposal ID <input name="id" type="number" required></label>
+        <label>Member <input name="member" required></label>
+        <label>Support <select name="support"><option value="true">Yes</option><option value="false">No</option></select></label>
+        <button type="submit">Vote</button>
+      </form>
+      <div id="dao-result" class="result"></div>
+    </section>
+    <section id="social">
+      <h2>Social: Profile / Post / Follow</h2>
+      <form id="social-profile-form">
+        <label>Address <input name="address" required></label>
+        <label>Data <input name="data" required></label>
+        <button type="submit">Create Profile</button>
+      </form>
+      <form id="social-post-form">
+        <label>Address <input name="address" required></label>
+        <label>Content <input name="content" required></label>
+        <button type="submit">Post</button>
+      </form>
+      <form id="social-follow-form">
+        <label>Follower <input name="follower" required></label>
+        <label>Followee <input name="followee" required></label>
+        <button type="submit">Follow</button>
+      </form>
+      <div id="social-result" class="result"></div>
+    </section>
+    <section id="rep">
+      <h2>Reputation: Add / Get Score</h2>
+      <form id="rep-add-form">
+        <label>Address <input name="address" required></label>
+        <label>Delta <input name="delta" type="number" required></label>
+        <button type="submit">Add Score</button>
+      </form>
+      <form id="rep-get-form">
+        <label>Address <input name="address" required></label>
+        <button type="submit">Get Score</button>
+      </form>
+      <div id="rep-result" class="result"></div>
+    </section>
+    <section id="carbon">
+      <h2>Carbon Market: Issue / Transfer Credit</h2>
+      <form id="carbon-issue-form">
+        <label>Address <input name="address" required></label>
+        <label>Amount <input name="amount" type="number" required></label>
+        <button type="submit">Issue Credit</button>
+      </form>
+      <form id="carbon-transfer-form">
+        <label>From <input name="from" required></label>
+        <label>To <input name="to" required></label>
+        <label>Amount <input name="amount" type="number" required></label>
+        <button type="submit">Transfer Credit</button>
+      </form>
+      <div id="carbon-result" class="result"></div>
+    </section>
+    <section id="edu">
+      <h2>Education: Issue / Get Certificates</h2>
+      <form id="edu-issue-form">
+        <label>Address <input name="address" required></label>
+        <label>Course <input name="course" required></label>
+        <label>Badge <input name="badge" required></label>
+        <button type="submit">Issue Certificate</button>
+      </form>
+      <form id="edu-get-form">
+        <label>Address <input name="address" required></label>
+        <button type="submit">Get Certificates</button>
+      </form>
+      <div id="edu-result" class="result"></div>
+    </section>
+    <section id="defi">
+      <h2>DeFi: Lend / Repay</h2>
+      <form id="defi-lend-form">
+        <label>Lender <input name="lender" required></label>
+        <label>Borrower <input name="borrower" required></label>
+        <label>Amount <input name="amount" type="number" required></label>
+        <label>Collateral <input name="collateral" required></label>
+        <button type="submit">Lend</button>
+      </form>
+      <form id="defi-repay-form">
+        <label>Loan Index <input name="index" type="number" required></label>
+        <button type="submit">Repay</button>
+      </form>
+      <div id="defi-result" class="result"></div>
+    </section>
+    <section id="game">
+      <h2>Gaming: Add Asset / Update Leaderboard</h2>
+      <form id="game-asset-form">
+        <label>Address <input name="address" required></label>
+        <label>Asset <input name="asset" required></label>
+        <button type="submit">Add Asset</button>
+      </form>
+      <form id="game-leaderboard-form">
+        <label>Address <input name="address" required></label>
+        <label>Score <input name="score" type="number" required></label>
+        <button type="submit">Update Leaderboard</button>
+      </form>
+      <div id="game-result" class="result"></div>
+    </section>
+    <section id="crowd">
+      <h2>Crowdfunding: Create Campaign / Donate</h2>
+      <form id="crowd-campaign-form">
+        <label>Owner <input name="owner" required></label>
+        <label>Goal <input name="goal" type="number" required></label>
+        <button type="submit">Create Campaign</button>
+      </form>
+      <form id="crowd-donate-form">
+        <label>Campaign ID <input name="id" type="number" required></label>
+        <label>Donor <input name="donor" required></label>
+        <label>Amount <input name="amount" type="number" required></label>
+        <button type="submit">Donate</button>
+      </form>
+      <div id="crowd-result" class="result"></div>
+    </section>
+    <section id="analytics">
+      <h2>Analytics</h2>
+      <button onclick="loadStats()">Refresh Stats</button>
+      <pre id="stats"></pre>
+    </section>
+    <section>
+      <h2>Analytics Chart</h2>
+      <canvas id="txChart" width="400" height="120"></canvas>
+      <button onclick="loadChart()">Refresh Chart</button>
+    </section>
+    <section id="activity-feed">
+      <h2>Activity Feed</h2>
+      <ul id="feed-list" style="max-height:180px;overflow-y:auto;background:#181c2a;border-radius:6px;padding:10px 16px;"></ul>
+    </section>
+    <section id="user-management">
+      <h2>User Management</h2>
+      <form id="add-user-form">
+        <label>Address <input name="address" required></label>
+        <label>Role <select name="role"><option value="user">User</option><option value="admin">Admin</option></select></label>
+        <label>KYC <select name="kyc"><option value="false">No</option><option value="true">Yes</option></select></label>
+        <button type="submit">Add User</button>
+      </form>
+      <input id="user-search" placeholder="Search address..." style="margin:10px 0;width:220px;">
+      <table id="user-table" style="width:100%;margin-top:10px;background:#181c2a;color:#b2ebf2;border-radius:6px;">
+        <thead><tr><th>Address</th><th>Role</th><th>KYC</th><th>Last Active</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>    <section id="logs">
+      <h2>Logs & Audit Trail</h2>
+      <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+        <button onclick="loadLogs()">Refresh Server Logs</button>
+        <button onclick="Logger.info('Test log entry', { type: 'manual', user: 'admin' })">Test Log</button>
+        <button onclick="Logger.exportLogs()">Export Logs</button>
+        <button onclick="Logger.clearLogs()" style="background: #ff5252;">Clear Logs</button>
+        <select id="log-level-filter" onchange="filterLogs()" style="margin-left: auto;" title="Filter logs by level" aria-label="Filter logs by level">
+          <option value="">All Levels</option>
+          <option value="DEBUG">Debug</option>
+          <option value="INFO">Info</option>
+          <option value="WARN">Warning</option>
+          <option value="ERROR">Error</option>
+          <option value="SUCCESS">Success</option>
+        </select>
+      </div>
+      <table id="logs-table" style="width:100%;margin-top:10px;background:#181c2a;color:#b2ebf2;border-radius:6px;">
+        <thead><tr><th style="padding: 12px;">Time</th><th style="padding: 12px;">Type</th><th style="padding: 12px;">Details</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <section id="plugin-market">
+      <h2>Plugin Marketplace</h2>
+      <div id="plugin-list" style="background:#181c2a;border-radius:6px;padding:12px 16px;min-height:80px;margin-bottom:12px;"></div>
+      <form id="plugin-install-form" style="display:flex;gap:8px;">
+        <input id="plugin-url" placeholder="Plugin URL or ID" style="flex:1;">
+        <button type="submit">Install Plugin</button>
+      </form>
+      <div id="plugin-market-result" class="result"></div>
+    </section>
+    <div id="ai-chat" style="position:fixed;bottom:30px;right:30px;width:340px;max-width:90vw;z-index:2000;background:rgba(20,24,36,0.98);border-radius:12px;box-shadow:0 4px 24px #111;display:flex;flex-direction:column;">
+      <div style="padding:12px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;">
+        <span style="color:#00eaff;font-family:'Orbitron',Arial,sans-serif;">Aetheron AI Assistant</span>
+        <button onclick="document.getElementById('ai-chat').style.display='none'" style="background:none;border:none;color:#b2ebf2;font-size:1.2em;cursor:pointer;">&times;</button>
+      </div>
+      <div id="ai-holo-container" style="width:100%;display:flex;justify-content:center;align-items:center;margin-bottom:8px;">
+        <canvas id="ai-holo" width="300" height="220" style="background:transparent;"></canvas>
+      </div>
+      <div id="ai-chat-messages" style="flex:1;overflow-y:auto;padding:12px;min-height:120px;"></div>
+      <form id="ai-chat-form" style="display:flex;border-top:1px solid #222;">
+        <input id="ai-chat-input" autocomplete="off" placeholder="Ask anything..." style="flex:1;padding:10px;background:#181c2a;color:#e0e0e0;border:none;border-radius:0 0 0 12px;">
+        <button type="submit" style="background:#00eaff;color:#181c2a;border:none;padding:10px 18px;border-radius:0 0 12px 0;font-weight:bold;">Send</button>
+      </form>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script>
+    // Enhanced Logging System
+    class AetherLogManager {
+      constructor() {
+        this.logs = [];
+        this.maxLogs = 1000;
+        this.logLevels = {
+          DEBUG: { color: '#b2ebf2', icon: '🔍' },
+          INFO: { color: '#00eaff', icon: 'ℹ️' },
+          WARN: { color: '#ffa726', icon: '⚠️' },
+          ERROR: { color: '#ff5252', icon: '❌' },
+          SUCCESS: { color: '#4caf50', icon: '✅' }
+        };
+      }
+
+      log(level, message, details = null) {
+        const timestamp = new Date().toLocaleString();
+        const logEntry = {
+          timestamp,
+          level,
+          message,
+          details,
+          id: Date.now()
+        };
+
+        // Add to internal logs
+        this.logs.unshift(logEntry);
+        if (this.logs.length > this.maxLogs) {
+          this.logs = this.logs.slice(0, this.maxLogs);
+        }
+
+        // Console logging
+        const style = this.logLevels[level];
+        console.log(
+          `%c${style.icon} [${level}] ${timestamp}`,
+          `color: ${style.color}; font-weight: bold;`,
+          message,
+          details || ''
+        );
+
+        // Update UI logs
+        this.updateUILogs();
+
+        // Send to server if needed
+        this.sendToServer(logEntry);
+      }
+
+      debug(message, details) { this.log('DEBUG', message, details); }
+      info(message, details) { this.log('INFO', message, details); }
+      warn(message, details) { this.log('WARN', message, details); }
+      error(message, details) { this.log('ERROR', message, details); }
+      success(message, details) { this.log('SUCCESS', message, details); }
+
+      updateUILogs() {
+        const tbody = document.querySelector('#logs-table tbody');
+        if (!tbody) return;
+
+        // Show last 50 logs in UI
+        const recentLogs = this.logs.slice(0, 50);
+        tbody.innerHTML = recentLogs.map(log => {
+          const style = this.logLevels[log.level];
+          return `
+            <tr style="border-bottom: 1px solid #333;">
+              <td style="padding: 8px;">${log.timestamp}</td>
+              <td style="padding: 8px; color: ${style.color};">${style.icon} ${log.level}</td>
+              <td style="padding: 8px;">
+                <div style="margin-bottom: 4px;">${log.message}</div>
+                ${log.details ? `<pre style="font-size: 0.8em; background: #0f1419; padding: 4px; border-radius: 3px;">${JSON.stringify(log.details, null, 2)}</pre>` : ''}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      async sendToServer(logEntry) {
+        try {
+          await fetch('/api/logs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(logEntry)
+          });
+        } catch (e) {
+          console.warn('Failed to send log to server:', e);
+        }
+      }
+
+      exportLogs() {
+        const dataStr = JSON.stringify(this.logs, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `aetheron-logs-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      clearLogs() {
+        this.logs = [];
+        this.updateUILogs();
+        this.info('Logs cleared');
+      }
+    }
+
+    // Initialize global logger
+    const Logger = new AetherLogManager();
+
+    // Animated space background
+    const canvas = document.getElementById('space-bg');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    const stars = Array.from({length: 120}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.5,
+      d: Math.random() * 0.5 + 0.2
+    }));
+    function drawStars() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.save();
+      ctx.globalAlpha = 0.7;
+      for (const s of stars) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+        ctx.fillStyle = '#b2ebf2';
+        ctx.shadowColor = '#00eaff';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        s.x += s.d;
+        if (s.x > canvas.width) s.x = 0;
+      }
+      ctx.restore();
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+    // Helper to handle form submissions and fetch
+    function handleForm(formId, endpoint, resultId, method = 'POST') {
+      document.getElementById(formId).onsubmit = async function(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(this));
+        const res = await fetch(endpoint, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: method === 'POST' ? JSON.stringify(data) : undefined
+        });
+        const json = await res.json();
+        document.getElementById(resultId).textContent = JSON.stringify(json, null, 2);
+      };
+    }
+    handleForm('dex-liquidity-form', '/dex/add-liquidity', 'dex-result');
+    handleForm('dex-swap-form', '/dex/swap', 'dex-result');
+    handleForm('dao-propose-form', '/dao/propose', 'dao-result');
+    handleForm('dao-vote-form', '/dao/vote', 'dao-result');
+    handleForm('social-profile-form', '/social/profile', 'social-result');
+    handleForm('social-post-form', '/social/post', 'social-result');
+    handleForm('social-follow-form', '/social/follow', 'social-result');
+    handleForm('rep-add-form', '/reputation/add', 'rep-result');
+    handleForm('rep-get-form', '/reputation/' + document.querySelector('#rep-get-form input[name=address]').value, 'rep-result', 'GET');
+    document.getElementById('rep-get-form').onsubmit = async function(e) {
+      e.preventDefault();
+      const address = this.address.value;
+      const res = await fetch('/reputation/' + address);
+      const json = await res.json();
+      document.getElementById('rep-result').textContent = JSON.stringify(json, null, 2);
+    };
+    handleForm('carbon-issue-form', '/carbon/issue', 'carbon-result');
+    handleForm('carbon-transfer-form', '/carbon/transfer', 'carbon-result');
+    handleForm('edu-issue-form', '/education/issue', 'edu-result');
+    document.getElementById('edu-get-form').onsubmit = async function(e) {
+      e.preventDefault();
+      const address = this.address.value;
+      const res = await fetch('/education/' + address);
+      const json = await res.json();
+      document.getElementById('edu-result').textContent = JSON.stringify(json, null, 2);
+    };
+    handleForm('defi-lend-form', '/defi/lend', 'defi-result');
+    handleForm('defi-repay-form', '/defi/repay', 'defi-result');
+    handleForm('game-asset-form', '/game/asset', 'game-result');
+    handleForm('game-leaderboard-form', '/game/leaderboard', 'game-result');
+    handleForm('crowd-campaign-form', '/crowd/campaign', 'crowd-result');
+    handleForm('crowd-donate-form', '/crowd/donate', 'crowd-result');
+    
+    async function loadStats() {
+      const res = await fetch('/stats');
+      const json = await res.json();
+      document.getElementById('stats').textContent = JSON.stringify(json, null, 2);
+    }
+    loadStats();
+    // Chart.js analytics
+    let txChart;
+    async function loadChart() {
+      const res = await fetch('/stats');
+      const stats = await res.json();
+      const ctx = document.getElementById('txChart').getContext('2d');
+      if (txChart) txChart.destroy();
+      txChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Transactions', 'Blocks', 'Users', 'Proposals', 'Liquidity'],
+          datasets: [{
+            label: 'Aetheron Stats',
+            data: [stats.txCount, stats.blockCount, stats.userCount, stats.proposals, stats.liquidity],
+            backgroundColor: ['#00eaff','#4CAF50','#b2ebf2','#00bcd4','#388e3c']
+          }]
+        },
+        options: { plugins: { legend: { display: false } } }
+      });
+    }
+    loadChart();    // Login modal logic
+    let authHeader = '';
+    document.getElementById('login-form').onsubmit = async function(e) {
+      e.preventDefault();
+      const user = this.user.value;
+      const pass = this.pass.value;
+      authHeader = 'Basic ' + btoa(user + ':' + pass);
+      Logger.info('Login attempt', { username: user });
+      
+      // Test login by fetching stats
+      try {
+        const res = await fetch('/stats', { headers: { Authorization: authHeader } });
+        if (res.status === 200) {
+          document.getElementById('login-modal').style.display = 'none';
+          Logger.success('Login successful', { username: user });
+          loadStats();
+          loadChart();
+        } else {
+          document.getElementById('login-error').textContent = 'Invalid credentials.';
+          Logger.warn('Login failed', { username: user, status: res.status });
+        }
+      } catch (error) {
+        document.getElementById('login-error').textContent = 'Connection error.';
+        Logger.error('Login connection error', { username: user, error: error.message });
+      }
+    };
+    // Attach auth to all fetches
+    const origFetch = window.fetch;
+    window.fetch = function(url, opts={}) {
+      opts.headers = opts.headers || {};
+      if (authHeader) opts.headers['Authorization'] = authHeader;
+      return origFetch(url, opts);
+    };
+    // Real-time stats update
+    setInterval(loadStats, 10000);
+    setInterval(loadChart, 20000);
+    // Sidebar navigation
+    document.querySelectorAll('#sidebar a').forEach(a => {
+      a.onclick = e => {
+        e.preventDefault();
+        const id = a.getAttribute('href').substring(1);
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      };
+    });
+    // Theme toggle
+    let dark = true;
+    document.getElementById('toggle-theme').onclick = () => {
+      dark = !dark;
+      document.body.style.background = dark ? 'linear-gradient(120deg,#232526,#0f2027 80%)' : '#f4f4f4';
+      document.body.style.color = dark ? '#e0e0e0' : '#222';
+    };
+    // Export/Import data
+    document.getElementById('export-data').onclick = async () => {
+      const res = await fetch('/stats');
+      const data = await res.json();
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'aetheron-stats.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+    document.getElementById('import-data').onclick = () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+      input.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const text = await file.text();
+        try { const data = JSON.parse(text); alert('Imported: ' + Object.keys(data).join(', ')); } catch { alert('Invalid file'); }
+      };
+      input.click();
+    };
+    // Toast notifications
+    function showToast(msg, color='#00eaff') {
+      const toast = document.createElement('div');
+      toast.textContent = msg;
+      toast.style.position = 'fixed';
+      toast.style.bottom = '30px';
+      toast.style.right = '30px';
+      toast.style.background = color;
+      toast.style.color = '#181c2a';
+      toast.style.padding = '12px 24px';
+      toast.style.borderRadius = '6px';
+      toast.style.fontWeight = 'bold';
+      toast.style.zIndex = 2000;
+      document.body.appendChild(toast);
+      setTimeout(()=>toast.remove(), 3000);
+    }
+    // Attach to all forms for feedback
+    document.querySelectorAll('form').forEach(f => {
+      f.onsubmit = (e) => {
+        setTimeout(()=>showToast('Action submitted!'), 500);
+      };
+    });
+    // Activity feed (demo: append on form submit)
+    document.querySelectorAll('form').forEach(f => {
+      f.onsubmit = (e) => {
+        const section = f.closest('section');
+        const label = section?.querySelector('h2')?.textContent || 'Action';
+        const li = document.createElement('li');
+        li.textContent = `${new Date().toLocaleTimeString()} - ${label}`;
+        document.getElementById('feed-list').prepend(li);
+        if (document.getElementById('feed-list').children.length > 10)
+          document.getElementById('feed-list').removeChild(document.getElementById('feed-list').lastChild);
+      };
+    });
+    // Responsive sidebar
+    function handleResize() {
+      document.getElementById('sidebar').style.display = window.innerWidth < 700 ? 'none' : 'flex';
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    // User management
+    async function loadUsers() {
+      const res = await fetch('/users');
+      const users = await res.json();
+      const tbody = document.querySelector('#user-table tbody');
+      tbody.innerHTML = '';
+      users.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${u.address}</td><td>${u.role}</td><td>${u.kyc ? 'Yes' : 'No'}</td><td>${u.lastActive || ''}</td><td>
+          <button onclick="updateRole('${u.address}')">Toggle Role</button>
+          <button onclick="updateKYC('${u.address}')">Toggle KYC</button>
+        </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('add-user-form').onsubmit = async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      data.kyc = data.kyc === 'true';
+      await fetch('/users/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      loadUsers();
+    };
+    window.updateRole = async function(address) {
+      await fetch('/users/role', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, role: 'admin' }) });
+      loadUsers();
+    };
+    window.updateKYC = async function(address) {
+      await fetch('/users/kyc', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, kyc: true }) });
+      loadUsers();
+    };
+    document.getElementById('user-search').oninput = function() {
+      const val = this.value.toLowerCase();
+      document.querySelectorAll('#user-table tbody tr').forEach(tr => {
+        tr.style.display = tr.children[0].textContent.toLowerCase().includes(val) ? '' : 'none';
+      });
+    };
+    loadUsers();    // Logs & Audit Trail
+    async function loadLogs() {
+      try {
+        const res = await fetch('/logs');
+        const logs = await res.json();
+        const tbody = document.querySelector('#logs-table tbody');
+        tbody.innerHTML = '';
+        logs.forEach(l => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="padding: 8px;">${l.time}</td><td style="padding: 8px;">${l.type}</td><td style="padding: 8px;"><pre>${JSON.stringify(l.details, null, 2)}</pre></td>`;
+          tbody.appendChild(tr);
+        });
+        Logger.info('Server logs refreshed', { count: logs.length });
+      } catch (error) {
+        Logger.error('Failed to load server logs', { error: error.message });
+      }
+    }
+
+    function filterLogs() {
+      const selectedLevel = document.getElementById('log-level-filter').value;
+      const rows = document.querySelectorAll('#logs-table tbody tr');
+      
+      rows.forEach(row => {
+        if (!selectedLevel) {
+          row.style.display = '';
+        } else {
+          const levelCell = row.cells[1];
+          const hasLevel = levelCell.textContent.includes(selectedLevel);
+          row.style.display = hasLevel ? '' : 'none';
+        }
+      });
+      
+      Logger.debug('Log filter applied', { level: selectedLevel || 'all' });
+    }
+
+    // Initialize logging when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      Logger.info('Admin Dashboard initialized', { 
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent 
+      });
+      loadLogs();
+    });
+    // Customizable widgets
+    function updateWidgets() {
+      document.querySelectorAll('#widget-controls input[type=checkbox]').forEach(cb => {
+        const section = document.getElementById(cb.dataset.widget);
+        if (section) section.style.display = cb.checked ? '' : 'none';
+      });
+      // Save preferences
+      const prefs = Array.from(document.querySelectorAll('#widget-controls input[type=checkbox]')).map(cb => cb.checked);
+      localStorage.setItem('aetheron-widgets', JSON.stringify(prefs));
+    }
+    document.querySelectorAll('#widget-controls input[type=checkbox]').forEach(cb => {
+      cb.onchange = updateWidgets;
+    });
+    // Load preferences
+    const widgetPrefs = JSON.parse(localStorage.getItem('aetheron-widgets') || 'null');
+    if (widgetPrefs) {
+      document.querySelectorAll('#widget-controls input[type=checkbox]').forEach((cb, i) => {
+        cb.checked = widgetPrefs[i];
+      });
+      updateWidgets();
+    }
+    // AI Chat Unit (uses a placeholder response)
+    document.getElementById('ai-chat-form').onsubmit = function(e) {
+      e.preventDefault();
+      const input = document.getElementById('ai-chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      const messages = document.getElementById('ai-chat-messages');
+      messages.innerHTML += `<div style='margin-bottom:8px;'><b>You:</b> ${msg}</div>`;
+      input.value = '';
+      // Placeholder: Replace with real AI API call if available
+      setTimeout(() => {
+        messages.innerHTML += `<div style='margin-bottom:8px;'><b>AI:</b> <span style='color:#00eaff;'>I'm here to help! (This is a demo. Integrate with an AI API for real answers.)</span></div>`;
+        messages.scrollTop = messages.scrollHeight;
+      }, 600);
+      messages.scrollTop = messages.scrollHeight;
+    };
+    // Show chat on load
+    document.getElementById('ai-chat').style.display = 'flex';
+    // 3D Hologram Avatar (Cortana-inspired with Aetheron logo)
+    const holoCanvas = document.getElementById('ai-holo');
+    const renderer = new THREE.WebGLRenderer({ canvas: holoCanvas, alpha: true });
+    renderer.setClearColor(0x000000, 0);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 300/220, 0.1, 1000);
+    camera.position.z = 5;
+    // Glowing sphere (head)
+    const glowMaterial = new THREE.MeshPhongMaterial({ color: 0x00eaff, emissive: 0x00eaff, shininess: 100, transparent: true, opacity: 0.7 });
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 32), glowMaterial);
+    scene.add(head);
+    // Aetheron logo (floating disc)
+    const loader = new THREE.TextureLoader();
+    loader.load('LOGO.PNG', function(texture) {
+      const logoMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+      const logo = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), logoMat);
+      logo.position.y = 1.3;
+      scene.add(logo);
+    });
+    // Hologram effect: animated rings
+    const rings = [];
+    for (let i=0; i<3; i++) {
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.25 });
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(1.1+i*0.2, 0.03, 16, 100), ringMat);
+      ring.rotation.x = Math.PI/2;
+      scene.add(ring);
+      rings.push(ring);
+    }
+    // Lighting
+    const light = new THREE.PointLight(0x00eaff, 1, 100);
+    light.position.set(0,2,5);
+    scene.add(light);
+    // Add more 3D features: animated vertical beams, floating particles, and logo pulse
+    // Animated vertical beams
+    const beamMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.18 });
+    const beams = [];
+    for (let i = 0; i < 3; i++) {
+      const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.07 + i*0.04, 0.07 + i*0.04, 2.5 + i*0.5, 32), beamMaterial);
+      beam.position.y = 0.2;
+      scene.add(beam);
+      beams.push(beam);
+    }
+    // Floating particles
+    const particleGeometry = new THREE.SphereGeometry(0.06, 8, 8);
+    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.5 });
+    const particles = [];
+    for (let i = 0; i < 18; i++) {
+      const p = new THREE.Mesh(particleGeometry, particleMaterial.clone());
+      p.position.set(Math.sin(i)*1.5, Math.random()*2-1, Math.cos(i)*1.5);
+      scene.add(p);
+      particles.push(p);
+    }
+    // Animate logo pulse
+    let logoMesh = null;
+    loader.load('LOGO.PNG', function(texture) {
+      const logoMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+      logoMesh = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), logoMat);
+      logoMesh.position.y = 1.3;
+      scene.add(logoMesh);
+    });
+    // Advanced: facial expression (morph target), sound effect, and AI-driven idle animation
+    // Facial expression: mouth morph (simulate talking)
+    const mouthGeometry = new THREE.TorusGeometry(0.25, 0.06, 8, 32, Math.PI);
+    const mouthMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.7 });
+    const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+    mouth.position.set(0, -0.45, 0.75);
+    mouth.rotation.x = Math.PI / 2;
+    head.add(mouth);
+    // Animate mouth on chat
+    document.getElementById('ai-chat-form').onsubmit = function(e) {
+      setTimeout(()=>{
+        head.material.emissive.setHex(0x4CAF50);
+        head.scale.set(1.15,1.15,1.15);
+        if (logoMesh) logoMesh.material.color.setHex(0x4CAF50);
+        // Mouth open/close
+        let t = 0;
+        const mouthAnim = setInterval(()=>{
+          mouth.scale.y = 1 + 0.5*Math.abs(Math.sin(t));
+          t += 0.3;
+        }, 60);
+        setTimeout(()=>{
+          head.material.emissive.setHex(0x00eaff);
+          head.scale.set(1,1,1);
+          if (logoMesh) logoMesh.material.color.setHex(0xffffff);
+          mouth.scale.y = 1;
+          clearInterval(mouthAnim);
+        }, 700);
+      }, 400);
+    };
+    // Sound effect on chat (browser beep)
+    function playBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        o.type = 'sine';
+        o.frequency.value = 660;
+        o.connect(ctx.destination);
+        o.start();
+        setTimeout(()=>o.stop(), 120);
+      } catch {}
+    }
+    document.getElementById('ai-chat-form').addEventListener('submit', playBeep);
+    // AI-driven idle animation: head tilts and logo bobs
+    let idleT = 0;
+    function animateHolo() {
+      idleT += 0.01;
+      head.rotation.y += 0.01 + 0.01*Math.sin(idleT/2);
+      head.rotation.x = 0.08*Math.sin(idleT);
+      rings.forEach((r,i) => r.rotation.z += 0.01 + i*0.005);
+      beams.forEach((b,i) => b.scale.y = 1 + 0.2*Math.sin(Date.now()/500 + i));
+      particles.forEach((p,i) => {
+        p.position.x = Math.sin(Date.now()/900 + i)*1.5;
+        p.position.z = Math.cos(Date.now()/900 + i)*1.5;
+        p.material.opacity = 0.3 + 0.2*Math.sin(Date.now()/700 + i);
+      });
+      if (logoMesh) {
+        logoMesh.scale.setScalar(1 + 0.08*Math.sin(Date.now()/400));
+        logoMesh.position.y = 1.3 + 0.08*Math.sin(idleT*2);
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(animateHolo);
+    }
+    animateHolo();
+    // Interactivity: avatar reacts to chat, mouse, and voice (if available)
+    // React to chat: pulse color and scale
+    document.getElementById('ai-chat-form').onsubmit = function(e) {
+      setTimeout(()=>{
+        head.material.emissive.setHex(0x4CAF50);
+        head.scale.set(1.15,1.15,1.15);
+        if (logoMesh) logoMesh.material.color.setHex(0x4CAF50);
+        setTimeout(()=>{
+          head.material.emissive.setHex(0x00eaff);
+          head.scale.set(1,1,1);
+          if (logoMesh) logoMesh.material.color.setHex(0xffffff);
+        }, 700);
+      }, 400);
+    };
+    // Mouse interactivity: rotate avatar with mouse
+    let isDragging = false, lastX = 0;
+    holoCanvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; });
+    window.addEventListener('mouseup', () => isDragging = false);
+    window.addEventListener('mousemove', e => {
+      if (isDragging) {
+        const dx = e.clientX - lastX;
+        head.rotation.y += dx * 0.01;
+        lastX = e.clientX;
+      }
+    });
+    // Voice interactivity (if supported)
+    if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      document.getElementById('ai-holo').addEventListener('dblclick', () => {
+        recognition.start();
+      });
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('ai-chat-input').value = transcript;
+        document.getElementById('ai-chat-form').dispatchEvent(new Event('submit'));
+      };
+    }
+    // === AI Chat: Real Backend Integration ===
+    // Set your OpenAI API key or endpoint here (for demo, leave blank)
+    const OPENAI_API_KEY = '';
+    const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+    async function fetchAIResponse(msg) {
+      if (!OPENAI_API_KEY) {
+        // Fallback to demo
+        return { text: "I'm here to help! (This is a demo. Integrate with an AI API for real answers.)", emotion: 'neutral' };
+      }
+      try {
+        const res = await fetch(OPENAI_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + OPENAI_API_KEY
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'system', content: 'You are Aetheron, a helpful, futuristic AI assistant.' }, { role: 'user', content: msg }],
+            max_tokens: 120
+          })
+        });
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content || 'Sorry, no response.';
+        // Simple emotion detection (demo)
+        let emotion = 'neutral';
+        if (/happy|great|success|win/i.test(text)) emotion = 'happy';
+        if (/sad|fail|error|problem/i.test(text)) emotion = 'sad';
+        if (/wow|amazing|surprise|what/i.test(text)) emotion = 'surprised';
+        return { text, emotion };
+      } catch (e) {
+        return { text: 'AI error: ' + e.message, emotion: 'sad' };
+      }
+    }
+    // Patch AI chat to use real backend
+    const origAIChat2 = document.getElementById('ai-chat-form').onsubmit;
+    document.getElementById('ai-chat-form').onsubmit = async function(e) {
+      e && e.preventDefault && e.preventDefault();
+      const input = document.getElementById('ai-chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      const messages = document.getElementById('ai-chat-messages');
+      messages.innerHTML += `<div style='margin-bottom:8px;'><b>You:</b> ${msg}</div>`;
+      input.value = '';
+      // Fetch from backend or demo
+      const ai = await fetchAIResponse(msg);
+      messages.innerHTML += `<div style='margin-bottom:8px;'><b>AI:</b> <span style='color:#00eaff;'>${ai.text}</span></div>`;
+      messages.scrollTop = messages.scrollHeight;
+      speakAI(ai.text, ai.emotion);
+    };
+    // === AI Hologram Avatar Enhancements ===
+    // Emotion states
+    const emotions = {
+      neutral: { color: 0x00eaff, mouth: 1, brow: 0 },
+      happy:   { color: 0x4CAF50, mouth: 1.5, brow: -0.2 },
+      surprised: { color: 0xffeb3b, mouth: 2.2, brow: 0.3 },
+      sad:     { color: 0x2196f3, mouth: 0.7, brow: 0.2 }
+    };
+    let currentEmotion = 'neutral';
+    function setEmotion(emotion) {
+      const e = emotions[emotion] || emotions.neutral;
+      head.material.emissive.setHex(e.color);
+      mouth.scale.y = e.mouth;
+      // Optionally add brow/eye overlays here
+      currentEmotion = emotion;
+    }
+    // Add emotion controls (for demo/testing)
+    const emotionBar = document.createElement('div');
+    emotionBar.style = 'position:fixed;bottom:320px;right:30px;z-index:2100;background:rgba(20,24,36,0.95);padding:6px 12px;border-radius:8px;box-shadow:0 2px 8px #111;';
+    ['neutral','happy','surprised','sad'].forEach(em => {
+      const btn = document.createElement('button');
+      btn.textContent = em.charAt(0).toUpperCase()+em.slice(1);
+      btn.onclick = ()=>setEmotion(em);
+      btn.style.margin = '0 4px';
+      emotionBar.appendChild(btn);
+    });
+    document.body.appendChild(emotionBar);
+    // === Custom Voice and Mouth Sync ===
+    function speakAI(text, emotion='neutral') {
+      setEmotion(emotion);
+      if ('speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        // Pick a custom voice if available
+        const voices = window.speechSynthesis.getVoices();
+        utter.voice = voices.find(v=>/en/i.test(v.lang) && v.name.toLowerCase().includes('female')) || voices[0];
+        utter.rate = 1.05;
+        utter.pitch = 1.2;
+        utter.volume = 1;
+        // Animate mouth during speech
+        utter.onstart = ()=>{
+          let t = 0;
+          mouth._lipSync = setInterval(()=>{
+            mouth.scale.y = 1 + 0.7*Math.abs(Math.sin(t));
+            t += 0.22 + Math.random()*0.1;
+          }, 55);
+        };
+        utter.onend = ()=>{
+          clearInterval(mouth._lipSync);
+          mouth.scale.y = emotions[emotion].mouth;
+          setEmotion('neutral');
+        };
+        window.speechSynthesis.speak(utter);
+      }
+    }
+    // Patch AI chat to use voice and emotion
+    const origAIChat = document.getElementById('ai-chat-form').onsubmit;
+    document.getElementById('ai-chat-form').onsubmit = function(e) {
+      e && e.preventDefault && e.preventDefault();
+      const input = document.getElementById('ai-chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      const messages = document.getElementById('ai-chat-messages');
+      messages.innerHTML += `<div style='margin-bottom:8px;'><b>You:</b> ${msg}</div>`;
+      input.value = '';
+      // Placeholder: Replace with real AI API call if available
+      setTimeout(() => {
+        // Pick emotion based on keywords (demo logic)
+        let aiText = "I'm here to help! (This is a demo. Integrate with an AI API for real answers.)";
+        let emotion = 'neutral';
+        if (/happy|great|success|win/i.test(msg)) emotion = 'happy';
+        if (/sad|fail|error|problem/i.test(msg)) emotion = 'sad';
+        if (/wow|amazing|surprise|what/i.test(msg)) emotion = 'surprised';
+        messages.innerHTML += `<div style='margin-bottom:8px;'><b>AI:</b> <span style='color:#00eaff;'>${aiText}</span></div>`;
+        messages.scrollTop = messages.scrollHeight;
+        speakAI(aiText, emotion);
+      }, 600);
+      messages.scrollTop = messages.scrollHeight;
+    };
+    // === Accessibility & Multi-language (basic) ===
+    // Add ARIA labels and lang attributes where needed (already set on <html>).
+    // Add language selector (demo: English/Spanish)
+    const langBar = document.createElement('div');
+    langBar.style = 'position:fixed;top:10px;left:200px;z-index:2100;background:rgba(20,24,36,0.95);padding:6px 12px;border-radius:8px;box-shadow:0 2px 8px #111;';
+    langBar.innerHTML = '<label style="color:#b2ebf2;">Language: <select id="lang-select"><option value="en">English</option><option value="es">Español</option></select></label>';
+    document.body.appendChild(langBar);
+    const translations = {
+      es: {
+        'Aetheron Admin Dashboard': 'Panel de Administración Aetheron',
+        'Decentralized Control Center': 'Centro de Control Descentralizado',
+        'AI Assistant': 'Asistente AI',
+        'Ask anything...': 'Pregunta lo que sea...'
+      }
+    };
+    document.getElementById('lang-select').onchange = function() {
+      const lang = this.value;
+      document.documentElement.lang = lang;
+      if (lang === 'es') {
+        document.querySelector('header h1').textContent = translations.es['Aetheron Admin Dashboard'];
+        document.querySelector('header p').textContent = translations.es['Decentralized Control Center'];
+        document.querySelector('#ai-chat span').textContent = translations.es['AI Assistant'];
+        document.getElementById('ai-chat-input').placeholder = translations.es['Ask anything...'];
+      } else {
+        document.querySelector('header h1').textContent = 'Aetheron Admin Dashboard';
+        document.querySelector('header p').textContent = 'Decentralized Control Center';
+        document.querySelector('#ai-chat span').textContent = 'Aetheron AI Assistant';
+        document.getElementById('ai-chat-input').placeholder = 'Ask anything...';
+      }
+    };
+    // === Module-specific Analytics & API Explorer ===
+    // Add analytics buttons to each module section (demo)
+    document.querySelectorAll('section[id]').forEach(section => {
+      const id = section.id;
+      if (!['analytics','activity-feed','user-management','logs'].includes(id)) {
+        const btn = document.createElement('button');
+        btn.textContent = 'Show Analytics';
+        btn.style.marginLeft = '12px';
+        btn.onclick = async () => {
+          const res = await fetch(`/stats/${id}`);
+          const data = await res.json();
+          alert(`Analytics for ${id}:\n` + JSON.stringify(data, null, 2));
+        };
+        section.querySelector('h2').appendChild(btn);
+      }
+    });
+    // API Explorer (demo: show all endpoints)
+    const apiBtn = document.createElement('button');
+    apiBtn.textContent = 'API Explorer';
+    apiBtn.style = 'position:fixed;top:10px;right:200px;z-index:2100;background:#00eaff;color:#181c2a;padding:8px 16px;border-radius:8px;font-weight:bold;';
+    apiBtn.onclick = async () => {
+      const res = await fetch('/api');
+      const data = await res.json();
+      alert('API Endpoints:\n' + data.endpoints.join('\n'));
+    };
+    document.body.appendChild(apiBtn);
+    // === Audit Trail: Export & Filtering ===
+    const exportLogsBtn = document.createElement('button');
+    exportLogsBtn.textContent = 'Export Logs';
+    exportLogsBtn.style = 'margin-left:12px;background:#00eaff;color:#181c2a;padding:6px 14px;border-radius:6px;font-weight:bold;';
+    exportLogsBtn.onclick = async () => {
+      const res = await fetch('/logs');
+      const logs = await res.json();
+      const blob = new Blob([JSON.stringify(logs, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'aetheron-logs.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+    document.querySelector('#logs h2').appendChild(exportLogsBtn);
+    // Filtering
+    const filterInput = document.createElement('input');
+    filterInput.placeholder = 'Filter by type...';
+    filterInput.style = 'margin-left:16px;padding:4px 10px;border-radius:4px;';
+    filterInput.oninput = function() {
+      const val = this.value.toLowerCase();
+      document.querySelectorAll('#logs-table tbody tr').forEach(tr => {
+        tr.style.display = tr.children[1].textContent.toLowerCase().includes(val) ? '' : 'none';
+      });
+    };
+    document.querySelector('#logs h2').appendChild(filterInput);
+    // === Automated Backup & Recovery UI ===
+    const backupBar = document.createElement('div');
+    backupBar.style = 'position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:2100;background:rgba(20,24,36,0.95);padding:8px 18px;border-radius:8px;box-shadow:0 2px 8px #111;';
+    backupBar.innerHTML = '<button id="backup-btn">Backup Now</button> <button id="restore-btn">Restore</button> <input id="restore-file" type="file" accept="application/json" style="display:none;">';
+    document.body.appendChild(backupBar);
+    document.getElementById('backup-btn').onclick = async () => {
+      const res = await fetch('/chain');
+      const chain = await res.json();
+      const blob = new Blob([JSON.stringify(chain, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'aetheron-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup exported!');
+    };
+    document.getElementById('restore-btn').onclick = () => {
+      document.getElementById('restore-file').click();
+    };
+    document.getElementById('restore-file').onchange = async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      try {
+        const data = JSON.parse(text);
+        // In real use, send to backend for restore
+        showToast('Backup file loaded. (Send to backend to restore)');
+      } catch { showToast('Invalid backup file', '#ff5252'); }
+    };
+  </script>
+</body>
+</html>
