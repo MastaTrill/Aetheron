@@ -1,58 +1,114 @@
-// ERC-20 Token Standard Implementation
-class ERC20Token {
-  constructor(name, symbol, decimals = 18, totalSupply = 0) {
-    this.name = name;
-    this.symbol = symbol;
-    this.decimals = decimals;
-    this.totalSupply = totalSupply;
-    this.balances = {};
-  }
 
-  mint(address, amount) {
-    this.totalSupply += amount;
-    this.balances[address] = (this.balances[address] || 0) + amount;
-  }
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-  transfer(from, to, amount) {
-    if ((this.balances[from] || 0) < amount) throw new Error('Insufficient balance');
-    this.balances[from] -= amount;
-    this.balances[to] = (this.balances[to] || 0) + amount;
-  }
+contract AetheronToken {
+    string public name = "Aetheron";
+    string public symbol = "AETH";
+    uint8 public decimals = 18;
+    uint256 public totalSupply;
 
-  balanceOf(address) {
-    return this.balances[address] || 0;
-  }
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+
+    address public owner;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    constructor(uint256 initialSupply) {
+        owner = 0x8a3ad49656bd07981c9cfc7ad826a808847c3452;
+        mint(owner, initialSupply);
+    }
+
+    function mint(address to, uint256 amount) public {
+        require(msg.sender == owner, "Only owner can mint");
+        totalSupply += amount;
+        balanceOf[to] += amount;
+        emit Transfer(address(0), to, amount);
+    }
+
+    function transfer(address to, uint256 amount) public returns (bool) {
+        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
+        emit Transfer(msg.sender, to, amount);
+        return true;
+    }
+
+    function approve(address spender, uint256 amount) public returns (bool) {
+        allowance[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
+    function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+        require(balanceOf[from] >= amount, "Insufficient balance");
+        require(allowance[from][msg.sender] >= amount, "Allowance exceeded");
+        allowance[from][msg.sender] -= amount;
+        balanceOf[from] -= amount;
+        balanceOf[to] += amount;
+        emit Transfer(from, to, amount);
+        return true;
+    }
 }
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-// ERC-721 NFT Standard Implementation
-class ERC721Token {
-  constructor(name, symbol) {
-    this.name = name;
-    this.symbol = symbol;
-    this.owners = {}; // tokenId => owner
-    this.tokenURIs = {}; // tokenId => metadata URI
-    this.nextTokenId = 1;
-  }
+contract AetheronGlyphs {
+    string public name = "AetheronGlyphs";
+    string public symbol = "AGLYPH";
 
-  mint(to, tokenURI) {
-    const tokenId = this.nextTokenId++;
-    this.owners[tokenId] = to;
-    this.tokenURIs[tokenId] = tokenURI;
-    return tokenId;
-  }
+    mapping(uint256 => address) public ownerOf;
+    mapping(uint256 => string) public tokenURI;
+    mapping(uint256 => address) public approvals;
+    mapping(address => mapping(address => bool)) public operatorApprovals;
 
-  transfer(from, to, tokenId) {
-    if (this.owners[tokenId] !== from) throw new Error('Not the owner');
-    this.owners[tokenId] = to;
-  }
+    uint256 public nextTokenId = 1;
+    address public owner;
 
-  ownerOf(tokenId) {
-    return this.owners[tokenId];
-  }
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
-  tokenURI(tokenId) {
-    return this.tokenURIs[tokenId];
-  }
+    constructor() {
+        owner = 0x8a3ad49656bd07981c9cfc7ad826a808847c3452;
+    }
+
+    function mint(address to, string memory uri) public returns (uint256) {
+        require(msg.sender == owner, "Only owner can mint");
+        uint256 tokenId = nextTokenId++;
+        ownerOf[tokenId] = to;
+        tokenURI[tokenId] = uri;
+        emit Transfer(address(0), to, tokenId);
+        return tokenId;
+    }
+
+    function transfer(address from, address to, uint256 tokenId) public {
+        require(ownerOf[tokenId] == from, "Not the owner");
+        require(msg.sender == from || msg.sender == approvals[tokenId] || operatorApprovals[from][msg.sender], "Not approved");
+        ownerOf[tokenId] = to;
+        approvals[tokenId] = address(0);
+        emit Transfer(from, to, tokenId);
+    }
+
+    function approve(address approved, uint256 tokenId) public {
+        address tokenOwner = ownerOf[tokenId];
+        require(msg.sender == tokenOwner, "Not the owner");
+        approvals[tokenId] = approved;
+        emit Approval(tokenOwner, approved, tokenId);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public {
+        operatorApprovals[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
+    }
+
+    function getApproved(uint256 tokenId) public view returns (address) {
+        return approvals[tokenId];
+    }
+
+    function isApprovedForAll(address tokenOwner, address operator) public view returns (bool) {
+        return operatorApprovals[tokenOwner][operator];
+    }
 }
-
-module.exports = { ERC20Token, ERC721Token };
