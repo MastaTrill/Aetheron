@@ -27,7 +27,8 @@
     #space-bg {
       position: fixed;
       top: 0;
-      left: 0;
+      left: 50%;
+      transform: translateX(-50%);
       width: 100vw;
       height: 100vh;
       z-index: -1;
@@ -37,6 +38,10 @@
     .main-header {
       background: linear-gradient(90deg, #0f2027, #2c5364);
       box-shadow: 0 2px 8px #222;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
     }
     
     .main-header h1 {
@@ -89,18 +94,35 @@
       /* Sidebar styles */
     #sidebar {
       position: fixed;
-      left: 0;
+      left: -180px;
       top: 0;
       height: 100vh;
       width: 180px;
       background: rgba(15, 32, 39, 0.98);
       color: #b2ebf2;
-      z-index: 10;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding-top: 40px;
       box-shadow: 2px 0 12px #111;
+      transition: left 0.3s ease-in-out;
+    }
+    
+    #sidebar:hover,
+    #sidebar.show {
+      left: 0;
+    }
+    
+    /* Hover trigger area for sidebar */
+    #sidebar::before {
+      content: '';
+      position: absolute;
+      right: -20px;
+      top: 0;
+      width: 20px;
+      height: 100%;
+      background: transparent;
     }
     
     #sidebar h3 {
@@ -127,17 +149,20 @@
       position: fixed;
       top: 10px;
       right: 20px;
-      z-index: 1001;
+      z-index: 999;
       background: rgba(20, 24, 36, 0.95);
       padding: 10px 18px;
       border-radius: 8px;
       box-shadow: 0 2px 8px #111;
+      transition: right 0.3s ease-in-out;
     }
     
     /* Main content */
     main {
       background: rgba(20, 24, 36, 0.98);
       color: #e0e0e0;
+      margin-left: auto;
+      margin-right: auto;
     }
     
     /* Feed styles */
@@ -293,6 +318,11 @@
   <header class="main-header">
     <h1>Aetheron Admin Dashboard</h1>
     <p>Decentralized Control Center</p>
+    <div id="header-controls" style="position: absolute; top: 20px; right: 20px; transition: opacity 0.3s ease, transform 0.3s ease;">
+      <span id="ws-status" style="font-size: 0.9em; padding: 6px 12px; background: rgba(0,0,0,0.3); border-radius: 4px;">
+        🔴 Connecting...
+      </span>
+    </div>
   </header>  <div id="login-modal">
     <form id="login-form">
       <h2>Admin Login</h2>
@@ -478,10 +508,217 @@
       <canvas id="txChart" width="400" height="120"></canvas>
       <button onclick="loadChart()">Refresh Chart</button>
     </section>
-    <section id="activity-feed">
-      <h2>Activity Feed</h2>
-      <ul id="feed-list" style="max-height:180px;overflow-y:auto;background:#181c2a;border-radius:6px;padding:10px 16px;"></ul>
+
+    <!-- NEW: Account Abstraction Section -->
+    <section id="account-abstraction">
+      <h2>⚡ Account Abstraction (ERC-4337)</h2>
+      <div class="flex">
+        <div>
+          <h3>Create Smart Account</h3>
+          <form id="aa-create-form" onsubmit="createSmartAccount(event)">
+            <label>Social Provider
+              <select name="provider" required>
+                <option value="google">Google</option>
+                <option value="twitter">Twitter</option>
+                <option value="facebook">Facebook</option>
+                <option value="github">GitHub</option>
+              </select>
+            </label>
+            <label>User ID <input name="userId" required placeholder="user@example.com"></label>
+            <label>Display Name <input name="userName" required placeholder="John Doe"></label>
+            <button type="submit">Create Account</button>
+          </form>
+          <div id="aa-result" class="result" style="display:none;"></div>
+        </div>
+        <div>
+          <h3>Session Keys</h3>
+          <form id="aa-session-form" onsubmit="createSessionKey(event)">
+            <label>Account Address <input name="accountAddress" required placeholder="0x..."></label>
+            <label>Max Amount (ETH) <input name="maxAmount" type="number" step="0.01" value="1"></label>
+            <label>Valid For (hours) <input name="validHours" type="number" value="24"></label>
+            <button type="submit">Create Session Key</button>
+          </form>
+          <div id="session-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+      <div style="margin-top: 20px;">
+        <h3>Active Accounts</h3>
+        <button onclick="loadAAAccounts()">Refresh Accounts</button>
+        <div id="aa-accounts-list" class="result"></div>
+      </div>
     </section>
+
+    <!-- NEW: Fiat On-Ramp Section -->
+    <section id="fiat-onramp">
+      <h2>💳 Fiat On-Ramp</h2>
+      <div class="flex">
+        <div>
+          <h3>Get Quote</h3>
+          <form id="fiat-quote-form" onsubmit="getFiatQuote(event)">
+            <label>Provider
+              <select name="provider" required>
+                <option value="moonpay">MoonPay</option>
+                <option value="stripe">Stripe</option>
+                <option value="transak">Transak</option>
+              </select>
+            </label>
+            <label>Amount <input name="amount" type="number" required value="100"></label>
+            <label>Fiat Currency
+              <select name="fiatCurrency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+              </select>
+            </label>
+            <label>Crypto Currency
+              <select name="cryptoCurrency">
+                <option value="ETH">ETH</option>
+                <option value="BTC">BTC</option>
+                <option value="USDC">USDC</option>
+              </select>
+            </label>
+            <button type="submit">Get Quote</button>
+          </form>
+          <div id="fiat-quote-result" class="result" style="display:none;"></div>
+        </div>
+        <div>
+          <h3>Buy Crypto</h3>
+          <form id="fiat-buy-form" onsubmit="buyCrypto(event)">
+            <label>Provider
+              <select name="provider" required>
+                <option value="moonpay">MoonPay</option>
+                <option value="stripe">Stripe</option>
+              </select>
+            </label>
+            <label>Amount (USD) <input name="amount" type="number" required value="100"></label>
+            <label>Crypto <input name="crypto" required value="ETH"></label>
+            <label>Recipient <input name="recipient" required placeholder="0x..."></label>
+            <label>Payment Method
+              <select name="paymentMethod">
+                <option value="credit_card">Credit Card</option>
+                <option value="debit_card">Debit Card</option>
+                <option value="bank_transfer">Bank Transfer</option>
+              </select>
+            </label>
+            <button type="submit">Buy Crypto</button>
+          </form>
+          <div id="fiat-buy-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW: Limit Orders Section -->
+    <section id="limit-orders">
+      <h2>📊 Limit Orders & Advanced Trading</h2>
+      <div class="flex">
+        <div>
+          <h3>Create Order</h3>
+          <form id="limit-order-form" onsubmit="createLimitOrder(event)">
+            <label>Order Type
+              <select name="orderType" required>
+                <option value="limit">Limit Order</option>
+                <option value="stop-loss">Stop Loss</option>
+                <option value="take-profit">Take Profit</option>
+                <option value="trailing-stop">Trailing Stop</option>
+              </select>
+            </label>
+            <label>Trading Pair <input name="pair" required value="ETH/USDC" placeholder="ETH/USDC"></label>
+            <label>Amount <input name="amount" type="number" step="0.01" required value="1"></label>
+            <label>Limit Price <input name="price" type="number" step="0.01" required value="2000"></label>
+            <label>Stop Price <input name="stopPrice" type="number" step="0.01" placeholder="Optional"></label>
+            <label>Expires In (hours) <input name="expiresHours" type="number" value="24"></label>
+            <button type="submit">Create Order</button>
+          </form>
+          <div id="limit-order-result" class="result" style="display:none;"></div>
+        </div>
+        <div>
+          <h3>Active Orders</h3>
+          <button onclick="loadActiveOrders()">Refresh Orders</button>
+          <div id="active-orders-list" class="result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW: RWA Tokenization Section -->
+    <section id="rwa-tokenization">
+      <h2>🏠 Real-World Asset Tokenization</h2>
+      <div class="flex">
+        <div>
+          <h3>Tokenize Asset</h3>
+          <form id="rwa-tokenize-form" onsubmit="tokenizeRWA(event)">
+            <label>Asset Type
+              <select name="assetType" required>
+                <option value="real-estate">Real Estate</option>
+                <option value="commodity">Commodity</option>
+                <option value="invoice">Invoice/Receivable</option>
+                <option value="security">Security</option>
+                <option value="art">Art & Collectibles</option>
+              </select>
+            </label>
+            <label>Asset Name <input name="assetName" required placeholder="123 Main St Property"></label>
+            <label>Total Value (USD) <input name="totalValue" type="number" required value="1000000"></label>
+            <label>Token Supply <input name="tokenSupply" type="number" required value="10000"></label>
+            <label>Owner Address <input name="owner" required placeholder="0x..."></label>
+            <button type="submit">Tokenize Asset</button>
+          </form>
+          <div id="rwa-tokenize-result" class="result" style="display:none;"></div>
+        </div>
+        <div>
+          <h3>Tokenized Assets</h3>
+          <button onclick="loadRWAAssets()">Refresh Assets</button>
+          <div id="rwa-assets-list" class="result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW: L2 Integration Section -->
+    <section id="l2-integration">
+      <h2>🌉 Layer 2 Integration</h2>
+      <div class="flex">
+        <div>
+          <h3>Deposit to L2</h3>
+          <form id="l2-deposit-form" onsubmit="depositToL2(event)">
+            <label>Network
+              <select name="network" required>
+                <option value="zksync">zkSync Era</option>
+                <option value="arbitrum">Arbitrum One</option>
+                <option value="optimism">Optimism</option>
+                <option value="base">Base</option>
+              </select>
+            </label>
+            <label>Token <input name="token" required value="ETH"></label>
+            <label>Amount <input name="amount" type="number" step="0.01" required value="0.1"></label>
+            <label>Recipient <input name="recipient" required placeholder="0x..."></label>
+            <button type="submit">Deposit</button>
+          </form>
+          <div id="l2-deposit-result" class="result" style="display:none;"></div>
+        </div>
+        <div>
+          <h3>Withdraw to L1</h3>
+          <form id="l2-withdraw-form" onsubmit="withdrawToL1(event)">
+            <label>Network
+              <select name="network" required>
+                <option value="zksync">zkSync Era</option>
+                <option value="arbitrum">Arbitrum One</option>
+                <option value="optimism">Optimism</option>
+                <option value="base">Base</option>
+              </select>
+            </label>
+            <label>Token <input name="token" required value="ETH"></label>
+            <label>Amount <input name="amount" type="number" step="0.01" required value="0.1"></label>
+            <label>Recipient <input name="recipient" required placeholder="0x..."></label>
+            <button type="submit">Withdraw (7 days)</button>
+          </form>
+          <div id="l2-withdraw-result" class="result" style="display:none;"></div>
+        </div>
+      </div>
+      <div style="margin-top: 20px;">
+        <h3>Supported Networks</h3>
+        <button onclick="loadL2Networks()">Refresh Networks</button>
+        <div id="l2-networks-list" class="result"></div>
+      </div>
+    </section>
+
     <section id="user-management">
       <h2>User Management</h2>
       <form id="add-user-form">
@@ -516,6 +753,27 @@
         <tbody></tbody>
       </table>
     </section>
+
+    <!-- Real-Time Notifications Panel -->
+    <section id="notifications-section">
+      <h2>Real-Time Notifications</h2>
+      <div id="notifications" style="background:#181c2a;border-radius:6px;padding:12px;min-height:100px;max-height:300px;overflow-y:auto;">
+        <!-- Notifications will appear here -->
+      </div>
+    </section>
+
+    <!-- Live Chat Panel -->
+    <section id="chat-section">
+      <h2>Live Chat</h2>
+      <div id="chat-messages" style="background:#181c2a;border-radius:6px;padding:12px;height:250px;overflow-y:auto;margin-bottom:10px;">
+        <!-- Chat messages will appear here -->
+      </div>
+      <form id="chat-form" style="display:flex;gap:8px;">
+        <input id="chat-input" placeholder="Type a message..." style="flex:1;" autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+    </section>
+    
     <section id="plugin-market">
       <h2>Plugin Marketplace</h2>
       <div id="plugin-list" style="background:#181c2a;border-radius:6px;padding:12px 16px;min-height:80px;margin-bottom:12px;"></div>
@@ -648,6 +906,268 @@
 
     // Initialize global logger
     const Logger = new AetherLogManager();
+
+    // ===== WebSocket Real-Time Connection =====
+    class AetheronWebSocketClient {
+      constructor() {
+        this.ws = null;
+        this.reconnectInterval = 5000;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 10;
+        this.subscriptions = new Set();
+        this.messageHandlers = new Map();
+        this.connect();
+      }
+
+      connect() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.host || 'localhost:3001';
+        const wsUrl = `${protocol}//${host}`;
+
+        Logger.info('Connecting to WebSocket...', { url: wsUrl });
+
+        try {
+          this.ws = new WebSocket(wsUrl);
+
+          this.ws.onopen = () => {
+            Logger.success('WebSocket connected', { url: wsUrl });
+            this.reconnectAttempts = 0;
+            this.updateConnectionStatus(true);
+            
+            // Resubscribe to channels
+            this.subscriptions.forEach(channel => {
+              this.subscribe(channel);
+            });
+          };
+
+          this.ws.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              this.handleMessage(data);
+            } catch (error) {
+              Logger.error('Failed to parse WebSocket message', error);
+            }
+          };
+
+          this.ws.onclose = () => {
+            Logger.warn('WebSocket disconnected');
+            this.updateConnectionStatus(false);
+            this.attemptReconnect();
+          };
+
+          this.ws.onerror = (error) => {
+            Logger.error('WebSocket error', error);
+          };
+
+        } catch (error) {
+          Logger.error('Failed to create WebSocket connection', error);
+          this.attemptReconnect();
+        }
+      }
+
+      handleMessage(data) {
+        Logger.debug('WebSocket message received', data);
+
+        // Call registered handlers for this message type
+        const handlers = this.messageHandlers.get(data.type);
+        if (handlers) {
+          handlers.forEach(handler => handler(data));
+        }
+
+        // Handle built-in message types
+        switch (data.type) {
+          case 'connected':
+            this.showNotification('success', data.message);
+            break;
+
+          case 'newBlock':
+            this.handleNewBlock(data.block);
+            break;
+
+          case 'newTransaction':
+            this.handleNewTransaction(data.transaction);
+            break;
+
+          case 'newLog':
+            this.handleNewLog(data.log);
+            break;
+
+          case 'userAction':
+            this.handleUserAction(data);
+            break;
+
+          case 'systemAlert':
+            this.showNotification(data.level, data.message, data.details);
+            break;
+
+          case 'statsUpdate':
+            this.handleStatsUpdate(data.stats);
+            break;
+
+          case 'chat':
+            this.handleChatMessage(data);
+            break;
+
+          case 'subscribed':
+            Logger.info(`Subscribed to channel: ${data.channel}`);
+            break;
+        }
+      }
+
+      subscribe(channel) {
+        this.subscriptions.add(channel);
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          this.send({ type: 'subscribe', channel });
+        }
+      }
+
+      unsubscribe(channel) {
+        this.subscriptions.delete(channel);
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          this.send({ type: 'unsubscribe', channel });
+        }
+      }
+
+      send(data) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify(data));
+        } else {
+          Logger.warn('WebSocket not connected, cannot send message');
+        }
+      }
+
+      on(messageType, handler) {
+        if (!this.messageHandlers.has(messageType)) {
+          this.messageHandlers.set(messageType, []);
+        }
+        this.messageHandlers.get(messageType).push(handler);
+      }
+
+      sendChat(message, user = 'Admin') {
+        this.send({
+          type: 'chat',
+          user,
+          message
+        });
+      }
+
+      attemptReconnect() {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+          this.reconnectAttempts++;
+          Logger.info(`Reconnecting in ${this.reconnectInterval/1000}s... (Attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+          setTimeout(() => this.connect(), this.reconnectInterval);
+        } else {
+          Logger.error('Max reconnect attempts reached');
+          this.showNotification('error', 'Connection lost. Please refresh the page.');
+        }
+      }
+
+      updateConnectionStatus(connected) {
+        const statusEl = document.getElementById('ws-status');
+        if (statusEl) {
+          statusEl.textContent = connected ? '🟢 Connected' : '🔴 Disconnected';
+          statusEl.style.color = connected ? '#4caf50' : '#ff5252';
+        }
+      }
+
+      handleNewBlock(block) {
+        Logger.success('New block mined!', block);
+        this.showNotification('success', `New block #${block.index} mined with ${block.transactions} transactions`);
+        loadStats(); // Refresh stats
+      }
+
+      handleNewTransaction(transaction) {
+        Logger.info('New transaction', transaction);
+        this.showNotification('info', `Transaction: ${transaction.amount} from ${transaction.from.substring(0, 8)}...`);
+      }
+
+      handleNewLog(log) {
+        // Logs are already handled by Logger, just trigger UI update
+        if (Logger.logs.findIndex(l => l.id === log.id) === -1) {
+          Logger.logs.unshift(log);
+          Logger.updateUILogs();
+        }
+      }
+
+      handleUserAction(data) {
+        Logger.info(`User action: ${data.action}`, data.details);
+        loadUsers(); // Refresh user list
+      }
+
+      handleStatsUpdate(stats) {
+        Logger.debug('Stats updated', stats);
+        loadStats();
+      }
+
+      handleChatMessage(data) {
+        Logger.info(`[Chat] ${data.user}: ${data.message}`);
+        this.appendChatMessage(data);
+      }
+
+      appendChatMessage(data) {
+        const chatBox = document.getElementById('chat-messages');
+        if (chatBox) {
+          const msg = document.createElement('div');
+          msg.style.cssText = 'padding: 8px; border-bottom: 1px solid #333; font-size: 0.9em;';
+          msg.innerHTML = `
+            <span style="color: #00eaff; font-weight: bold;">${data.user}</span>
+            <span style="color: #666; margin-left: 8px; font-size: 0.8em;">${new Date(data.timestamp).toLocaleTimeString()}</span>
+            <div style="color: #b2ebf2; margin-top: 4px;">${data.message}</div>
+          `;
+          chatBox.appendChild(msg);
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+      }
+
+      showNotification(level, message, details = null) {
+        const notifBox = document.getElementById('notifications');
+        if (!notifBox) return;
+
+        const colors = {
+          success: '#4caf50',
+          info: '#00eaff',
+          warning: '#ffa726',
+          error: '#ff5252'
+        };
+
+        const notif = document.createElement('div');
+        notif.style.cssText = `
+          background: ${colors[level] || colors.info}22;
+          border-left: 3px solid ${colors[level] || colors.info};
+          padding: 12px;
+          margin-bottom: 8px;
+          border-radius: 4px;
+          color: #e0e0e0;
+          animation: slideIn 0.3s ease-out;
+        `;
+        notif.innerHTML = `
+          <div style="font-weight: bold; margin-bottom: 4px;">${message}</div>
+          ${details ? `<div style="font-size: 0.85em; color: #b2ebf2;">${JSON.stringify(details)}</div>` : ''}
+        `;
+
+        notifBox.insertBefore(notif, notifBox.firstChild);
+
+        // Remove after 5 seconds
+        setTimeout(() => {
+          notif.style.animation = 'slideOut 0.3s ease-out';
+          setTimeout(() => notif.remove(), 300);
+        }, 5000);
+
+        // Keep only last 5 notifications
+        while (notifBox.children.length > 5) {
+          notifBox.lastChild.remove();
+        }
+      }
+    }
+
+    // Initialize WebSocket client
+    const wsClient = new AetheronWebSocketClient();
+
+    // Subscribe to channels
+    wsClient.subscribe('blockchain');
+    wsClient.subscribe('dashboard');
+    wsClient.subscribe('alerts');
+    wsClient.subscribe('chat');
 
     // Animated space background
     const canvas = document.getElementById('space-bg');
@@ -905,7 +1425,340 @@
         tr.style.display = tr.children[0].textContent.toLowerCase().includes(val) ? '' : 'none';
       });
     };
-    loadUsers();    // Logs & Audit Trail
+    loadUsers();
+
+    // ===== NEW FEATURE FUNCTIONS =====
+
+    // Account Abstraction Functions
+    async function createSmartAccount(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        provider: form.provider.value,
+        profile: {
+          id: form.userId.value,
+          name: form.userName.value,
+          email: form.userId.value
+        }
+      };
+      
+      try {
+        const res = await fetch('/api/aa/create-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('aa-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Account Created!</strong><br>
+          Address: ${result.account?.address || 'N/A'}<br>
+          Provider: ${result.account?.provider || 'N/A'}<br>
+          Needs Deployment: ${result.needsDeployment ? 'Yes' : 'No'}`;
+        Logger.success('Smart account created', result);
+      } catch (error) {
+        Logger.error('Failed to create smart account', { error: error.message });
+      }
+    }
+
+    async function createSessionKey(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        accountAddress: form.accountAddress.value,
+        permissions: {
+          maxAmount: (parseFloat(form.maxAmount.value) * 1e18).toString(),
+          validUntil: Date.now() + (parseInt(form.validHours.value) * 60 * 60 * 1000)
+        }
+      };
+      
+      try {
+        const res = await fetch('/api/aa/create-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('session-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Session Key Created!</strong><br>
+          Key: ${result.sessionKey || 'N/A'}<br>
+          Expires: ${result.expiresAt || 'N/A'}`;
+        Logger.success('Session key created', result);
+      } catch (error) {
+        Logger.error('Failed to create session key', { error: error.message });
+      }
+    }
+
+    async function loadAAAccounts() {
+      try {
+        const res = await fetch('/api/aa/accounts', {
+          headers: { 'Authorization': getAuthHeader() }
+        });
+        const result = await res.json();
+        const div = document.getElementById('aa-accounts-list');
+        div.innerHTML = result.accounts.map(acc => 
+          `<div style="border-bottom:1px solid #333;padding:10px;">
+            <strong>${acc.address}</strong><br>
+            Provider: ${acc.provider} | Deployed: ${acc.deployed ? 'Yes' : 'No'}
+          </div>`
+        ).join('') || '<p>No accounts found</p>';
+      } catch (error) {
+        Logger.error('Failed to load AA accounts', { error: error.message });
+      }
+    }
+
+    // Fiat On-Ramp Functions
+    async function getFiatQuote(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        provider: form.provider.value,
+        fiatAmount: parseFloat(form.amount.value),
+        fiatCurrency: form.fiatCurrency.value,
+        cryptoCurrency: form.cryptoCurrency.value
+      };
+      
+      try {
+        const res = await fetch('/api/fiat/quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('fiat-quote-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Quote:</strong><br>
+          ${result.quote?.cryptoAmount || 'N/A'} ${result.quote?.cryptoCurrency || ''}<br>
+          Rate: ${result.quote?.exchangeRate || 'N/A'}<br>
+          Fee: ${result.quote?.processingFee || 'N/A'}`;
+        Logger.info('Fiat quote received', result);
+      } catch (error) {
+        Logger.error('Failed to get fiat quote', { error: error.message });
+      }
+    }
+
+    async function buyCrypto(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        provider: form.provider.value,
+        fiatAmount: parseFloat(form.amount.value),
+        fiatCurrency: 'USD',
+        cryptoCurrency: form.crypto.value,
+        paymentMethod: form.paymentMethod.value,
+        recipient: form.recipient.value
+      };
+      
+      try {
+        const res = await fetch('/api/fiat/buy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('fiat-buy-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Purchase Initiated!</strong><br>
+          Transaction ID: ${result.transactionId || 'N/A'}<br>
+          Status: ${result.status || 'N/A'}<br>
+          Amount: ${result.cryptoAmount || 'N/A'} ${data.cryptoCurrency}`;
+        Logger.success('Crypto purchase initiated', result);
+      } catch (error) {
+        Logger.error('Failed to buy crypto', { error: error.message });
+      }
+    }
+
+    // Limit Orders Functions
+    async function createLimitOrder(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        type: form.orderType.value,
+        pair: form.pair.value,
+        amount: parseFloat(form.amount.value),
+        price: parseFloat(form.price.value),
+        stopPrice: form.stopPrice.value ? parseFloat(form.stopPrice.value) : null,
+        expiresAt: Date.now() + (parseInt(form.expiresHours.value) * 60 * 60 * 1000)
+      };
+      
+      try {
+        const res = await fetch('/api/orders/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('limit-order-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Order Created!</strong><br>
+          Order ID: ${result.order?.orderId || 'N/A'}<br>
+          Type: ${result.order?.type || 'N/A'}<br>
+          Status: ${result.order?.status || 'N/A'}`;
+        Logger.success('Limit order created', result);
+        loadActiveOrders();
+      } catch (error) {
+        Logger.error('Failed to create limit order', { error: error.message });
+      }
+    }
+
+    async function loadActiveOrders() {
+      try {
+        const res = await fetch('/api/orders/active', {
+          headers: { 'Authorization': getAuthHeader() }
+        });
+        const result = await res.json();
+        const div = document.getElementById('active-orders-list');
+        div.innerHTML = result.orders.map(order => 
+          `<div style="border-bottom:1px solid #333;padding:10px;">
+            <strong>${order.type}</strong> ${order.pair}<br>
+            Amount: ${order.amount} @ ${order.price}<br>
+            Status: ${order.status}
+          </div>`
+        ).join('') || '<p>No active orders</p>';
+      } catch (error) {
+        Logger.error('Failed to load active orders', { error: error.message });
+      }
+    }
+
+    // RWA Tokenization Functions
+    async function tokenizeRWA(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        assetType: form.assetType.value,
+        assetDetails: {
+          name: form.assetName.value,
+          description: `${form.assetType.value} asset`
+        },
+        totalValue: parseFloat(form.totalValue.value),
+        tokenSupply: parseInt(form.tokenSupply.value),
+        owner: form.owner.value
+      };
+      
+      try {
+        const res = await fetch('/api/rwa/tokenize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('rwa-tokenize-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Asset Tokenized!</strong><br>
+          Token ID: ${result.tokenId || 'N/A'}<br>
+          Contract: ${result.contractAddress || 'N/A'}<br>
+          Tokens: ${result.tokensIssued || 'N/A'}`;
+        Logger.success('RWA asset tokenized', result);
+        loadRWAAssets();
+      } catch (error) {
+        Logger.error('Failed to tokenize asset', { error: error.message });
+      }
+    }
+
+    async function loadRWAAssets() {
+      try {
+        const res = await fetch('/api/rwa/assets', {
+          headers: { 'Authorization': getAuthHeader() }
+        });
+        const result = await res.json();
+        const div = document.getElementById('rwa-assets-list');
+        div.innerHTML = result.assets.map(asset => 
+          `<div style="border-bottom:1px solid #333;padding:10px;">
+            <strong>${asset.assetDetails.name}</strong><br>
+            Type: ${asset.assetType} | Value: $${asset.totalValue.toLocaleString()}<br>
+            Tokens: ${asset.tokenSupply.toLocaleString()}
+          </div>`
+        ).join('') || '<p>No tokenized assets</p>';
+      } catch (error) {
+        Logger.error('Failed to load RWA assets', { error: error.message });
+      }
+    }
+
+    // L2 Integration Functions
+    async function depositToL2(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        network: form.network.value,
+        token: form.token.value,
+        amount: parseFloat(form.amount.value),
+        recipient: form.recipient.value
+      };
+      
+      try {
+        const res = await fetch('/api/l2/deposit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('l2-deposit-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Deposit Initiated!</strong><br>
+          Deposit ID: ${result.depositId || 'N/A'}<br>
+          Network: ${result.network || 'N/A'}<br>
+          Estimated Time: ${result.estimatedTime || 'N/A'}<br>
+          L1 TX: ${result.l1TxHash || 'Pending'}`;
+        Logger.success('L2 deposit initiated', result);
+      } catch (error) {
+        Logger.error('Failed to deposit to L2', { error: error.message });
+      }
+    }
+
+    async function withdrawToL1(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        network: form.network.value,
+        token: form.token.value,
+        amount: parseFloat(form.amount.value),
+        recipient: form.recipient.value
+      };
+      
+      try {
+        const res = await fetch('/api/l2/withdraw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAuthHeader() },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        const div = document.getElementById('l2-withdraw-result');
+        div.style.display = 'block';
+        div.innerHTML = `<strong>Withdrawal Initiated!</strong><br>
+          Withdrawal ID: ${result.withdrawalId || 'N/A'}<br>
+          Network: ${result.network || 'N/A'}<br>
+          Challenge Period: ${result.challengePeriod || 'N/A'}<br>
+          L2 TX: ${result.l2TxHash || 'Pending'}`;
+        Logger.success('L2 withdrawal initiated', result);
+      } catch (error) {
+        Logger.error('Failed to withdraw to L1', { error: error.message });
+      }
+    }
+
+    async function loadL2Networks() {
+      try {
+        const res = await fetch('/api/l2/networks');
+        const result = await res.json();
+        const div = document.getElementById('l2-networks-list');
+        div.innerHTML = result.networks.map(network => 
+          `<div style="border-bottom:1px solid #333;padding:10px;">
+            <strong>${network.name}</strong><br>
+            Chain ID: ${network.chainId} | RPC: ${network.rpc}<br>
+            <a href="${network.explorer}" target="_blank" style="color:#00eaff;">Explorer</a>
+          </div>`
+        ).join('');
+      } catch (error) {
+        Logger.error('Failed to load L2 networks', { error: error.message });
+      }
+    }
+
+    // Helper function for auth header
+    function getAuthHeader() {
+      return 'Basic ' + btoa('admin:admin123');
+    }
+
+    // Logs & Audit Trail
     async function loadLogs() {
       try {
         const res = await fetch('/logs');
@@ -1389,6 +2242,156 @@
         showToast('Backup file loaded. (Send to backend to restore)');
       } catch { showToast('Invalid backup file', '#ff5252'); }
     };
+
+    // ===== Chat Form Handler =====
+    document.getElementById('chat-form').onsubmit = function(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      
+      if (message) {
+        wsClient.sendChat(message);
+        input.value = '';
+      }
+    };
+
+    // ===== Load Users Function =====
+    async function loadUsers() {
+      try {
+        const res = await fetch('/users');
+        const users = await res.json();
+        const tbody = document.querySelector('#users-table tbody');
+        if (tbody) {
+          tbody.innerHTML = users.map(u => `
+            <tr>
+              <td style="padding: 8px;">${u.address}</td>
+              <td style="padding: 8px;">${u.role || 'user'}</td>
+              <td style="padding: 8px;">${u.kyc || 'pending'}</td>
+              <td style="padding: 8px;">${u.lastActive || 'N/A'}</td>
+              <td style="padding: 8px;">
+                <button onclick="manageUser('${u.address}')" style="font-size: 0.85em; padding: 4px 8px;">Manage</button>
+              </td>
+            </tr>
+          `).join('');
+        }
+      } catch (error) {
+        Logger.error('Failed to load users', error);
+      }
+    }
+
+    // ===== Load Logs Function =====
+    async function loadLogs() {
+      try {
+        const res = await fetch('/logs');
+        const logs = await res.json();
+        logs.forEach(log => {
+          if (Logger.logs.findIndex(l => l.time === log.time) === -1) {
+            Logger.logs.push({
+              timestamp: log.time,
+              level: log.type,
+              message: log.details?.message || JSON.stringify(log.details),
+              details: log.details,
+              id: Date.now() + Math.random()
+            });
+          }
+        });
+        Logger.updateUILogs();
+        Logger.info('Server logs loaded');
+      } catch (error) {
+        Logger.error('Failed to load server logs', error);
+      }
+    }
+
+    // ===== Filter Logs Function =====
+    function filterLogs() {
+      const filter = document.getElementById('log-level-filter').value;
+      const tbody = document.querySelector('#logs-table tbody');
+      if (!tbody) return;
+
+      const filteredLogs = filter ? Logger.logs.filter(log => log.level === filter) : Logger.logs;
+      
+      tbody.innerHTML = filteredLogs.slice(0, 50).map(log => {
+        const style = Logger.logLevels[log.level];
+        return `
+          <tr style="border-bottom: 1px solid #333;">
+            <td style="padding: 8px;">${log.timestamp}</td>
+            <td style="padding: 8px; color: ${style.color};">${style.icon} ${log.level}</td>
+            <td style="padding: 8px;">
+              <div style="margin-bottom: 4px;">${log.message}</div>
+              ${log.details ? `<pre style="font-size: 0.8em; background: #0f1419; padding: 4px; border-radius: 3px;">${JSON.stringify(log.details, null, 2)}</pre>` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Load initial data
+    loadUsers();
+    loadLogs();
+
+    // Auto-hide header controls on scroll for long pages
+    let lastScrollTop = 0;
+    let scrollTimeout;
+    const headerControls = document.getElementById('header-controls');
+    const header = document.querySelector('.main-header');
+    
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Hide when scrolling down, show when scrolling up
+      if (scrollTop > lastScrollTop && scrollTop > 100) {
+        // Scrolling down
+        if (headerControls) {
+          headerControls.style.opacity = '0';
+          headerControls.style.transform = 'translateY(-20px)';
+          headerControls.style.pointerEvents = 'none';
+        }
+        if (header) {
+          header.style.transform = 'translateY(-100%)';
+        }
+      } else {
+        // Scrolling up
+        if (headerControls) {
+          headerControls.style.opacity = '1';
+          headerControls.style.transform = 'translateY(0)';
+          headerControls.style.pointerEvents = 'auto';
+        }
+        if (header) {
+          header.style.transform = 'translateY(0)';
+        }
+      }
+      
+      lastScrollTop = scrollTop;
+      
+      // Auto-show after stopping scroll
+      scrollTimeout = setTimeout(() => {
+        if (headerControls) {
+          headerControls.style.opacity = '1';
+          headerControls.style.transform = 'translateY(0)';
+          headerControls.style.pointerEvents = 'auto';
+        }
+        if (header) {
+          header.style.transform = 'translateY(0)';
+        }
+      }, 2000);
+    });
+
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
   </script>
 </body>
 </html>

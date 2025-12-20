@@ -9,7 +9,7 @@ class Education {
   }
 
   getCertificates(address) {
-    return this.certificates.filter(c => c.address === address);
+    return this.certificates.filter((c) => c.address === address);
   }
 }
 

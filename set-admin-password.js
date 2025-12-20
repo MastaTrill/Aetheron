@@ -4,7 +4,7 @@ import { setAdminPassword } from './admin-auth.js';
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 function questionAsync(query) {
-  return new Promise(resolve => rl.question(query, resolve));
+  return new Promise((resolve) => rl.question(query, resolve));
 }
 
 (async () => {

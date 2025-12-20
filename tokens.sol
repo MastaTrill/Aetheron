@@ -2,6 +2,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// Aetheron Token Addresses (Multi-Chain)
+// Ethereum Mainnet: 0x8A3ad49656Bd07981C9CFc7aD826a808847c3452
+// Base Network: 0x8A3ad49656Bd07981C9CFc7aD826a808847c3452
+// Polygon (Matic): 0x8A3ad49656Bd07981C9CFc7aD826a808847c3452
+// Solana: 5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki
+
 contract AetheronToken {
     string public name = "Aetheron";
     string public symbol = "AETH";

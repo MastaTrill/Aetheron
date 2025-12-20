@@ -1,0 +1,63 @@
+{
+  "networks": {
+    "ethereum": {
+      "chainId": 1,
+      "name": "Ethereum Mainnet",
+      "rpcUrl": "https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY",
+      "explorerUrl": "https://etherscan.io",
+      "nativeCurrency": {
+        "name": "Ether",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "tokenAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+      "nftAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
+    },
+    "base": {
+      "chainId": 8453,
+      "name": "Base",
+      "rpcUrl": "https://mainnet.base.org",
+      "explorerUrl": "https://basescan.org",
+      "nativeCurrency": {
+        "name": "Ether",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "tokenAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+      "nftAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
+    },
+    "polygon": {
+      "chainId": 137,
+      "name": "Polygon Mainnet",
+      "rpcUrl": "https://polygon-rpc.com",
+      "explorerUrl": "https://polygonscan.com",
+      "nativeCurrency": {
+        "name": "MATIC",
+        "symbol": "MATIC",
+        "decimals": 18
+      },
+      "tokenAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
+      "nftAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
+    },
+    "solana": {
+      "name": "Solana Mainnet",
+      "rpcUrl": "https://api.mainnet-beta.solana.com",
+      "explorerUrl": "https://solscan.io",
+      "tokenAddress": "5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki"
+    }
+  },
+  "testnet": {
+    "base-sepolia": {
+      "chainId": 84532,
+      "name": "Base Sepolia",
+      "rpcUrl": "https://sepolia.base.org",
+      "explorerUrl": "https://sepolia.basescan.org"
+    },
+    "polygon-mumbai": {
+      "chainId": 80001,
+      "name": "Polygon Mumbai",
+      "rpcUrl": "https://rpc-mumbai.maticvigil.com",
+      "explorerUrl": "https://mumbai.polygonscan.com"
+    }
+  }
+}

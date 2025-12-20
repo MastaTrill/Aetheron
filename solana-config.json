@@ -1,0 +1,19 @@
+{
+  "network": "mainnet-beta",
+  "tokenAddress": "5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki",
+  "tokenName": "Aetheron",
+  "tokenSymbol": "AETH",
+  "decimals": 9,
+  "description": "Aetheron native token on Solana blockchain",
+  "rpcEndpoints": {
+    "mainnet": "https://api.mainnet-beta.solana.com",
+    "devnet": "https://api.devnet.solana.com",
+    "testnet": "https://api.testnet.solana.com"
+  },
+  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  "metadata": {
+    "image": "",
+    "externalUrl": "https://aetheron.io",
+    "attributes": []
+  }
+}

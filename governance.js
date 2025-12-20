@@ -20,7 +20,8 @@ class Governance {
   tally(proposalId) {
     const proposal = this.proposals[proposalId];
     if (!proposal) throw new Error('Invalid proposal');
-    let yes = 0, no = 0;
+    let yes = 0,
+      no = 0;
     for (const v in proposal.votes) {
       if (proposal.votes[v]) yes++;
       else no++;

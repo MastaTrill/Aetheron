@@ -13,14 +13,21 @@
 </head>
 <body>
   <h1>Aetheron Block Explorer</h1>
+  <p style="text-align: center; color: #666; margin: 20px;">Note: This explorer requires the Aetheron server to be running. <a href="index.html">Return to Home</a></p>
   <div id="blocks"></div>
   <script>
     async function loadBlocks() {
-      const res = await fetch('http://localhost:3000/chain');
-      const chain = await res.json();
-      const blocksDiv = document.getElementById('blocks');
-      blocksDiv.innerHTML = '';
-      chain.forEach((block, i) => {
+      try {
+        // Try localhost first, fallback to demo data if server not running
+        const res = await fetch('http://localhost:3000/chain').catch(() => null);
+        if (!res) {
+          document.getElementById('blocks').innerHTML = '<p style="text-align: center; color: #666;">Server not running. Start with <code>npm start</code> to view live blockchain data.</p>';
+          return;
+        }
+        const chain = await res.json();
+        const blocksDiv = document.getElementById('blocks');
+        blocksDiv.innerHTML = '';
+        chain.forEach((block, i) => {
         const blockDiv = document.createElement('div');
         blockDiv.className = 'block';
         blockDiv.innerHTML = `<b>Block #${i}</b><br>Hash: ${block.hash}<br>Prev: ${block.previousHash}<br>Txs:<br>`;
@@ -29,6 +36,9 @@
         });
         blocksDiv.appendChild(blockDiv);
       });
+      } catch (error) {
+        document.getElementById('blocks').innerHTML = '<p style="text-align: center; color: red;">Error loading blockchain data. Please ensure the server is running.</p>';
+      }
     }
     loadBlocks();
   </script>

@@ -9,7 +9,7 @@ class SupplyChain {
   }
 
   updateStatus(id, status) {
-    const item = this.items.find(i => i.id === id);
+    const item = this.items.find((i) => i.id === id);
     if (item) {
       item.status = status;
       item.history.push({ status, timestamp: Date.now() });

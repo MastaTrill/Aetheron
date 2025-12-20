@@ -1,0 +1,132 @@
+{
+  "name": "Aetheron Network",
+  "short_name": "Aetheron",
+  "description": "Decentralized blockchain platform with DeFi, NFTs, DAOs, and more",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Send Transaction",
+      "short_name": "Send",
+      "description": "Send AETH to another address",
+      "url": "/?action=send",
+      "icons": [{ "src": "/icon-send.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "View Explorer",
+      "short_name": "Explorer",
+      "description": "Browse the blockchain",
+      "url": "/explorer.html",
+      "icons": [{ "src": "/icon-explorer.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "NFT Marketplace",
+      "short_name": "NFTs",
+      "description": "Buy and sell NFTs",
+      "url": "/?page=nft",
+      "icons": [{ "src": "/icon-nft.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "DAO Governance",
+      "short_name": "DAO",
+      "description": "Vote on proposals",
+      "url": "/?page=dao",
+      "icons": [{ "src": "/icon-dao.png", "sizes": "96x96" }]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "scope": "/",
+  "dir": "ltr",
+  "lang": "en-US"
+}

@@ -10,7 +10,10 @@ const { Education } = require('./education');
 const { DeFiLending } = require('./defi');
 const { GamePlatform } = require('./game');
 const { Crowdfunding } = require('./crowdfunding');
-app = express();
+const { MultiChainIntegration } = require('./multichain');
+const { SolanaIntegration } = require('./solana');
+
+const app = express();
 app.use(express.json());
 
 let chain = new Blockchain();
@@ -27,12 +30,16 @@ const defi = new DeFiLending();
 const game = new GamePlatform();
 const crowd = new Crowdfunding();
 
+// Multi-chain support
+const multichain = new MultiChainIntegration('ethereum');
+const solana = new SolanaIntegration('mainnet-beta');
+
 const stats = {
   txCount: 0,
   blockCount: 0,
   users: new Set(),
   proposals: 0,
-  liquidity: 0,
+  liquidity: 0
 };
 
 app.get('/chain', (_req, res) => {
@@ -207,7 +214,7 @@ app.get('/stats', (_req, res) => {
     blockCount: stats.blockCount,
     userCount: stats.users.size,
     proposals: stats.proposals,
-    liquidity: stats.liquidity,
+    liquidity: stats.liquidity
   });
 });
 
@@ -215,7 +222,7 @@ app.get('/stats', (_req, res) => {
 const users = [];
 app.post('/users/add', (req, res) => {
   const { address, role = 'user', kyc = false } = req.body;
-  if (!users.find(u => u.address === address))
+  if (!users.find((u) => u.address === address))
     users.push({ address, role, kyc, lastActive: new Date().toISOString() });
   res.json({ status: 'User added' });
 });
@@ -224,13 +231,13 @@ app.get('/users', (_req, res) => {
 });
 app.post('/users/kyc', (req, res) => {
   const { address, kyc } = req.body;
-  const user = users.find(u => u.address === address);
+  const user = users.find((u) => u.address === address);
   if (user) user.kyc = kyc;
   res.json({ status: 'KYC updated' });
 });
 app.post('/users/role', (req, res) => {
   const { address, role } = req.body;
-  const user = users.find(u => u.address === address);
+  const user = users.find((u) => u.address === address);
   if (user) user.role = role;
   res.json({ status: 'Role updated' });
 });
@@ -242,14 +249,94 @@ function logAction(type, details) {
   if (logs.length > 200) logs.shift();
 }
 // Log user actions
-app.post('/users/add', (req, _res, next) => { logAction('user_add', req.body); next(); });
-app.post('/users/kyc', (req, _res, next) => { logAction('user_kyc', req.body); next(); });
-app.post('/users/role', (req, _res, next) => { logAction('user_role', req.body); next(); });
+app.post('/users/add', (req, _res, next) => {
+  logAction('user_add', req.body);
+  next();
+});
+app.post('/users/kyc', (req, _res, next) => {
+  logAction('user_kyc', req.body);
+  next();
+});
+app.post('/users/role', (req, _res, next) => {
+  logAction('user_role', req.body);
+  next();
+});
 // Log DEX, DAO, etc. (add more as needed)
-app.post('/dex/add-liquidity', (req, _res, next) => { logAction('dex_liquidity', req.body); next(); });
-app.post('/dao/propose', (req, _res, next) => { logAction('dao_propose', req.body); next(); });
-app.post('/defi/lend', (req, _res, next) => { logAction('defi_lend', req.body); next(); });
-app.get('/logs', (_req, res) => { res.json(logs.slice().reverse()); });
+app.post('/dex/add-liquidity', (req, _res, next) => {
+  logAction('dex_liquidity', req.body);
+  next();
+});
+app.post('/dao/propose', (req, _res, next) => {
+  logAction('dao_propose', req.body);
+  next();
+});
+app.post('/defi/lend', (req, _res, next) => {
+  logAction('defi_lend', req.body);
+  next();
+});
+app.get('/logs', (_req, res) => {
+  res.json(logs.slice().reverse());
+});
+
+// Multi-chain endpoints
+app.get('/multichain/chains', (req, res) => {
+  res.json(multichain.getSupportedChains());
+});
+
+app.get('/multichain/balance/:chain/:address', async (req, res) => {
+  const { chain, address } = req.params;
+  try {
+    if (chain === 'solana') {
+      const balance = await solana.getBalance(address);
+      res.json({ chain, address, balance, unit: 'SOL' });
+    } else {
+      const balance = await multichain.getEVMBalance(address, chain);
+      res.json({
+        chain,
+        address,
+        balance,
+        unit: multichain.getChainConfig(chain).nativeCurrency.symbol
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/multichain/token-balance/:chain/:address', async (req, res) => {
+  const { chain, address } = req.params;
+  try {
+    if (chain === 'solana') {
+      const balance = await solana.getTokenBalance(address);
+      res.json({ chain, address, balance, token: 'AETH' });
+    } else {
+      const balance = await multichain.getTokenBalance(address, chain);
+      res.json({ chain, address, balance, token: 'AETH' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/multichain/block-number/:chain', async (req, res) => {
+  const { chain } = req.params;
+  try {
+    const blockNumber = await multichain.getBlockNumber(chain);
+    res.json({ chain, blockNumber });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/multichain/config/:chain', (req, res) => {
+  const { chain } = req.params;
+  try {
+    const config = multichain.getChainConfig(chain);
+    res.json(config);
+  } catch (error) {
+    res.status(404).json({ error: 'Chain not found' });
+  }
+});
 
 process.on('exit', () => {
   saveBlockchain(chain);
@@ -272,7 +359,10 @@ function basicAuth(req, res, next) {
 }
 
 // Protect admin endpoints
-app.use(['/dex','/dao','/social','/reputation','/carbon','/education','/defi','/game','/crowd'], basicAuth);
+app.use(
+  ['/dex', '/dao', '/social', '/reputation', '/carbon', '/education', '/defi', '/game', '/crowd'],
+  basicAuth
+);
 
 // === Plugin Marketplace Endpoints ===
 const plugins = [];
@@ -290,7 +380,7 @@ app.post('/plugins/install', (req, res) => {
 });
 app.post('/plugins/uninstall', (req, res) => {
   const { id } = req.body;
-  const idx = plugins.findIndex(p => p.id === id);
+  const idx = plugins.findIndex((p) => p.id === id);
   if (idx !== -1) {
     const [removed] = plugins.splice(idx, 1);
     logAction('plugin_uninstall', { id });

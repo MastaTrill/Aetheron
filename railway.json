@@ -1,13 +1,33 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS"
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["nodejs-20_x", "python3"]
+        },
+        "install": {
+          "cmds": ["npm ci --production"]
+        },
+        "build": {
+          "cmds": ["npm run lint:fix || true"]
+        }
+      }
+    }
   },
   "deploy": {
-    "startCommand": "npm start",
-    "healthcheckPath": "/",
+    "numReplicas": 1,
+    "startCommand": "node server.js",
+    "healthcheckPath": "/health",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
+  },
+  "environments": {
+    "production": {
+      "NODE_ENV": "production",
+      "PORT": 3001
+    }
   }
 }

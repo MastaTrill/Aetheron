@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  aetheron-app:
+    build: .
+    container_name: aetheron-dashboard
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - aetheron-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: aetheron-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - aetheron-network
+
+  # Optional: Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: aetheron-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - aetheron-app
+    restart: unless-stopped
+    networks:
+      - aetheron-network
+
+networks:
+  aetheron-network:
+    driver: bridge
+
+volumes:
+  redis-data:

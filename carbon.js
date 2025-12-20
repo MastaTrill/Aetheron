@@ -9,7 +9,7 @@ class CarbonMarket {
   }
 
   transferCredit(from, to, amount) {
-    const idx = this.credits.findIndex(c => c.address === from && !c.used && c.amount >= amount);
+    const idx = this.credits.findIndex((c) => c.address === from && !c.used && c.amount >= amount);
     if (idx === -1) throw new Error('No available credit');
     this.credits[idx].address = to;
   }

@@ -9,7 +9,7 @@ class NFTMarketplace {
   }
 
   buy(tokenId, buyer) {
-    const idx = this.listings.findIndex(l => l.tokenId === tokenId);
+    const idx = this.listings.findIndex((l) => l.tokenId === tokenId);
     if (idx === -1) throw new Error('Not listed');
     const listing = this.listings[idx];
     // Transfer logic would go here

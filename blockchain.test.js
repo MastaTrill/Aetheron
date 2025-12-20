@@ -15,7 +15,9 @@ describe('Blockchain', () => {
     tx.signTransaction(wallet1.privateKey);
     chain.addTransaction(tx);
     expect(chain.pendingTransactions.length).toBe(1);
-    expect(() => chain.addTransaction(new Transaction(wallet1.publicKey, wallet2.publicKey, -5))).toThrow();
+    expect(() =>
+      chain.addTransaction(new Transaction(wallet1.publicKey, wallet2.publicKey, -5))
+    ).toThrow();
   });
 
   it('should update balances after mining', () => {

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheron - Multi-Chain Blockchain Platform</title>
+  <meta name="description" content="Aetheron is a modular, full-featured blockchain platform with DeFi, NFT, DAO, Gaming, and more">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .logo {
+      font-size: 4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00eaff, #00bcd4, #0097a7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      text-shadow: 0 0 30px rgba(0, 234, 255, 0.5);
+      letter-spacing: 4px;
+    }
+
+    .tagline {
+      font-size: 1.5rem;
+      opacity: 0.9;
+      margin-bottom: 40px;
+      color: #00eaff;
+    }
+
+    .description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      opacity: 0.8;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 60px 0;
+    }
+
+    .feature-badge {
+      background: rgba(0, 234, 255, 0.1);
+      border: 1px solid rgba(0, 234, 255, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .feature-badge:hover {
+      background: rgba(0, 234, 255, 0.2);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 234, 255, 0.3);
+    }
+
+    .feature-badge h3 {
+      color: #00eaff;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .feature-badge p {
+      opacity: 0.8;
+      font-size: 0.95rem;
+    }
+
+    .pages-section {
+      margin: 80px 0;
+    }
+
+    .pages-section h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #00eaff;
+      margin-bottom: 40px;
+    }
+
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .page-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 234, 255, 0.3);
+      border-radius: 12px;
+      padding: 30px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s ease;
+      display: block;
+    }
+
+    .page-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 234, 255, 0.4);
+    }
+
+    .page-card h3 {
+      color: #00eaff;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .page-card p {
+      opacity: 0.8;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .page-card .view-btn {
+      display: inline-block;
+      background: #00eaff;
+      color: #0f2027;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .page-card:hover .view-btn {
+      background: #00bcd4;
+    }
+
+    .token-info {
+      background: rgba(0, 234, 255, 0.1);
+      border: 2px solid rgba(0, 234, 255, 0.3);
+      border-radius: 12px;
+      padding: 30px;
+      margin: 60px 0;
+    }
+
+    .token-info h2 {
+      color: #00eaff;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    .token-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .token-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .token-item strong {
+      color: #00eaff;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .token-item code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      display: block;
+      word-break: break-all;
+      margin-top: 5px;
+    }
+
+    .links-section {
+      text-align: center;
+      margin: 60px 0;
+    }
+
+    .links-section h2 {
+      color: #00eaff;
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+
+    .link-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .link-btn {
+      background: rgba(0, 234, 255, 0.2);
+      border: 1px solid #00eaff;
+      color: #00eaff;
+      padding: 15px 30px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .link-btn:hover {
+      background: #00eaff;
+      color: #0f2027;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 234, 255, 0.5);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      opacity: 0.6;
+      margin-top: 80px;
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 2.5rem;
+      }
+
+      .tagline {
+        font-size: 1.2rem;
+      }
+
+      .pages-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .link-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .link-btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <header>
+      <h1 class="logo">AETHERON</h1>
+      <p class="tagline">Multi-Chain Blockchain Platform</p>
+      <p class="description">
+        A modular, full-featured blockchain ecosystem with advanced DeFi, NFT marketplace, 
+        DAO governance, gaming integration, and enterprise-grade security features across 
+        Ethereum, Base, Polygon, and Solana networks.
+      </p>
+    </header>
+
+    <div class="features-grid">
+      <div class="feature-badge">
+        <h3>🔗 Multi-Chain</h3>
+        <p>Ethereum, Base, Polygon & Solana support</p>
+      </div>
+      <div class="feature-badge">
+        <h3>⚡ Layer 2 Scaling</h3>
+        <p>State channels & optimistic rollups</p>
+      </div>
+      <div class="feature-badge">
+        <h3>💰 Advanced DeFi</h3>
+        <p>Yield farming, flash loans & derivatives</p>
+      </div>
+      <div class="feature-badge">
+        <h3>🎨 NFT Marketplace</h3>
+        <p>Create, trade & auction digital assets</p>
+      </div>
+      <div class="feature-badge">
+        <h3>🏛️ DAO Governance</h3>
+        <p>Decentralized decision making</p>
+      </div>
+      <div class="feature-badge">
+        <h3>🎮 Gaming SDK</h3>
+        <p>Unity/Unreal integration & tournaments</p>
+      </div>
+      <div class="feature-badge">
+        <h3>🔐 Account Abstraction</h3>
+        <p>ERC-4337 smart wallets & gasless txs</p>
+      </div>
+      <div class="feature-badge">
+        <h3>🛡️ ZK Privacy</h3>
+        <p>Zero-knowledge proofs & private txs</p>
+      </div>
+    </div>
+
+    <section class="pages-section">
+      <h2>Explore Aetheron</h2>
+      <div class="pages-grid">
+        <a href="admin-dashboard.html" class="page-card">
+          <h3>🎛️ Admin Dashboard</h3>
+          <p>Full-featured administration panel with 3D AI hologram assistant, blockchain controls, user management, and real-time system monitoring.</p>
+          <span class="view-btn">Open Dashboard →</span>
+        </a>
+
+        <a href="analytics-dashboard.html" class="page-card">
+          <h3>📊 Analytics Dashboard</h3>
+          <p>Real-time metrics visualization with Chart.js and D3.js. Track transactions, user growth, revenue, funnels, and cohort analysis.</p>
+          <span class="view-btn">View Analytics →</span>
+        </a>
+
+        <a href="explorer.html" class="page-card">
+          <h3>🔍 Block Explorer</h3>
+          <p>Browse blockchain blocks and transactions in real-time. View transaction details, hashes, and complete chain history.</p>
+          <span class="view-btn">Explore Blocks →</span>
+        </a>
+
+        <a href="DEMO.html" class="page-card">
+          <h3>✨ Features Demo</h3>
+          <p>Interactive showcase of all platform capabilities including DeFi, NFT, DAO, gaming, social features, and more with live examples.</p>
+          <span class="view-btn">Try Demo →</span>
+        </a>
+
+        <a href="browser-extension/popup.html" class="page-card">
+          <h3>💼 Browser Wallet</h3>
+          <p>Chrome/Firefox wallet extension interface. Send, receive, and manage tokens across multiple networks with built-in security.</p>
+          <span class="view-btn">View Wallet →</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="token-info">
+      <h2>🪙 Token Information</h2>
+      <p style="margin-bottom: 20px;">Aetheron Token (AETH) is deployed across multiple blockchain networks:</p>
+      
+      <div class="token-grid">
+        <div class="token-item">
+          <strong>Ethereum Mainnet</strong>
+          <code>0x8A3ad49656Bd07981C9CFc7aD826a808847c3452</code>
+        </div>
+        <div class="token-item">
+          <strong>Base Network</strong>
+          <code>0x8A3ad49656Bd07981C9CFc7aD826a808847c3452</code>
+        </div>
+        <div class="token-item">
+          <strong>Polygon (Matic)</strong>
+          <code>0x8A3ad49656Bd07981C9CFc7aD826a808847c3452</code>
+        </div>
+        <div class="token-item">
+          <strong>Solana</strong>
+          <code>5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki</code>
+        </div>
+      </div>
+
+      <p style="margin-top: 20px;"><strong>Symbol:</strong> AETH | <strong>Decimals:</strong> 18 (EVM), 9 (Solana)</p>
+    </div>
+
+    <section class="links-section">
+      <h2>📚 Documentation & Resources</h2>
+      <div class="link-buttons">
+        <a href="https://github.com/MastaTrill/Aetheron" class="link-btn">GitHub Repository</a>
+        <a href="API_DOCS.md" class="link-btn">API Documentation</a>
+        <a href="SDK_DOCS.md" class="link-btn">SDK Docs</a>
+        <a href="FEATURES.md" class="link-btn">Features Guide</a>
+        <a href="PRODUCTION_DEPLOYMENT.md" class="link-btn">Deployment Guide</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2025 Aetheron Platform. Multi-Chain Blockchain Ecosystem.</p>
+      <p>Built with ❤️ for the decentralized future</p>
+    </footer>
+  </div>
+
+  <script>
+    // Generate random stars
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 200; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      starsContainer.appendChild(star);
+    }
+  </script>
+</body>
+</html>

@@ -4,8 +4,8 @@ module.exports = defineConfig({
   testDir: 'tests/e2e',
   use: {
     browserName: 'chromium',
-    headless: true,
+    headless: true
   },
   reporter: 'html',
-  globalSetup: './global-setup.js',
+  globalSetup: './global-setup.js'
 });

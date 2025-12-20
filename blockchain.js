@@ -3,7 +3,7 @@
 // Use Node.js crypto for real SHA256
 const crypto = require('crypto');
 const { encrypt, decrypt } = require('./encryption');
-const { ERC20Token, ERC721Token } = require('./tokens');
+// Note: Token contracts would be deployed on-chain, not imported here
 const { blockchainEvents } = require('./events');
 
 class Wallet {
@@ -49,23 +49,34 @@ function SHA256(data) {
 }
 
 class Block {
-  constructor(timestamp, transactions, previousHash = '') {
-    this.timestamp = timestamp;
+  constructor(index, transactions, timestamp, previousHash = '') {
+    this.index = index;
+    this.timestamp = timestamp || Date.now();
     this.transactions = transactions;
     this.previousHash = previousHash;
+    this.nonce = 0;
     this.hash = this.calculateHash();
-    this.nonce = 0; // Added for PoS
   }
 
   calculateHash() {
     // Simplified hash function (in real-world, use SHA256)
-    return SHA256(this.timestamp + this.previousHash + JSON.stringify(this.transactions) + this.nonce);
+    return SHA256(
+      this.index + this.timestamp + this.previousHash + JSON.stringify(this.transactions) + this.nonce
+    );
+  }
+
+  mineBlock(difficulty) {
+    while (this.hash.substring(0, difficulty) !== '0'.repeat(difficulty)) {
+      this.nonce++;
+      this.hash = this.calculateHash();
+    }
   }
 
   // Proof of Stake method (simplified)
   validateBlock(stake) {
     // In a real PoS system, validation depends on the validator's stake and other factors
-    return this.hash.startsWith("00") && stake > 0; // Example: Hash starts with "00" and validator has stake
+    // For simplicity, just check if validator has stake (no mining required for PoS)
+    return stake > 0;
   }
 }
 
@@ -74,11 +85,11 @@ class Blockchain {
     this.consensus = consensus; // 'pos', 'pow', or 'hybrid'
     this.chain = [this.createGenesisBlock()];
     this.pendingTransactions = [];
-    this.validatorStake = {}; // { validatorAddress: stakeAmount }
+    this.validatorStake = { 'default-validator': 1000 }; // Add default validator for testing
   }
 
   createGenesisBlock() {
-    return new Block(Date.now(), "Genesis Block", "0");
+    return new Block(0, [], Date.now(), '0');
   }
 
   getLatestBlock() {
@@ -97,12 +108,14 @@ class Blockchain {
     if (transaction.contract) {
       const { SmartContract } = require('./smartcontract');
       const contract = new SmartContract(transaction.contract);
-      if (!contract.execute({
-        sender: transaction.sender,
-        receiver: transaction.receiver,
-        amount: transaction.amount,
-        blockchain: this
-      })) {
+      if (
+        !contract.execute({
+          sender: transaction.sender,
+          receiver: transaction.receiver,
+          amount: transaction.amount,
+          blockchain: this
+        })
+      ) {
         throw new Error('Smart contract condition failed');
       }
     }
@@ -114,14 +127,14 @@ class Blockchain {
     let balance = 0;
     for (const block of this.chain) {
       for (const tx of block.transactions) {
-        if (tx.sender === address) balance -= (tx.amount + (tx.fee || 0));
+        if (tx.sender === address) balance -= tx.amount + (tx.fee || 0);
         if (tx.receiver === address) balance += tx.amount;
         // Block reward
         if (tx.sender === null && tx.receiver === address) balance += tx.amount;
       }
     }
     for (const tx of this.pendingTransactions) {
-      if (tx.sender === address) balance -= (tx.amount + (tx.fee || 0));
+      if (tx.sender === address) balance -= tx.amount + (tx.fee || 0);
       if (tx.receiver === address) balance += tx.amount;
     }
     return balance;
@@ -178,8 +191,9 @@ class Blockchain {
       let nonce = 0;
       let block;
       const previousHash = this.getLatestBlock().hash;
+      const index = this.chain.length;
       do {
-        block = new Block(Date.now(), this.pendingTransactions, previousHash);
+        block = new Block(index, this.pendingTransactions, Date.now(), previousHash);
         block.nonce = nonce++;
         block.hash = block.calculateHash();
       } while (!block.hash.startsWith('00'));
@@ -195,7 +209,8 @@ class Blockchain {
       // PoS or hybrid
       validator = this.selectValidator();
       const previousHash = this.getLatestBlock().hash;
-      const block = new Block(Date.now(), this.pendingTransactions, previousHash);
+      const index = this.chain.length;
+      const block = new Block(index, this.pendingTransactions, Date.now(), previousHash);
       if (!block.validateBlock(this.validatorStake[validator])) {
         throw new Error('Block validation failed');
       }
@@ -253,6 +268,15 @@ class Transaction {
   }
 }
 
+// Export all classes
+module.exports = {
+  Blockchain,
+  Block,
+  Transaction,
+  Wallet,
+  SHA256
+};
+
 // Example Usage
 if (require.main === module) {
   // Create a new blockchain
@@ -263,16 +287,16 @@ if (require.main === module) {
   Aetheron.addValidatorStake('validator2', 200);
 
   // Create some transactions
-Aetheron.addTransaction(new Transaction("address1", "address2", 10));
-Aetheron.addTransaction(new Transaction("address3", "address4", 25));
+  Aetheron.addTransaction(new Transaction('address1', 'address2', 10));
+  Aetheron.addTransaction(new Transaction('address3', 'address4', 25));
   //create a new block
   let newBlock = Aetheron.createBlock();
-  console.log("New Block", newBlock);
+  console.log('New Block', newBlock);
 
   // Validate the blockchain
-  console.log("Is chain valid?", Aetheron.isChainValid());
+  console.log('Is chain valid?', Aetheron.isChainValid());
 
   // Tamper with a block
-  Aetheron.chain[1].transactions = [new Transaction("address1", "address5", 500)];
-  console.log("Is chain valid after tampering?", Aetheron.isChainValid());  // Should now be false
+  Aetheron.chain[1].transactions = [new Transaction('address1', 'address5', 500)];
+  console.log('Is chain valid after tampering?', Aetheron.isChainValid()); // Should now be false
 }

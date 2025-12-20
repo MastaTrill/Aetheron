@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheron Analytics Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      padding: 20px;
+    }
+
+    .dashboard {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+
+    .metric-label {
+      font-size: 0.9rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .metric-change {
+      font-size: 0.9rem;
+      color: #10b981;
+    }
+
+    .metric-change.negative {
+      color: #ef4444;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .chart-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    canvas {
+      max-height: 300px;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f3f4f6;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .refresh-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .refresh-btn:hover {
+      background: #5568d3;
+      transform: scale(1.05);
+    }
+
+    .time-range {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .time-range select {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      background: white;
+      color: #333;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <div class="header">
+      <h1>📊 Aetheron Analytics Dashboard</h1>
+      <p>Real-time blockchain platform metrics and insights</p>
+    </div>
+
+    <div class="time-range">
+      <label for="timeRange">Time Range: </label>
+      <select id="timeRange" onchange="updateDashboard()">
+        <option value="1h">Last Hour</option>
+        <option value="24h" selected>Last 24 Hours</option>
+        <option value="7d">Last 7 Days</option>
+        <option value="30d">Last 30 Days</option>
+        <option value="90d">Last 90 Days</option>
+      </select>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Users</div>
+        <div class="metric-value" id="totalUsers">0</div>
+        <div class="metric-change" id="usersChange">+0%</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Total Transactions</div>
+        <div class="metric-value" id="totalTxs">0</div>
+        <div class="metric-change" id="txsChange">+0%</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Transaction Volume</div>
+        <div class="metric-value" id="txVolume">$0</div>
+        <div class="metric-change" id="volumeChange">+0%</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Active Wallets</div>
+        <div class="metric-value" id="activeWallets">0</div>
+        <div class="metric-change" id="walletsChange">+0%</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Revenue (24h)</div>
+        <div class="metric-value" id="revenue">$0</div>
+        <div class="metric-change" id="revenueChange">+0%</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Avg. Gas Price</div>
+        <div class="metric-value" id="gasPrice">0</div>
+        <div class="metric-change" id="gasPriceChange">+0%</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-grid">
+      <div class="chart-container">
+        <div class="chart-title">Transaction Volume (24h)</div>
+        <canvas id="volumeChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">User Growth</div>
+        <canvas id="userGrowthChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">Transaction Types</div>
+        <canvas id="txTypesChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">Network Activity</div>
+        <canvas id="networkChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">Revenue by Source</div>
+        <canvas id="revenueChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">User Retention Cohorts</div>
+        <canvas id="cohortChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Transactions Table -->
+    <div class="table-container">
+      <h2 class="chart-title">Recent Transactions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>TX Hash</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="recentTxs">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <button class="refresh-btn" onclick="updateDashboard()">🔄 Refresh Data</button>
+  </div>
+
+  <script>
+    // Generate mock data
+    function generateMockData() {
+      return {
+        totalUsers: Math.floor(Math.random() * 100000) + 50000,
+        totalTxs: Math.floor(Math.random() * 1000000) + 500000,
+        txVolume: Math.floor(Math.random() * 10000000) + 5000000,
+        activeWallets: Math.floor(Math.random() * 50000) + 20000,
+        revenue: Math.floor(Math.random() * 100000) + 50000,
+        gasPrice: Math.floor(Math.random() * 50) + 20,
+        usersChange: (Math.random() * 20 - 5).toFixed(1),
+        txsChange: (Math.random() * 30 - 10).toFixed(1),
+        volumeChange: (Math.random() * 25 - 5).toFixed(1),
+        walletsChange: (Math.random() * 15 - 3).toFixed(1),
+        revenueChange: (Math.random() * 20 - 5).toFixed(1),
+        gasPriceChange: (Math.random() * 10 - 5).toFixed(1)
+      };
+    }
+
+    // Update metrics
+    function updateMetrics() {
+      const data = generateMockData();
+      
+      document.getElementById('totalUsers').textContent = data.totalUsers.toLocaleString();
+      document.getElementById('totalTxs').textContent = data.totalTxs.toLocaleString();
+      document.getElementById('txVolume').textContent = '$' + data.txVolume.toLocaleString();
+      document.getElementById('activeWallets').textContent = data.activeWallets.toLocaleString();
+      document.getElementById('revenue').textContent = '$' + data.revenue.toLocaleString();
+      document.getElementById('gasPrice').textContent = data.gasPrice + ' gwei';
+
+      updateChange('usersChange', data.usersChange);
+      updateChange('txsChange', data.txsChange);
+      updateChange('volumeChange', data.volumeChange);
+      updateChange('walletsChange', data.walletsChange);
+      updateChange('revenueChange', data.revenueChange);
+      updateChange('gasPriceChange', data.gasPriceChange);
+    }
+
+    function updateChange(id, value) {
+      const elem = document.getElementById(id);
+      const sign = value >= 0 ? '+' : '';
+      elem.textContent = sign + value + '% from last period';
+      elem.className = value >= 0 ? 'metric-change' : 'metric-change negative';
+    }
+
+    // Initialize charts
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom'
+        }
+      }
+    };
+
+    // Volume Chart
+    const volumeChart = new Chart(document.getElementById('volumeChart'), {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 24}, (_, i) => i + 'h'),
+        datasets: [{
+          label: 'Transaction Volume ($)',
+          data: Array.from({length: 24}, () => Math.random() * 500000 + 100000),
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: chartOptions
+    });
+
+    // User Growth Chart
+    const userGrowthChart = new Chart(document.getElementById('userGrowthChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'New Users',
+          data: Array.from({length: 7}, () => Math.random() * 5000 + 1000),
+          backgroundColor: '#10b981'
+        }]
+      },
+      options: chartOptions
+    });
+
+    // Transaction Types Chart
+    const txTypesChart = new Chart(document.getElementById('txTypesChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Transfer', 'Swap', 'NFT', 'DeFi', 'DAO', 'Other'],
+        datasets: [{
+          data: [35, 25, 15, 12, 8, 5],
+          backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a']
+        }]
+      },
+      options: chartOptions
+    });
+
+    // Network Chart
+    const networkChart = new Chart(document.getElementById('networkChart'), {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 24}, (_, i) => i + 'h'),
+        datasets: [{
+          label: 'TPS',
+          data: Array.from({length: 24}, () => Math.random() * 1000 + 200),
+          borderColor: '#f093fb',
+          tension: 0.4
+        }]
+      },
+      options: chartOptions
+    });
+
+    // Revenue Chart
+    const revenueChart = new Chart(document.getElementById('revenueChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Gas Fees', 'NFT Sales', 'Swaps', 'Subscriptions', 'Other'],
+        datasets: [{
+          label: 'Revenue ($)',
+          data: [45000, 32000, 28000, 15000, 8000],
+          backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b']
+        }]
+      },
+      options: chartOptions
+    });
+
+    // Cohort Chart
+    const cohortChart = new Chart(document.getElementById('cohortChart'), {
+      type: 'line',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [
+          {
+            label: 'Cohort Jan',
+            data: [100, 85, 72, 65],
+            borderColor: '#667eea',
+            tension: 0.4
+          },
+          {
+            label: 'Cohort Feb',
+            data: [100, 88, 75, 68],
+            borderColor: '#764ba2',
+            tension: 0.4
+          },
+          {
+            label: 'Cohort Mar',
+            data: [100, 90, 78, 70],
+            borderColor: '#f093fb',
+            tension: 0.4
+          }
+        ]
+      },
+      options: chartOptions
+    });
+
+    // Update recent transactions
+    function updateRecentTransactions() {
+      const tbody = document.getElementById('recentTxs');
+      tbody.innerHTML = '';
+
+      for (let i = 0; i < 10; i++) {
+        const tr = document.createElement('tr');
+        const txHash = '0x' + Math.random().toString(16).substr(2, 40);
+        const from = '0x' + Math.random().toString(16).substr(2, 8) + '...';
+        const to = '0x' + Math.random().toString(16).substr(2, 8) + '...';
+        const amount = (Math.random() * 100).toFixed(4);
+        const types = ['Transfer', 'Swap', 'NFT', 'DeFi'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        const status = Math.random() > 0.1 ? 'active' : 'pending';
+        const time = Math.floor(Math.random() * 60) + ' min ago';
+
+        tr.innerHTML = `
+          <td><code>${txHash.substr(0, 10)}...</code></td>
+          <td><code>${from}</code></td>
+          <td><code>${to}</code></td>
+          <td>${amount} AETH</td>
+          <td>${type}</td>
+          <td><span class="status-badge status-${status}">${status}</span></td>
+          <td>${time}</td>
+        `;
+
+        tbody.appendChild(tr);
+      }
+    }
+
+    // Update dashboard
+    function updateDashboard() {
+      updateMetrics();
+      updateRecentTransactions();
+    }
+
+    // Initial load
+    updateDashboard();
+
+    // Auto-refresh every 30 seconds
+    setInterval(updateDashboard, 30000);
+  </script>
+</body>
+</html>

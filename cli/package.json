@@ -1,0 +1,28 @@
+{
+  "name": "@aetheron/cli",
+  "version": "1.0.0",
+  "description": "Command-line interface for Aetheron blockchain",
+  "main": "aetheron-cli.js",
+  "bin": {
+    "aetheron": "./aetheron-cli.js"
+  },
+  "keywords": [
+    "aetheron",
+    "blockchain",
+    "cli",
+    "cryptocurrency",
+    "web3"
+  ],
+  "author": "Aetheron Team",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.5",
+    "cli-table3": "^0.6.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

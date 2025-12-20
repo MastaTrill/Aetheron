@@ -1,0 +1,166 @@
+version: '3.8'
+
+services:
+  aetheron-us-east:
+    image: registry.aetheron.io/aetheron:latest
+    container_name: aetheron-us-east-1
+    environment:
+      - NODE_ENV=production
+      - REGION=us-east-1
+      - DB_HOST=db-us-east-1.aetheron.io
+      - REDIS_HOST=redis-us-east-1.aetheron.io
+      - BLOCKCHAIN_RPC=https://eth-us-east.aetheron.io
+      - IPFS_NODE=ipfs-us-east-1.aetheron.io:5001
+    ports:
+      - "3000:3000"
+    networks:
+      - aetheron-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+  aetheron-us-west:
+    image: registry.aetheron.io/aetheron:latest
+    container_name: aetheron-us-west-2
+    environment:
+      - NODE_ENV=production
+      - REGION=us-west-2
+      - DB_HOST=db-us-west-2.aetheron.io
+      - REDIS_HOST=redis-us-west-2.aetheron.io
+      - BLOCKCHAIN_RPC=https://eth-us-west.aetheron.io
+      - IPFS_NODE=ipfs-us-west-2.aetheron.io:5001
+    ports:
+      - "3001:3000"
+    networks:
+      - aetheron-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  aetheron-eu-west:
+    image: registry.aetheron.io/aetheron:latest
+    container_name: aetheron-eu-west-1
+    environment:
+      - NODE_ENV=production
+      - REGION=eu-west-1
+      - DB_HOST=db-eu-west-1.aetheron.io
+      - REDIS_HOST=redis-eu-west-1.aetheron.io
+      - BLOCKCHAIN_RPC=https://eth-eu-west.aetheron.io
+      - IPFS_NODE=ipfs-eu-west-1.aetheron.io:5001
+    ports:
+      - "3002:3000"
+    networks:
+      - aetheron-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  aetheron-ap-southeast:
+    image: registry.aetheron.io/aetheron:latest
+    container_name: aetheron-ap-southeast-1
+    environment:
+      - NODE_ENV=production
+      - REGION=ap-southeast-1
+      - DB_HOST=db-ap-southeast-1.aetheron.io
+      - REDIS_HOST=redis-ap-southeast-1.aetheron.io
+      - BLOCKCHAIN_RPC=https://eth-ap-southeast.aetheron.io
+      - IPFS_NODE=ipfs-ap-southeast-1.aetheron.io:5001
+    ports:
+      - "3003:3000"
+    networks:
+      - aetheron-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # Global Load Balancer
+  nginx-lb:
+    image: nginx:alpine
+    container_name: nginx-global-lb
+    volumes:
+      - ./nginx-lb.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - aetheron-network
+    depends_on:
+      - aetheron-us-east
+      - aetheron-us-west
+      - aetheron-eu-west
+      - aetheron-ap-southeast
+    restart: unless-stopped
+
+  # Prometheus for monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - aetheron-network
+    restart: unless-stopped
+
+  # Grafana for dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3100:3000"
+    networks:
+      - aetheron-network
+    restart: unless-stopped
+
+networks:
+  aetheron-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
