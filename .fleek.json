@@ -1,0 +1,64 @@
+{
+  "build": {
+    "command": "",
+    "publish": ".",
+    "baseDir": ""
+  },
+  "hosting": {
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/admin",
+        "destination": "/admin-dashboard.html",
+        "permanent": false
+      },
+      {
+        "source": "/analytics",
+        "destination": "/analytics-dashboard.html",
+        "permanent": false
+      },
+      {
+        "source": "/explorer",
+        "destination": "/explorer.html",
+        "permanent": false
+      },
+      {
+        "source": "/demo",
+        "destination": "/DEMO.html",
+        "permanent": false
+      },
+      {
+        "source": "/wallet",
+        "destination": "/browser-extension/popup.html",
+        "permanent": false
+      }
+    ]
+  }
+}

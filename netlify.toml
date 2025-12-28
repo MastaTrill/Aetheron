@@ -1,0 +1,66 @@
+# Netlify configuration for Aetheron
+# Free URL: https://aetheron.netlify.app (or custom name)
+
+[build]
+  # No build command needed - static HTML files
+  publish = "."
+  
+[build.environment]
+  NODE_VERSION = "20"
+
+# Redirect rules
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-backend-url.com/api/:splat"
+  status = 200
+  force = false
+  
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Pretty URLs
+[[redirects]]
+  from = "/admin"
+  to = "/admin-dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/analytics"
+  to = "/analytics-dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/explorer"
+  to = "/explorer.html"
+  status = 200
+
+[[redirects]]
+  from = "/demo"
+  to = "/DEMO.html"
+  status = 200
+
+[[redirects]]
+  from = "/wallet"
+  to = "/browser-extension/popup.html"
+  status = 200

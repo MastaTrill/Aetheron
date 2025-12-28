@@ -1,0 +1,45 @@
+{
+  "routes": [
+    {
+      "route": "/admin",
+      "rewrite": "/admin-dashboard.html"
+    },
+    {
+      "route": "/analytics",
+      "rewrite": "/analytics-dashboard.html"
+    },
+    {
+      "route": "/explorer",
+      "rewrite": "/explorer.html"
+    },
+    {
+      "route": "/demo",
+      "rewrite": "/DEMO.html"
+    },
+    {
+      "route": "/wallet",
+      "rewrite": "/browser-extension/popup.html"
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["*.{css,scss,js,png,gif,ico,jpg,svg,json,woff,woff2,ttf,eot}"]
+  },
+  "globalHeaders": {
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-Content-Type-Options": "nosniff",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "mimeTypes": {
+    ".json": "application/json",
+    ".js": "text/javascript",
+    ".css": "text/css"
+  },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html",
+      "statusCode": 200
+    }
+  }
+}
