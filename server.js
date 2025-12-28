@@ -291,12 +291,11 @@ app.get('/multichain/chains', (req, res) => {
 });
 
 app.get('/multichain/config/:chain', (req, res) => {
-  try {
-    const config = multichain.getChainConfig(req.params.chain);
-    res.json(config);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
+  const config = multichain.getChainConfig(req.params.chain);
+  if (!config) {
+    return res.status(404).json({ error: `Chain config not found for '${req.params.chain}'` });
   }
+  res.json(config);
 });
 
 // Health check endpoint (for Railway and monitoring)

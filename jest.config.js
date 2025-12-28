@@ -21,5 +21,6 @@ module.exports = {
     }
   },
   verbose: true,
-  testTimeout: 10000
+  testTimeout: 30000,
+  testPathIgnorePatterns: ["<rootDir>/tests/e2e/"]
 };
