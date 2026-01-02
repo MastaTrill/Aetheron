@@ -545,7 +545,7 @@ class AccountAbstraction {
   async createSmartAccount(provider, profile) {
     const account = await this.factory.createAccount(provider, profile);
     this.accounts.set(account.address, account);
-    
+
     return {
       success: true,
       account: {
@@ -566,9 +566,9 @@ class AccountAbstraction {
       expiresAt: permissions.validUntil || (Date.now() + 86400000),
       active: true
     };
-    
+
     this.sessionKeys.set(sessionKey.key, sessionKey);
-    
+
     return {
       success: true,
       sessionKey: sessionKey.key,
@@ -579,24 +579,24 @@ class AccountAbstraction {
 
   async executeWithSessionKey(sessionKey, transaction) {
     const session = this.sessionKeys.get(sessionKey);
-    
+
     if (!session || !session.active) {
       return { success: false, error: 'Invalid or inactive session key' };
     }
-    
+
     // Check if transaction value exceeds session limit
     if (session.permissions.maxAmount) {
       const maxAmount = BigInt(session.permissions.maxAmount);
       const txValue = BigInt(transaction.value);
-      
+
       if (txValue > maxAmount) {
-        return { 
-          success: false, 
-          error: 'Transaction value exceeds session key limit' 
+        return {
+          success: false,
+          error: 'Transaction value exceeds session key limit'
         };
       }
     }
-    
+
     return {
       success: true,
       userOpHash: '0x' + Math.random().toString(16).substr(2, 64),
@@ -607,12 +607,12 @@ class AccountAbstraction {
 
   revokeSessionKey(sessionKey) {
     const session = this.sessionKeys.get(sessionKey);
-    
+
     if (session) {
       session.active = false;
       return { success: true };
     }
-    
+
     return { success: false, error: 'Session key not found' };
   }
 
@@ -649,7 +649,7 @@ class AccountAbstraction {
     // Try to find existing account with same provider and profile
     const account = await this.factory.createAccount(provider, profile);
     const existing = this.accounts.get(account.address);
-    
+
     if (existing) {
       return {
         success: true,
@@ -662,7 +662,7 @@ class AccountAbstraction {
         recovered: true
       };
     }
-    
+
     // Create new account
     this.accounts.set(account.address, account);
     return {
@@ -679,13 +679,13 @@ class AccountAbstraction {
 
   async addRecovery(accountAddress, guardians, threshold) {
     const account = this.accounts.get(accountAddress);
-    
+
     if (!account) {
       return { success: false, error: 'Account not found' };
     }
-    
+
     account.recovery = { guardians, threshold };
-    
+
     return { success: true, guardians, threshold };
   }
 

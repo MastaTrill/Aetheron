@@ -1,4 +1,4 @@
-/* global chrome, document, navigator, alert, confirm, window */
+/* global chrome */
 /**
  * Popup UI Logic
  */

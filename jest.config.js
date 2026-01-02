@@ -11,7 +11,10 @@ module.exports = {
     '!scripts/**',
     '!*.config.js'
   ],
-  testMatch: ['**/tests/**/*.test.js', '**/tests/**/*.spec.js'],
+  testMatch: ['**/tests/unit/**/*.test.js', '**/tests/integration/**/*.test.js'],
+  transform: {
+    '^.+\\.(js|jsx)$': 'babel-jest'
+  },
   coverageThreshold: {
     global: {
       branches: 70,
@@ -22,5 +25,5 @@ module.exports = {
   },
   verbose: true,
   testTimeout: 30000,
-  testPathIgnorePatterns: ["<rootDir>/tests/e2e/"]
+  testPathIgnorePatterns: ['<rootDir>/tests/e2e/']
 };

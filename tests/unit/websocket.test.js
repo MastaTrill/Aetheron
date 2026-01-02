@@ -22,7 +22,7 @@ describe('WebSocket Server', () => {
         client.close();
       }
     });
-    
+
     // Close WebSocket server
     wsServer.wss.close(() => {
       // Close HTTP server
@@ -56,14 +56,21 @@ describe('WebSocket Server', () => {
     test('should track connection count', (done) => {
       const client1 = new WebSocket(`ws://localhost:${testPort}`);
       const client2 = new WebSocket(`ws://localhost:${testPort}`);
+      let connectedCount = 0;
 
-      client2.on('open', () => {
-        const count = wsServer.getConnectionCount();
-        expect(count).toBeGreaterThanOrEqual(2);
-        client1.close();
-        client2.close();
-        done();
-      });
+      const checkConnections = () => {
+        connectedCount++;
+        if (connectedCount >= 2) {
+          const count = wsServer.getConnectionCount();
+          expect(count).toBeGreaterThanOrEqual(2);
+          client1.close();
+          client2.close();
+          done();
+        }
+      };
+
+      client1.on('open', checkConnections);
+      client2.on('open', checkConnections);
     });
   });
 
@@ -165,6 +172,9 @@ describe('WebSocket Server', () => {
       });
 
       client.on('open', () => {
+        // Subscribe to blockchain channel
+        client.send(JSON.stringify({ type: 'subscribe', channel: 'blockchain' }));
+
         // Ensure client is ready before notifying
         setTimeout(() => {
           wsServer.notifyNewBlock({
@@ -196,6 +206,9 @@ describe('WebSocket Server', () => {
       });
 
       client.on('open', () => {
+        // Subscribe to blockchain channel
+        client.send(JSON.stringify({ type: 'subscribe', channel: 'blockchain' }));
+
         setTimeout(() => {
           wsServer.notifyNewTransaction({
             sender: '0x123',

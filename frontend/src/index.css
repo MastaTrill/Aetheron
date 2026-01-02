@@ -1,0 +1,110 @@
+/* Aetheron Admin Dashboard Styles */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --primary-color: #00eaff;
+  --secondary-color: #ff6b6b;
+  --accent-color: #4ecdc4;
+  --background-dark: #0f0f23;
+  --background-card: #1a1a2e;
+  --background-light: #16213e;
+  --text-primary: #ffffff;
+  --text-secondary: #b2ebf2;
+  --text-muted: #8892a0;
+  --border-color: #2a2d3a;
+  --success-color: #00d4aa;
+  --warning-color: #ffaa00;
+  --error-color: #ff4757;
+  --shadow: 0 4px 20px rgba(0, 234, 255, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: linear-gradient(135deg, var(--background-dark) 0%, var(--background-card) 50%, var(--background-light) 100%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 234, 255, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(0, 234, 255, 0.6); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.glow {
+  animation: glow 3s infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(0, 234, 255, 0.3);
+  color: var(--text-primary);
+}
+
+/* Focus styles */
+*:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+}

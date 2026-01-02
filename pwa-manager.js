@@ -1,4 +1,3 @@
-/* global navigator, window, document, Notification, indexedDB */
 /**
  * PWA Registration and Management
  * Handles service worker registration and PWA features

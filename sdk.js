@@ -1,4 +1,3 @@
-/* global window */
 // Developer SDK for Aetheron Platform
 const axios = require('axios');
 const WebSocket = require('ws');

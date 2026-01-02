@@ -870,11 +870,11 @@ class RWATokenization extends EventEmitter {
 
     this.emit('kycVerified', { tokenId, holderAddress, kycStatus });
 
-    return { 
-      success: true, 
-      tokenId, 
-      holderAddress, 
-      kycStatus 
+    return {
+      success: true,
+      tokenId,
+      holderAddress,
+      kycStatus
     };
   }
 
@@ -889,7 +889,7 @@ class RWATokenization extends EventEmitter {
 
     // Convert amount to BigInt if needed
     const amountBigInt = typeof amount === 'bigint' ? amount : BigInt(amount);
-    
+
     // Check if sender has enough tokens
     const fromShares = asset.holders.get(from) || BigInt(0);
     if (fromShares < amountBigInt) {
@@ -907,10 +907,10 @@ class RWATokenization extends EventEmitter {
 
     this.emit('tokensTransferred', { tokenId, from, to, amount });
 
-    return { 
-      success: true, 
-      from, 
-      to, 
+    return {
+      success: true,
+      from,
+      to,
       amount: Number(amountBigInt),
       transferAmount: Number(amountBigInt)
     };

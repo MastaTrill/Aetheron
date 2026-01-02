@@ -208,7 +208,7 @@ class DeFiLending {
     const now = Date.now();
     const duration = Math.min(now - stake.startTime, stake.unlockTime - stake.startTime);
     const years = duration / (365 * 24 * 60 * 60 * 1000);
-    
+
     // Ensure minimum reward even for very short durations
     const reward = stake.stakedAmount * (stake.apy / 100) * years;
     return reward > 0 ? reward : stake.stakedAmount * 0.0000001; // Minimum reward
@@ -245,7 +245,7 @@ class DeFiLending {
   async getFarmingRewards(userId) {
     const userPositions = this.farmingPositions.filter(p => p.userId === userId);
     const rewardRate = 0.0001; // 0.01% per second
-    
+
     return userPositions.reduce((total, position) => {
       const duration = (Date.now() - position.startTime) / 1000; // seconds
       const rewards = position.lpAmount * rewardRate * duration;
@@ -255,7 +255,7 @@ class DeFiLending {
 
   async claimFarmingRewards() {
     const rewards = await this.getFarmingRewards('test-user');
-    
+
     // Reset start times for all positions
     this.farmingPositions.forEach(p => {
       if (p.userId === 'test-user') {
@@ -318,7 +318,7 @@ class DeFiLending {
     // Time-Weighted Average Price
     // For simplicity, just return current price with small variation
     const currentPrice = await this.getPrice(token1, token2);
-    
+
     if (!this.priceHistory) {
       this.priceHistory = {};
     }
@@ -353,27 +353,28 @@ class DeFiLending {
       try {
         let result;
         switch (op.type) {
-          case 'swap':
-            // Ensure pool exists for swap
-            const poolKey1 = `${op.from}-${op.to}`;
-            const poolKey2 = `${op.to}-${op.from}`;
-            if (!this.liquidityPools[poolKey1] && !this.liquidityPools[poolKey2]) {
-              // Create a default pool for testing
-              await this.addLiquidity(op.from, op.to, 100, 200000);
-            }
-            result = await this.swap(op.from, op.to, op.amount, 50); // Higher slippage for batch
-            gasUsed += 50000; // Simulated gas
-            break;
-          case 'stake':
-            result = await this.stake(op.token, op.amount, op.days);
-            gasUsed += 30000;
-            break;
-          case 'addLiquidity':
-            result = await this.addLiquidity(op.token1, op.token2, op.amount1, op.amount2);
-            gasUsed += 60000;
-            break;
-          default:
-            throw new Error(`Unknown operation type: ${op.type}`);
+        case 'swap': {
+          // Ensure pool exists for swap
+          const poolKey1 = `${op.from}-${op.to}`;
+          const poolKey2 = `${op.to}-${op.from}`;
+          if (!this.liquidityPools[poolKey1] && !this.liquidityPools[poolKey2]) {
+            // Create a default pool for testing
+            await this.addLiquidity(op.from, op.to, 100, 200000);
+          }
+          result = await this.swap(op.from, op.to, op.amount, 50); // Higher slippage for batch
+          gasUsed += 50000; // Simulated gas
+          break;
+        }
+        case 'stake':
+          result = await this.stake(op.token, op.amount, op.days);
+          gasUsed += 30000;
+          break;
+        case 'addLiquidity':
+          result = await this.addLiquidity(op.token1, op.token2, op.amount1, op.amount2);
+          gasUsed += 60000;
+          break;
+        default:
+          throw new Error(`Unknown operation type: ${op.type}`);
         }
         results.push(result);
       } catch (error) {
@@ -399,7 +400,7 @@ class DeFiLending {
       throw new Error('Reentrancy detected');
     }
     this.locked = true;
-    
+
     // Simulate reentrancy attempt
     try {
       await this.reentrancyTest(); // Attempt reentrant call
@@ -407,7 +408,7 @@ class DeFiLending {
       this.locked = false;
       throw error; // Re-throw the reentrancy error
     }
-    
+
     this.locked = false;
   }
 }

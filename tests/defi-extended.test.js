@@ -111,10 +111,10 @@ describe('DeFi Module - Extended Tests', () => {
     it('should accumulate farming rewards over time', async () => {
       await defi.addLiquidity('ETH', 'USDC', 10, 20000);
       await defi.startFarming('ETH-USDC', 50);
-      
+
       // Simulate time passing
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       const rewards = await defi.getFarmingRewards('test-user');
       expect(rewards).toBeGreaterThanOrEqual(0);
     });
@@ -162,9 +162,9 @@ describe('DeFi Module - Extended Tests', () => {
     it('should update TWAP over time', async () => {
       await defi.addLiquidity('ETH', 'USDC', 10, 20000);
       const twap1 = await defi.getTWAP('ETH', 'USDC');
-      
+
       await defi.swap('USDC', 'ETH', 5000, 1);
-      
+
       const twap2 = await defi.getTWAP('ETH', 'USDC');
       expect(twap2).not.toBe(twap1);
     });

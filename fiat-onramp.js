@@ -89,7 +89,7 @@ class FiatOnRamp {
       return quote;
     }
 
-    const transactionId = 'tx_' + crypto.randomBytes(16).toString('hex');
+    const transactionId = 'tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     const transaction = {
       transactionId,
       provider,
@@ -169,7 +169,7 @@ class FiatOnRamp {
    */
   getTransactionStatus(transactionId) {
     const transaction = this.transactions.get(transactionId);
-    
+
     if (!transaction) {
       return {
         success: false,

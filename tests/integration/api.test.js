@@ -131,8 +131,8 @@ describe('API Integration Tests', () => {
   });
 
   describe('Error Handling', () => {
-    test('should return 404 for non-existent routes', async () => {
-      const res = await request(app).get('/nonexistent');
+    test('should return 404 for non-existent API routes', async () => {
+      const res = await request(app).get('/api/nonexistent');
       expect(res.status).toBe(404);
     });
 
