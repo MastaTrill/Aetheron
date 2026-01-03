@@ -5,6 +5,44 @@ const http = require('http');
 const { AetheronWebSocket } = require('./websocket');
 require('dotenv').config();
 
+// Startup validation - Check required modules and configuration
+function validateStartup() {
+  console.log('🔍 Running startup validation...');
+  
+  // Check critical npm packages
+  const requiredPackages = {
+    'express': express,
+    'cors': cors,
+    'AetheronWebSocket': AetheronWebSocket
+  };
+
+  const missingPackages = [];
+  for (const [name, module] of Object.entries(requiredPackages)) {
+    if (!module || typeof module !== 'function' && typeof module !== 'object') {
+      missingPackages.push(name);
+    }
+  }
+
+  if (missingPackages.length > 0) {
+    console.error('❌ Startup validation failed!');
+    console.error('Missing or invalid modules:', missingPackages.join(', '));
+    console.error('Please run: npm install --legacy-peer-deps');
+    process.exit(1);
+  }
+
+  // Verify path module is available (built-in)
+  if (!path || typeof path.join !== 'function') {
+    console.error('❌ Node.js path module is not available');
+    console.error('This indicates a corrupted Node.js installation');
+    process.exit(1);
+  }
+
+  console.log('✅ All required modules loaded successfully');
+}
+
+// Run startup validation
+validateStartup();
+
 // Database and Auth
 const { sequelize, User, Log, Transaction } = require('./database/models');
 const authRoutes = require('./auth/routes');

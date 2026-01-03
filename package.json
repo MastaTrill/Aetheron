@@ -33,16 +33,13 @@
     "docker:logs": "docker-compose -f docker-compose.prod.yml logs -f",
     "backup:create": "node scripts/backup.js",
     "backup:restore": "node scripts/restore.js",
-    "monitoring:setup": "node scripts/setup-monitoring.js"
+    "monitoring:setup": "node scripts/setup-monitoring.js",
     "cli": "node cli/aetheron.js",
     "backup": "node backup-recovery.js backup",
     "restore": "node backup-recovery.js restore",
     "security:scan": "node security-automation.js scan",
     "security:audit": "node security-automation.js audit",
-    "docker:build": "docker build -t aetheron .",
-    "docker:run": "docker run -p 3001:3001 aetheron",
     "docker:compose": "docker-compose up -d",
-    "docker:down": "docker-compose down",
     "deploy:all": "cd deployment && bash deploy.sh",
     "deploy:us-east": "cd deployment && bash deploy.sh us-east",
     "deploy:eu": "cd deployment && bash deploy.sh eu",
@@ -148,6 +145,5 @@
     "multichain"
   ],
   "author": "Aetheron Team",
-  "license": "MIT",
-  "type": "module"
+  "license": "MIT"
 }
