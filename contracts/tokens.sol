@@ -3,10 +3,11 @@
 pragma solidity ^0.8.0;
 
 // Aetheron Token Addresses (Multi-Chain)
-// Ethereum Mainnet: 0x8A3ad49656Bd07981C9CFc7aD826a808847c3452
-// Base Network: 0x8A3ad49656Bd07981C9CFc7aD826a808847c3452
-// Polygon (Matic): 0x8A3ad49656Bd07981C9CFc7aD826a808847c3452
-// Solana: 5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki
+// Local Hardhat Network:
+// - AetheronToken (ERC-20): 0x5FbDB2315678afecb367f032d93F642f64180aa3
+// - AetheronGlyphs (ERC-721): 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+//
+// Mainnet addresses will be generated after deployment
 
 contract AetheronToken {
     string public name = "Aetheron";
@@ -23,7 +24,7 @@ contract AetheronToken {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     constructor(uint256 initialSupply) {
-        owner = 0x8a3ad49656bd07981c9cfc7ad826a808847c3452;
+        owner = msg.sender;
         mint(owner, initialSupply);
     }
 
@@ -58,7 +59,7 @@ contract AetheronToken {
         return true;
     }
 }
-// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 contract AetheronGlyphs {
@@ -78,7 +79,7 @@ contract AetheronGlyphs {
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
     constructor() {
-        owner = 0x8a3ad49656bd07981c9cfc7ad826a808847c3452;
+        owner = msg.sender;
     }
 
     function mint(address to, string memory uri) public returns (uint256) {

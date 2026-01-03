@@ -19,15 +19,132 @@ Aetheron is a modular, full-featured blockchain platform with a futuristic admin
 
 **Aetheron Token (AETH)** - Multi-Chain Support
 
-**EVM Networks:**
+### Local Development (Hardhat)
+- **AetheronToken (ERC-20)**: Deployed locally - see `deployments/hardhat.json`
+- **AetheronGlyphs (ERC-721)**: Deployed locally - see `deployments/hardhat.json`
 
-- Ethereum Mainnet: `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
-- Base Network: `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
-- Polygon (Matic): `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
+### Testnet Deployments (After Setup)
+- **Sepolia (Ethereum Testnet)**: `npx hardhat run scripts/deploy.js --network sepolia`
+- **Polygon Amoy**: `npx hardhat run scripts/deploy.js --network polygonAmoy`
+- **Base Sepolia**: `npx hardhat run scripts/deploy.js --network baseSepolia`
 
-**Other Networks:**
+### Mainnet Deployments (After Setup)
+- **Ethereum Mainnet**: [To be deployed]
+- **Base**: [To be deployed]
+- **Polygon**: [To be deployed]
+- **Solana**: [To be deployed]
 
-- Solana: `5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki`
+## Deployment Instructions
+
+### Prerequisites
+1. **Get API Keys**:
+   - [Alchemy API Key](https://www.alchemy.com/) for Ethereum RPC
+   - [Infura Project ID](https://www.infura.io/) for Polygon RPC
+   - [Etherscan API Key](https://etherscan.io/) for contract verification
+
+2. **Fund Testnet Wallet**:
+   - Get testnet ETH from [Sepolia Faucet](https://sepoliafaucet.com/)
+   - Get testnet MATIC from [Polygon Faucet](https://faucet.polygon.technology/)
+
+3. **Configure Environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual API keys and private key
+   ```
+
+## Deployment Guide
+
+### Prerequisites
+
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Get API Keys**:
+   - [Alchemy API Key](https://www.alchemy.com/) for Ethereum RPC
+   - [Infura Project ID](https://www.infura.io/) for Polygon RPC
+   - [Etherscan API Key](https://etherscan.io/) for contract verification
+   - [Polygonscan API Key](https://polygonscan.com/) for Polygon verification
+   - [Basescan API Key](https://basescan.org/) for Base verification
+
+3. **Configure Environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual API keys and private key
+   ```
+
+4. **Fund Your Wallet** (for testnet deployments):
+   - **Sepolia**: Get ETH from [Sepolia Faucet](https://sepoliafaucet.com/)
+   - **Polygon Amoy**: Get MATIC from [Polygon Faucet](https://faucet.polygon.technology/)
+   - **Base Sepolia**: Get ETH from [Base Sepolia Faucet](https://sepoliafaucet.com/)
+
+### Local Development Deployment
+
+```bash
+# Deploy to local Hardhat network
+npx hardhat run scripts/deploy.js --network hardhat
+```
+
+### Testnet Deployments
+
+```bash
+# Deploy to Sepolia (Ethereum testnet)
+npx hardhat run scripts/deploy.js --network sepolia
+
+# Deploy to Polygon Amoy
+npx hardhat run scripts/deploy.js --network polygonAmoy
+
+# Deploy to Base Sepolia
+npx hardhat run scripts/deploy.js --network baseSepolia
+```
+
+### Contract Verification
+
+After deployment, verify your contracts on block explorers:
+
+```bash
+# Verify on Etherscan (Sepolia)
+npx hardhat verify --network sepolia <TOKEN_ADDRESS> "1000000000000000000000000"
+npx hardhat verify --network sepolia <NFT_ADDRESS>
+
+# Verify on Polygonscan (Amoy)
+npx hardhat verify --network polygonAmoy <TOKEN_ADDRESS> "1000000000000000000000000"
+npx hardhat verify --network polygonAmoy <NFT_ADDRESS>
+
+# Verify on Basescan (Sepolia)
+npx hardhat verify --network baseSepolia <TOKEN_ADDRESS> "1000000000000000000000000"
+npx hardhat verify --network baseSepolia <NFT_ADDRESS>
+```
+
+### Mainnet Deployment (⚠️ Use with Caution)
+
+**IMPORTANT**: Mainnet deployments cost real money and cannot be undone. Triple-check your code and test thoroughly on testnets first.
+
+```bash
+# Deploy to Ethereum Mainnet
+npx hardhat run scripts/deploy.js --network ethereum
+
+# Deploy to Polygon Mainnet
+npx hardhat run scripts/deploy.js --network polygon
+
+# Deploy to Base Mainnet
+npx hardhat run scripts/deploy.js --network base
+```
+
+### Deployment Artifacts
+
+After successful deployment, check:
+- `deployments/[network].json` - Contains deployment details
+- Contract addresses will be logged to console
+- Update `chain-config.json` with actual deployed addresses
+
+### Troubleshooting
+
+- **"Invalid account" error**: Check your `.env` file has the correct private key format (64 characters, no 0x prefix)
+- **"Insufficient funds"**: Make sure your wallet has enough native tokens for gas
+- **"Network connection failed"**: Verify your RPC URLs and API keys
+- **Verification failed**: Ensure constructor arguments match exactly what was used during deployment
 
 **Token Details:**
 
@@ -37,11 +154,13 @@ Aetheron is a modular, full-featured blockchain platform with a futuristic admin
 
 **Aetheron Glyphs (AGLYPH)** - NFT Collection
 
-- Ethereum: `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
-- Base: `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
-- Polygon: `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
-- Symbol: AGLYPH
-- Type: ERC-721 compliant NFT
+**Local Hardhat Network (Development):**
+- AetheronGlyphs (ERC-721): `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`
+
+**EVM Networks:**
+- Ethereum: [To be deployed]
+- Base: [To be deployed]
+- Polygon: [To be deployed]
 
 ## Features
 

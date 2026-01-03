@@ -1,0 +1,43 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "C:\\Users\\willi\\.vscode\\Aetheron\\Aetheron\\contracts\\tokens.sol": {
+      "lastModificationDate": 1767344076492,
+      "contentHash": "41f194d7752c578504ad60bae321b47f",
+      "sourceName": "contracts/tokens.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0",
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "AetheronGlyphs",
+        "AetheronToken"
+      ]
+    }
+  }
+}

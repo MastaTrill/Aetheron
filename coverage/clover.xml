@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1767313306022" clover="3.2.0">
-  <project timestamp="1767313306022" name="All files">
-    <metrics statements="7240" coveredstatements="730" conditionals="29608" coveredconditionals="295" methods="7957" coveredmethods="134" elements="44805" coveredelements="1159" complexity="0" loc="7240" ncloc="7240" packages="11" files="101" classes="101"/>
+<coverage generated="1767411594341" clover="3.2.0">
+  <project timestamp="1767411594341" name="All files">
+    <metrics statements="7239" coveredstatements="731" conditionals="29602" coveredconditionals="295" methods="7957" coveredmethods="134" elements="44798" coveredelements="1160" complexity="0" loc="7239" ncloc="7239" packages="11" files="100" classes="100"/>
     <package name="Aetheron">
-      <metrics statements="5928" coveredstatements="692" conditionals="2872" coveredconditionals="277" methods="1469" coveredmethods="130"/>
-      <file name=".eslintrc.js" path="C:\Users\willi\.vscode\Aetheron\Aetheron\.eslintrc.js">
-        <metrics statements="1" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="0" type="stmt"/>
-      </file>
+      <metrics statements="5927" coveredstatements="693" conditionals="2872" coveredconditionals="277" methods="1469" coveredmethods="130"/>
       <file name="account-abstraction.js" path="C:\Users\willi\.vscode\Aetheron\Aetheron\account-abstraction.js">
-        <metrics statements="209" coveredstatements="70" conditionals="106" coveredconditionals="22" methods="58" coveredmethods="15"/>
+        <metrics statements="209" coveredstatements="71" conditionals="106" coveredconditionals="22" methods="58" coveredmethods="15"/>
         <line num="6" count="2" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
         <line num="14" count="14" type="stmt"/>
@@ -202,9 +198,9 @@
         <line num="650" count="1" type="stmt"/>
         <line num="651" count="1" type="stmt"/>
         <line num="653" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="654" count="1" type="stmt"/>
-        <line num="667" count="0" type="stmt"/>
-        <line num="668" count="0" type="stmt"/>
+        <line num="654" count="0" type="stmt"/>
+        <line num="667" count="1" type="stmt"/>
+        <line num="668" count="1" type="stmt"/>
         <line num="681" count="0" type="stmt"/>
         <line num="683" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="684" count="0" type="stmt"/>
@@ -1098,17 +1094,17 @@
         <line num="41" count="2" type="stmt"/>
         <line num="42" count="2" type="stmt"/>
         <line num="43" count="2" type="stmt"/>
-        <line num="48" count="300" type="stmt"/>
+        <line num="48" count="30" type="stmt"/>
         <line num="53" count="25" type="stmt"/>
         <line num="54" count="25" type="cond" truecount="1" falsecount="1"/>
         <line num="55" count="25" type="stmt"/>
         <line num="56" count="25" type="stmt"/>
         <line num="57" count="25" type="stmt"/>
         <line num="58" count="25" type="stmt"/>
-        <line num="63" count="300" type="stmt"/>
+        <line num="63" count="30" type="stmt"/>
         <line num="69" count="1" type="stmt"/>
-        <line num="70" count="273" type="stmt"/>
-        <line num="71" count="273" type="stmt"/>
+        <line num="70" count="3" type="stmt"/>
+        <line num="71" count="3" type="stmt"/>
         <line num="79" count="3" type="stmt"/>
         <line num="85" count="19" type="stmt"/>
         <line num="86" count="19" type="stmt"/>
@@ -6979,12 +6975,12 @@
       </file>
     </package>
     <package name="Aetheron.database">
-      <metrics statements="40" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="2" coveredmethods="0"/>
+      <metrics statements="40" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="2" coveredmethods="0"/>
       <file name="connection.js" path="C:\Users\willi\.vscode\Aetheron\Aetheron\database\connection.js">
-        <metrics statements="4" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <metrics statements="4" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
         <line num="2" count="0" type="stmt"/>
-        <line num="5" count="0" type="stmt"/>
+        <line num="5" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="28" count="0" type="stmt"/>
       </file>
       <file name="migrate.js" path="C:\Users\willi\.vscode\Aetheron\Aetheron\database\migrate.js">

@@ -673,7 +673,7 @@ class AccountAbstraction {
         profile,
         isDeployed: account.isDeployed
       },
-      recovered: true
+      recovered: false
     };
   }
 
