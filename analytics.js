@@ -16,6 +16,14 @@ class AnalyticsEngine {
 
   // Transaction Analytics
   analyzeTransaction(tx) {
+    // Track active addresses
+    if (tx.sender) {
+      this.metrics.activeAddresses.add(tx.sender);
+    }
+    if (tx.receiver) {
+      this.metrics.activeAddresses.add(tx.receiver);
+    }
+
     return {
       hash: tx.hash,
       value: tx.amount,

@@ -8,8 +8,7 @@ import {
   ListItemText,
   Divider,
   Box,
-  Typography,
-  useTheme
+  Typography
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -17,10 +16,7 @@ import {
   MonetizationOn as DefiIcon,
   Analytics as AnalyticsIcon,
   Security as SecurityIcon,
-  Settings as SettingsIcon,
-  ChevronLeft as ChevronLeftIcon,
-  ExpandLess as ExpandLessIcon,
-  ExpandMore as ExpandMoreIcon
+  Settings as SettingsIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
@@ -53,8 +49,6 @@ const menuItems = [
 ];
 
 const Sidebar = ({ open, currentPage, setCurrentPage }) => {
-  const theme = useTheme();
-
   return (
     <StyledDrawer variant="permanent" open={open}>
       <Box

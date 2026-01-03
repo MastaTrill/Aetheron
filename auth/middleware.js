@@ -1,5 +1,4 @@
 const authService = require('./jwt-service');
-const { User } = require('../database/models');
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';

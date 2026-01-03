@@ -28,12 +28,9 @@ import {
   People as PeopleIcon,
   MonetizationOn as RevenueIcon,
   Refresh as RefreshIcon,
-  Download as DownloadIcon,
-  DateRange as DateRangeIcon
+  Download as DownloadIcon
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -56,8 +53,6 @@ const Analytics = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [timeRange, setTimeRange] = useState('7d');
   const [analyticsData, setAnalyticsData] = useState(null);
-  const [userMetrics, setUserMetrics] = useState([]);
-  const [revenueData, setRevenueData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -112,15 +107,11 @@ const Analytics = () => {
   const loadAnalyticsData = async () => {
     try {
       setLoading(true);
-      const [overviewResponse, usersResponse, revenueResponse] = await Promise.all([
-        api.get(`/api/analytics/overview?range=${timeRange}`),
-        api.get(`/api/analytics/users?range=${timeRange}`),
-        api.get(`/api/analytics/revenue?range=${timeRange}`)
+      const [overviewResponse] = await Promise.all([
+        api.get(`/api/analytics/overview?range=${timeRange}`)
       ]);
 
       setAnalyticsData(overviewResponse.data);
-      setUserMetrics(usersResponse.data);
-      setRevenueData(revenueResponse.data);
       setError(null);
     } catch (err) {
       setError('Failed to load analytics data');

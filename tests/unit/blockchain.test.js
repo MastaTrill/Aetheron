@@ -1,6 +1,5 @@
 // Unit tests for blockchain core functionality
 const { Blockchain, Block, Transaction, Wallet } = require('../../blockchain');
-const crypto = require('crypto');
 
 describe('Blockchain Core', () => {
   let blockchain;
@@ -154,7 +153,6 @@ describe('Blockchain Core', () => {
 
     test('should calculate balance correctly', () => {
       const wallet1 = new Wallet();
-      const wallet2 = new Wallet();
 
       // Add reward to wallet1
       blockchain.createBlock(wallet1.publicKey);

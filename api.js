@@ -389,3 +389,5 @@ app.post('/plugins/uninstall', (req, res) => {
     res.status(404).json({ error: 'Plugin not found' });
   }
 });
+
+module.exports = app;

@@ -8,7 +8,6 @@
 const { Command } = require('commander');
 const chalk = require('chalk');
 const ora = require('ora');
-const inquirer = require('inquirer');
 const Table = require('cli-table3');
 const fs = require('fs');
 const path = require('path');

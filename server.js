@@ -479,7 +479,7 @@ app.get('*', (req, res) => {
 });
 
 // Error handling
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error(err.stack);
 
   // Handle JSON parsing errors

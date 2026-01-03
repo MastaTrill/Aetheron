@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     container_name: aetheron-app
     restart: unless-stopped
     ports:
@@ -12,35 +12,60 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - MONGODB_URI=${MONGODB_URI}
+      - DATABASE_URL=postgresql://aetheron:${POSTGRES_PASSWORD}@postgres:5432/aetheron
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET}
-      - ETHEREUM_RPC=${ETHEREUM_RPC}
+      - ALCHEMY_API_KEY=${ALCHEMY_API_KEY}
+      - INFURA_PROJECT_ID=${INFURA_PROJECT_ID}
+      - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY}
+      - POLYGONSCAN_API_KEY=${POLYGONSCAN_API_KEY}
+      - BASESCAN_API_KEY=${BASESCAN_API_KEY}
+      - DEPLOYER_PRIVATE_KEY=${DEPLOYER_PRIVATE_KEY}
       - MOONPAY_API_KEY=${MOONPAY_API_KEY}
       - STRIPE_API_KEY=${STRIPE_API_KEY}
       - BUNDLER_URL=${BUNDLER_URL}
       - PAYMASTER_URL=${PAYMASTER_URL}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
     depends_on:
-      - mongodb
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - aetheron-network
     volumes:
       - ./logs:/app/logs
+      - ./backups:/app/backups
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  mongodb:
-    image: mongo:7
-    container_name: aetheron-mongodb
+  postgres:
+    image: postgres:15-alpine
+    container_name: aetheron-postgres
     restart: unless-stopped
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - POSTGRES_DB=aetheron
+      - POSTGRES_USER=aetheron
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "27017:27017"
+      - "5432:5432"
     volumes:
-      - mongodb-data:/data/db
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - aetheron-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aetheron -d aetheron"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -53,6 +78,11 @@ services:
       - redis-data:/data
     networks:
       - aetheron-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   nginx:
     image: nginx:alpine
@@ -68,11 +98,16 @@ services:
       - app
     networks:
       - aetheron-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   aetheron-network:
     driver: bridge
 
 volumes:
-  mongodb-data:
+  postgres-data:
   redis-data:

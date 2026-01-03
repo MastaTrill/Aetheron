@@ -129,7 +129,7 @@ class SmartAccount {
       .digest('hex');
   }
 
-  async verifyMultiSig(userOp, signatures) {
+  async verifyMultiSig(_userOp, _signatures) {
     // In real implementation, verify multiple signatures
     return this.threshold;
   }
@@ -182,7 +182,7 @@ class SmartAccount {
     };
   }
 
-  async executeCall(target, value, data, blockchain) {
+  async executeCall(target, value, data, _blockchain) {
     // Execute the actual transaction on blockchain
     if (value > this.balance) {
       throw new Error('Insufficient balance');
@@ -253,7 +253,7 @@ class AccountFactory {
   /**
    * Deploy account on-chain
    */
-  async deployAccount(address, blockchain) {
+  async deployAccount(address, _blockchain) {
     const account = this.accounts.get(address);
     if (!account) {
       throw new Error('Account not found');
@@ -346,7 +346,7 @@ class UserOperationMempool {
    */
   getPendingOperations(limit = 10) {
     const pending = Array.from(this.operations.entries())
-      .filter(([hash, op]) => {
+      .filter(([_hash, op]) => {
         // Check if still valid
         return op.validation.validUntil > Date.now();
       })
@@ -694,7 +694,7 @@ class AccountAbstraction {
     return { success: true, guardians, threshold };
   }
 
-  async initiateRecovery(accountAddress, newOwner, guardianSignatures) {
+  async initiateRecovery(accountAddress, newOwner, _guardianSignatures) {
     return {
       success: true,
       recoveryId: 'recovery_' + Math.random().toString(16).substr(2, 16),

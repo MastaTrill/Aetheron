@@ -10,8 +10,6 @@
  * - Grafana-compatible exports
  */
 
-const crypto = require('crypto');
-
 /**
  * Metrics Collector
  * Prometheus-compatible metrics collection
@@ -81,7 +79,7 @@ class MetricsCollector {
   /**
    * Record WebSocket event
    */
-  recordWebSocket(event, data = {}) {
+  recordWebSocket(event, _data = {}) {
     switch (event) {
     case 'connect':
       this.metrics.wsConnectionsActive++;
@@ -498,7 +496,7 @@ const DEFAULT_ALERT_RULES = {
     return false;
   },
 
-  noRecentBlocks: (summary) => {
+  noRecentBlocks: (_summary) => {
     // Check if blocks mined in last period
     // Would need timestamp tracking in real implementation
     return false;
