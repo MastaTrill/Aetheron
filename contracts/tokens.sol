@@ -70,9 +70,9 @@ contract AetheronToken {
      * @dev Increase allowance for spender
      */
     function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
-        unchecked {
-            allowance[msg.sender][spender] += addedValue;
-        }
+        require(spender != address(0), "Cannot approve zero address");
+        // Note: Not using unchecked here to prevent overflow
+        allowance[msg.sender][spender] += addedValue;
         emit Approval(msg.sender, spender, allowance[msg.sender][spender]);
         return true;
     }
@@ -81,6 +81,7 @@ contract AetheronToken {
      * @dev Decrease allowance for spender
      */
     function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
+        require(spender != address(0), "Cannot approve zero address");
         uint256 currentAllowance = allowance[msg.sender][spender];
         require(currentAllowance >= subtractedValue, "Decreased allowance below zero");
         unchecked {
@@ -102,6 +103,7 @@ contract AetheronToken {
     }
 
     function approve(address spender, uint256 amount) public returns (bool) {
+        require(spender != address(0), "Cannot approve zero address");
         allowance[msg.sender][spender] = amount;
         emit Approval(msg.sender, spender, amount);
         return true;
