@@ -71,7 +71,7 @@ contract AetheronToken {
      */
     function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
         require(spender != address(0), "Cannot approve zero address");
-        // Note: Not using unchecked here to prevent overflow
+        // Solidity 0.8.0+ provides automatic overflow protection
         allowance[msg.sender][spender] += addedValue;
         emit Approval(msg.sender, spender, allowance[msg.sender][spender]);
         return true;
