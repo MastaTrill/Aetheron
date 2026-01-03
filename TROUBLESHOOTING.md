@@ -304,7 +304,7 @@ npm audit
 node -e "console.log(process.env)" | grep -E "(PORT|NODE_ENV|ADMIN)"
 
 # Test database connection
-node -e "require('./database/connection').authenticate().then(() => console.log('OK')).catch(e => console.error(e))"
+node -e "const {sequelize} = require('./database/models'); sequelize.authenticate().then(() => console.log('Database OK')).catch(e => console.error('Database Error:', e.message))"
 ```
 
 ---
