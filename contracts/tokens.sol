@@ -31,7 +31,7 @@ contract AetheronToken {
      * @param initialSupply Initial token supply to mint
      */
     constructor(uint256 initialSupply) {
-        owner = msg.sender; // Dynamic owner (deployer)
+        owner = msg.sender;
         _mint(owner, initialSupply);
     }
 
@@ -39,6 +39,7 @@ contract AetheronToken {
      * @dev Internal mint function
      */
     function _mint(address to, uint256 amount) internal {
+        require(to != address(0), "Cannot mint to zero address");
         totalSupply += amount;
         balanceOf[to] += amount;
         emit Transfer(address(0), to, amount);
@@ -90,6 +91,7 @@ contract AetheronToken {
     }
 
     function transfer(address to, uint256 amount) public returns (bool) {
+        require(to != address(0), "Cannot transfer to zero address");
         require(balanceOf[msg.sender] >= amount, "Insufficient balance");
         unchecked {
             balanceOf[msg.sender] -= amount;
@@ -106,6 +108,7 @@ contract AetheronToken {
     }
 
     function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+        require(to != address(0), "Cannot transfer to zero address");
         require(balanceOf[from] >= amount, "Insufficient balance");
         require(allowance[from][msg.sender] >= amount, "Allowance exceeded");
         unchecked {
@@ -118,7 +121,6 @@ contract AetheronToken {
     }
 }
 
-// Keep NFT contract as-is (no changes requested)
 contract AetheronGlyphs {
     string public name = "AetheronGlyphs";
     string public symbol = "AGLYPH";
