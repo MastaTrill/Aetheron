@@ -36,7 +36,6 @@ class SmartAccount {
     const hash = crypto
       .createHash('sha256')
       .update(owner)
-      .update(Date.now().toString())
       .digest('hex');
     return '0xAA' + hash.slice(0, 38); // AA prefix for Account Abstraction
   }
@@ -543,7 +542,9 @@ class AccountAbstraction {
   }
 
   async createSmartAccount(provider, profile) {
-    const account = await this.factory.createAccount(provider, profile);
+    // Create deterministic owner string from provider and profile
+    const owner = `${provider}:${profile.id || profile.email || JSON.stringify(profile)}`;
+    const account = await this.factory.createAccount(owner, { provider, profile });
     this.accounts.set(account.address, account);
 
     return {
@@ -646,8 +647,11 @@ class AccountAbstraction {
   }
 
   async recoverAccount(provider, profile) {
+    // Create deterministic owner string from provider and profile
+    const owner = `${provider}:${profile.id || profile.email || JSON.stringify(profile)}`;
+
     // Try to find existing account with same provider and profile
-    const account = await this.factory.createAccount(provider, profile);
+    const account = await this.factory.createAccount(owner, { provider, profile });
     const existing = this.accounts.get(account.address);
 
     if (existing) {
@@ -666,6 +670,7 @@ class AccountAbstraction {
     // Create new account
     this.accounts.set(account.address, account);
     return {
+
       success: true,
       account: {
         address: account.address,

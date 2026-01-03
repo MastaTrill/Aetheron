@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.17% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>71/214</span>
+                <span class='fraction'>72/216</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20.75% </span>
+                <span class="strong">21.42% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>22/106</span>
+                <span class='fraction'>24/112</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.97% </span>
+                <span class="strong">34.12% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>71/209</span>
+                <span class='fraction'>72/211</span>
             </div>
         
             
@@ -774,7 +774,12 @@
 <a name='L709'></a><a href='#L709'>709</a>
 <a name='L710'></a><a href='#L710'>710</a>
 <a name='L711'></a><a href='#L711'>711</a>
-<a name='L712'></a><a href='#L712'>712</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L712'></a><a href='#L712'>712</a>
+<a name='L713'></a><a href='#L713'>713</a>
+<a name='L714'></a><a href='#L714'>714</a>
+<a name='L715'></a><a href='#L715'>715</a>
+<a name='L716'></a><a href='#L716'>716</a>
+<a name='L717'></a><a href='#L717'>717</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -813,7 +818,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1319,6 +1323,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1424,24 +1430,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1523,7 +1533,6 @@ class SmartAccount {
     const hash = crypto
       .createHash('sha256')
       .update(owner)
-      .update(Date.now().toString())
       .digest('hex');
     return '0xAA' + hash.slice(0, 38); // AA prefix for Account Abstraction
   }
@@ -2030,7 +2039,9 @@ class AccountAbstraction {
   }
 &nbsp;
   async createSmartAccount(provider, profile) {
-    const account = await this.factory.createAccount(provider, profile);
+    // Create deterministic owner string from provider and profile
+    const owner = `${provider}:${profile.id || <span class="branch-1 cbranch-no" title="branch not covered" >profile.email </span>|| <span class="branch-2 cbranch-no" title="branch not covered" >JSON.stringify(profile)}</span>`;
+    const account = await this.factory.createAccount(owner, { provider, profile });
     this.accounts.set(account.address, account);
 &nbsp;
     return {
@@ -2133,12 +2144,15 @@ class AccountAbstraction {
   }
 &nbsp;
   async recoverAccount(provider, profile) {
+    // Create deterministic owner string from provider and profile
+    const owner = `${provider}:${profile.id || <span class="branch-1 cbranch-no" title="branch not covered" >profile.email </span>|| <span class="branch-2 cbranch-no" title="branch not covered" >JSON.stringify(profile)}</span>`;
+&nbsp;
     // Try to find existing account with same provider and profile
-    const account = await this.factory.createAccount(provider, profile);
+    const account = await this.factory.createAccount(owner, { provider, profile });
     const existing = this.accounts.get(account.address);
 &nbsp;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (existing) {
-<span class="cstat-no" title="statement not covered" >      return {</span>
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (existing) {
+      return {
         success: true,
         account: {
           address: existing.address,
@@ -2151,8 +2165,9 @@ class AccountAbstraction {
     }
 &nbsp;
     // Create new account
-    this.accounts.set(account.address, account);
-    return {
+<span class="cstat-no" title="statement not covered" >    this.accounts.set(account.address, account);</span>
+<span class="cstat-no" title="statement not covered" >    return {</span>
+&nbsp;
       success: true,
       account: {
         address: account.address,
@@ -2203,7 +2218,7 @@ module.exports.ValidationRules = ValidationRules;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-03T03:39:11.362Z
+                at 2026-01-03T03:45:04.542Z
             </div>
         <script src="../prettify.js"></script>
         <script>
