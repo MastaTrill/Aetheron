@@ -407,3 +407,21 @@ FodyWeavers.xsd
 
 # Environment variables
 .env
+
+# Build artifacts
+frontend/dist/
+coverage/
+.cache/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
