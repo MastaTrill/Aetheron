@@ -5,6 +5,36 @@ const http = require('http');
 const { AetheronWebSocket } = require('./websocket');
 require('dotenv').config();
 
+// Startup validation - Check required modules are loaded
+function validateStartup() {
+  const requiredModules = {
+    'express': express,
+    'path': path,
+    'cors': cors,
+    'http': http,
+    'AetheronWebSocket': AetheronWebSocket
+  };
+
+  const missingModules = [];
+  for (const [name, module] of Object.entries(requiredModules)) {
+    if (!module) {
+      missingModules.push(name);
+    }
+  }
+
+  if (missingModules.length > 0) {
+    console.error('❌ Startup validation failed!');
+    console.error('Missing required modules:', missingModules.join(', '));
+    console.error('Please run: npm install --legacy-peer-deps');
+    process.exit(1);
+  }
+
+  console.log('✅ All required modules loaded successfully');
+}
+
+// Run startup validation
+validateStartup();
+
 // Database and Auth
 const { sequelize, User, Log, Transaction } = require('./database/models');
 const authRoutes = require('./auth/routes');
