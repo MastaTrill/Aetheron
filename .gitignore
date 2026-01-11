@@ -407,3 +407,6 @@ FodyWeavers.xsd
 
 # Environment variables
 .env
+
+# Local Netlify folder
+.netlify
