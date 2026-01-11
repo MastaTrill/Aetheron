@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { CameraView, Camera } from 'expo-camera';
 
@@ -181,3 +182,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   }
 });
+
+ScanScreen.propTypes = {
+  navigation: PropTypes.object.isRequired,
+  route: PropTypes.object.isRequired
+};

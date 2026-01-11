@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "C:\\Users\\willi\\.vscode\\Aetheron\\Aetheron\\contracts\\tokens.sol": {
-      "lastModificationDate": 1767344076492,
-      "contentHash": "41f194d7752c578504ad60bae321b47f",
+      "lastModificationDate": 1768127895632,
+      "contentHash": "f5c282be6014ff35060d51173cc026be",
       "sourceName": "contracts/tokens.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -31,7 +31,6 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.0",
         "^0.8.0"
       ],
       "artifacts": [

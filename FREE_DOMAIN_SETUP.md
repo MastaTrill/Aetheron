@@ -6,12 +6,13 @@
 
 1. **Go to Freenom:**
    - Visit: https://www.freenom.com/
-   
 2. **Search for domain:**
+
    - Enter: `aetheron`
    - Click "Check Availability"
 
 3. **Choose extension:**
+
    - `aetheron.tk` (Tokelau)
    - `aetheron.ml` (Mali)
    - `aetheron.ga` (Gabon)
@@ -25,10 +26,12 @@
 ### Step 2: Register
 
 1. **Choose period:**
+
    - Select "12 Months @ FREE"
    - Can renew for free before expiry
 
 2. **Create account:**
+
    - Enter your email
    - Verify email address
    - Complete registration
@@ -44,17 +47,20 @@
 ### Option A: Connect to Netlify
 
 1. **Deploy to Netlify first:**
+
    - Go to: https://app.netlify.com/start
    - Connect GitHub → Select Aetheron
    - Deploy (get temporary URL)
 
 2. **Add custom domain in Netlify:**
+
    - In Netlify dashboard → Domain settings
    - Click "Add custom domain"
    - Enter: `aetheron.tk`
    - Netlify gives you DNS records
 
 3. **Update Freenom DNS:**
+
    - Go to: https://my.freenom.com/
    - Click "Services" → "My Domains"
    - Click "Manage Domain" for aetheron.tk
@@ -70,6 +76,7 @@
    - Click "Change Nameservers"
 
 4. **Wait for DNS propagation:**
+
    - Takes 1-24 hours (usually ~1 hour)
    - Check status at: https://www.whatsmydns.net/
 
@@ -80,11 +87,13 @@
 ### Option B: Connect to Vercel
 
 1. **Deploy to Vercel:**
+
    - Go to: https://vercel.com/new
    - Import Aetheron from GitHub
    - Deploy
 
 2. **Add domain in Vercel:**
+
    - In project settings → Domains
    - Enter: `aetheron.tk`
    - Vercel gives you DNS records
@@ -103,6 +112,7 @@
 1. **Deploy to Azure Static Web Apps** (already set up)
 
 2. **Add custom domain in Azure:**
+
    - Azure Portal → Your Static Web App
    - Click "Custom domains"
    - Click "Add"
@@ -128,13 +138,16 @@
 **Using Freenom DNS Manager:**
 
 1. **Get your hosting IP/CNAME:**
+
    - From Netlify/Vercel/Azure deployment
 
 2. **Configure Freenom DNS:**
+
    - Freenom → Manage Domain → Manage Freenom DNS
    - Add records:
 
    **For root domain (aetheron.tk):**
+
    ```
    Type: A
    Name: (empty)
@@ -143,6 +156,7 @@
    ```
 
    **For www subdomain:**
+
    ```
    Type: CNAME
    Name: www
@@ -159,12 +173,13 @@
 1. **Deploy to Netlify** (2 min):
    - https://app.netlify.com/start
    - Import Aetheron
-   
 2. **Register aetheron.tk** (10 min):
+
    - https://www.freenom.com/
    - Search and register
 
 3. **Connect domain** (5 min):
+
    - Netlify: Add custom domain
    - Freenom: Update nameservers
 
@@ -177,6 +192,7 @@
 ## ⚠️ Important Notes
 
 ### Freenom Domain Rules:
+
 - ✅ Free for 12 months
 - ✅ Can renew for free (must renew before expiry)
 - ✅ Must have content on site (no parking)
@@ -184,13 +200,16 @@
 - ⚠️ Keep your Freenom account active
 
 ### Best Practices:
+
 1. **Set renewal reminder** 1 month before expiry
 2. **Keep site active** (no empty pages)
 3. **Add backup domain** (e.g., netlify.app as fallback)
 4. **Enable HTTPS** (automatic on most platforms)
 
 ### Alternative Free TLDs:
+
 If `.tk` is taken, try:
+
 - `aetheron.ml` (Mali)
 - `aetheron.ga` (Gabon)
 - `aetheron.cf` (Central African Republic)
@@ -203,6 +222,7 @@ All are free for 12 months!
 ## 🔍 Check Domain Status
 
 ### Test if domain is working:
+
 ```
 # Check DNS propagation
 https://www.whatsmydns.net/#A/aetheron.tk
@@ -212,6 +232,7 @@ https://www.sslshopper.com/ssl-checker.html#hostname=aetheron.tk
 ```
 
 ### Troubleshooting:
+
 - **Domain not resolving:** Wait 24 hours for DNS propagation
 - **SSL not working:** Host should auto-provision (wait 1 hour)
 - **Can't access site:** Check nameservers are correct
@@ -220,13 +241,13 @@ https://www.sslshopper.com/ssl-checker.html#hostname=aetheron.tk
 
 ## 📊 Summary
 
-| Step | Time | Cost |
-|------|------|------|
-| Register aetheron.tk | 10 min | $0 |
-| Deploy to host | 2-5 min | $0 |
-| Connect domain | 5 min | $0 |
-| DNS propagation | 1-24 hrs | $0 |
-| **Total** | **~20 min + waiting** | **$0** ✅ |
+| Step                 | Time                  | Cost      |
+| -------------------- | --------------------- | --------- |
+| Register aetheron.tk | 10 min                | $0        |
+| Deploy to host       | 2-5 min               | $0        |
+| Connect domain       | 5 min                 | $0        |
+| DNS propagation      | 1-24 hrs              | $0        |
+| **Total**            | **~20 min + waiting** | **$0** ✅ |
 
 **Final URL:** `https://aetheron.tk`
 

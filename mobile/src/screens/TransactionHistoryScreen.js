@@ -26,29 +26,29 @@ export default function TransactionHistoryScreen() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmed':
-        return '#4caf50';
-      case 'pending':
-        return '#ffa726';
-      case 'failed':
-        return '#ff5252';
-      default:
-        return '#666';
+    case 'confirmed':
+      return '#4caf50';
+    case 'pending':
+      return '#ffa726';
+    case 'failed':
+      return '#ff5252';
+    default:
+      return '#666';
     }
   };
 
   const getChainEmoji = (chain) => {
     switch (chain) {
-      case 'ethereum':
-        return '⟠';
-      case 'base':
-        return '🔵';
-      case 'polygon':
-        return '🟣';
-      case 'solana':
-        return '⚡';
-      default:
-        return '🔗';
+    case 'ethereum':
+      return '⟠';
+    case 'base':
+      return '🔵';
+    case 'polygon':
+      return '🟣';
+    case 'solana':
+      return '⚡';
+    default:
+      return '🔗';
     }
   };
 

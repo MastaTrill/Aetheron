@@ -9,6 +9,7 @@ Aetheron is a modular, full-featured blockchain platform with a futuristic admin
 **GitHub Pages:** [https://mastatrill.github.io/Aetheron/](https://mastatrill.github.io/Aetheron/)
 
 **Available Pages:**
+
 - 🎛️ [Admin Dashboard](https://mastatrill.github.io/Aetheron/admin-dashboard.html) - Full admin panel with 3D AI assistant
 - 📊 [Analytics Dashboard](https://mastatrill.github.io/Aetheron/analytics-dashboard.html) - Real-time metrics & charts
 - 🔍 [Block Explorer](https://mastatrill.github.io/Aetheron/explorer.html) - Browse blockchain data
@@ -20,15 +21,18 @@ Aetheron is a modular, full-featured blockchain platform with a futuristic admin
 **Aetheron Token (AETH)** - Multi-Chain Support
 
 ### Local Development (Hardhat)
+
 - **AetheronToken (ERC-20)**: Deployed locally - see `deployments/hardhat.json`
 - **AetheronGlyphs (ERC-721)**: Deployed locally - see `deployments/hardhat.json`
 
 ### Testnet Deployments (After Setup)
+
 - **Sepolia (Ethereum Testnet)**: `npx hardhat run scripts/deploy.js --network sepolia`
 - **Polygon Amoy**: `npx hardhat run scripts/deploy.js --network polygonAmoy`
 - **Base Sepolia**: `npx hardhat run scripts/deploy.js --network baseSepolia`
 
 ### Mainnet Deployments (After Setup)
+
 - **Ethereum Mainnet**: [To be deployed]
 - **Base**: [To be deployed]
 - **Polygon**: [To be deployed]
@@ -37,12 +41,15 @@ Aetheron is a modular, full-featured blockchain platform with a futuristic admin
 ## Deployment Instructions
 
 ### Prerequisites
+
 1. **Get API Keys**:
+
    - [Alchemy API Key](https://www.alchemy.com/) for Ethereum RPC
    - [Infura Project ID](https://www.infura.io/) for Polygon RPC
    - [Etherscan API Key](https://etherscan.io/) for contract verification
 
 2. **Fund Testnet Wallet**:
+
    - Get testnet ETH from [Sepolia Faucet](https://sepoliafaucet.com/)
    - Get testnet MATIC from [Polygon Faucet](https://faucet.polygon.technology/)
 
@@ -57,11 +64,13 @@ Aetheron is a modular, full-featured blockchain platform with a futuristic admin
 ### Prerequisites
 
 1. **Install Dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Get API Keys**:
+
    - [Alchemy API Key](https://www.alchemy.com/) for Ethereum RPC
    - [Infura Project ID](https://www.infura.io/) for Polygon RPC
    - [Etherscan API Key](https://etherscan.io/) for contract verification
@@ -69,6 +78,7 @@ Aetheron is a modular, full-featured blockchain platform with a futuristic admin
    - [Basescan API Key](https://basescan.org/) for Base verification
 
 3. **Configure Environment**:
+
    ```bash
    cp .env.example .env
    # Edit .env with your actual API keys and private key
@@ -135,6 +145,7 @@ npx hardhat run scripts/deploy.js --network base
 ### Deployment Artifacts
 
 After successful deployment, check:
+
 - `deployments/[network].json` - Contains deployment details
 - Contract addresses will be logged to console
 - Update `chain-config.json` with actual deployed addresses
@@ -155,9 +166,11 @@ After successful deployment, check:
 **Aetheron Glyphs (AGLYPH)** - NFT Collection
 
 **Local Hardhat Network (Development):**
+
 - AetheronGlyphs (ERC-721): `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`
 
 **EVM Networks:**
+
 - Ethereum: [To be deployed]
 - Base: [To be deployed]
 - Polygon: [To be deployed]

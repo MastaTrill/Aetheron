@@ -17,7 +17,7 @@ describe('WebSocket Server', () => {
 
   afterAll((done) => {
     // Close all client connections first
-    wsServer.clients.forEach(client => {
+    wsServer.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.close();
       }

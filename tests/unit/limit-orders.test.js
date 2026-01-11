@@ -143,9 +143,27 @@ describe('Limit Orders & Advanced Trading', () => {
     });
 
     test('should get active orders', async () => {
-      await limitOrders.createLimitOrder({ type: 'buy', pair: 'ETH/USDC', amount: 1, limitPrice: 2000, userAddress: '0x1' });
-      await limitOrders.createLimitOrder({ type: 'buy', pair: 'BTC/USDC', amount: 0.5, limitPrice: 45000, userAddress: '0x2' });
-      await limitOrders.createLimitOrder({ type: 'buy', pair: 'SOL/USDC', amount: 10, limitPrice: 100, userAddress: '0x3' });
+      await limitOrders.createLimitOrder({
+        type: 'buy',
+        pair: 'ETH/USDC',
+        amount: 1,
+        limitPrice: 2000,
+        userAddress: '0x1'
+      });
+      await limitOrders.createLimitOrder({
+        type: 'buy',
+        pair: 'BTC/USDC',
+        amount: 0.5,
+        limitPrice: 45000,
+        userAddress: '0x2'
+      });
+      await limitOrders.createLimitOrder({
+        type: 'buy',
+        pair: 'SOL/USDC',
+        amount: 10,
+        limitPrice: 100,
+        userAddress: '0x3'
+      });
 
       const activeOrders = limitOrders.getActiveOrders();
 
@@ -186,9 +204,27 @@ describe('Limit Orders & Advanced Trading', () => {
 
   describe('Order Statistics', () => {
     test('should calculate order book statistics', async () => {
-      await limitOrders.createLimitOrder({ type: 'buy', pair: 'ETH/USDC', amount: 1, limitPrice: 1900, userAddress: '0x1' });
-      await limitOrders.createLimitOrder({ type: 'buy', pair: 'ETH/USDC', amount: 2, limitPrice: 2000, userAddress: '0x2' });
-      await limitOrders.createLimitOrder({ type: 'buy', pair: 'ETH/USDC', amount: 1.5, limitPrice: 2100, userAddress: '0x3' });
+      await limitOrders.createLimitOrder({
+        type: 'buy',
+        pair: 'ETH/USDC',
+        amount: 1,
+        limitPrice: 1900,
+        userAddress: '0x1'
+      });
+      await limitOrders.createLimitOrder({
+        type: 'buy',
+        pair: 'ETH/USDC',
+        amount: 2,
+        limitPrice: 2000,
+        userAddress: '0x2'
+      });
+      await limitOrders.createLimitOrder({
+        type: 'buy',
+        pair: 'ETH/USDC',
+        amount: 1.5,
+        limitPrice: 2100,
+        userAddress: '0x3'
+      });
 
       const stats = limitOrders.getOrderBookStats('ETH/USDC');
 

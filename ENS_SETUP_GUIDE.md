@@ -3,10 +3,12 @@
 ## 🌐 What is ENS?
 
 **Ethereum Name Service (ENS)** converts crypto addresses into human-readable names:
+
 - Instead of: `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
 - You get: `aetheron.eth`
 
 Your site will be accessible at:
+
 - **ENS Domain**: `https://aetheron.eth` (via ENS-enabled browsers)
 - **IPFS Gateway**: `https://aetheron.eth.limo` or `https://aetheron.eth.link`
 - **Traditional URL**: `https://aetheron.on.fleek.co`
@@ -16,11 +18,13 @@ Your site will be accessible at:
 ## 💰 Cost & Requirements
 
 ### ENS Domain Registration:
+
 - **1 year**: ~$5 USD (in ETH)
 - **Longer = Cheaper**: $3/year for 5+ years
 - **One-time gas fee**: ~$10-50 (depends on Ethereum gas prices)
 
 ### What You Need:
+
 1. **MetaMask wallet** (or any Ethereum wallet)
 2. **~$15-60 in ETH** (for domain + gas fees)
 3. **GitHub account** (you have this ✅)
@@ -32,12 +36,14 @@ Your site will be accessible at:
 ### Step 1: Get an ENS Domain
 
 1. **Install MetaMask**:
+
    - Go to: https://metamask.io/
    - Add to Chrome/Firefox
    - Create or import wallet
    - Add some ETH (buy on Coinbase/Binance)
 
 2. **Register ENS Domain**:
+
    - Go to: https://app.ens.domains/
    - Connect MetaMask
    - Search for: `aetheron.eth`
@@ -52,11 +58,13 @@ Your site will be accessible at:
 ### Step 2: Deploy to IPFS via Fleek
 
 1. **Sign up for Fleek**:
+
    - Go to: https://app.fleek.co/
    - Click "Sign Up" → Connect GitHub
    - Authorize Fleek
 
 2. **Add New Site**:
+
    - Click "Add new site"
    - Select "Deploy with GitHub"
    - Choose your `Aetheron` repository
@@ -74,10 +82,12 @@ Your site will be accessible at:
 ### Step 3: Link ENS to IPFS
 
 1. **Go to ENS Manager**:
+
    - Visit: https://app.ens.domains/
    - Click on your `aetheron.eth` domain
 
 2. **Add Content Hash**:
+
    - Click "Add/Edit Record"
    - Select "Content Hash"
    - Paste your IPFS hash from Fleek
@@ -95,11 +105,13 @@ Your site will be accessible at:
 ### Step 4: Access Your Site
 
 **Via ENS-Enabled Browsers:**
+
 - Brave browser: `aetheron.eth`
 - Opera: `aetheron.eth`
 - MetaMask browser: `aetheron.eth`
 
 **Via Traditional Browsers:**
+
 - `https://aetheron.eth.link` (Cloudflare gateway)
 - `https://aetheron.eth.limo` (IPFS gateway)
 - `https://aetheron.on.fleek.co` (Fleek direct)
@@ -113,6 +125,7 @@ If you don't want to buy an ENS domain yet, you can use **free Web3 alternatives
 ### Option A: Use a Free ENS Subdomain
 
 Some projects offer free subdomains:
+
 - `aetheron.dao.eth` (if part of a DAO)
 - `aetheron.web3.eth`
 - Ask in Web3 communities for free subdomains
@@ -128,6 +141,7 @@ Some projects offer free subdomains:
 ### Option C: Just use IPFS for now (FREE)
 
 Deploy to Fleek without ENS:
+
 - URL: `https://aetheron.on.fleek.co`
 - IPFS URL: `https://ipfs.fleek.co/ipfs/QmXxxx...`
 - Add ENS later when ready
@@ -139,6 +153,7 @@ Deploy to Fleek without ENS:
 I've prepared your project for Fleek deployment. The files work as-is!
 
 ### What Fleek Will Deploy:
+
 - ✅ All HTML pages
 - ✅ CSS and JavaScript files
 - ✅ Images and assets
@@ -146,6 +161,7 @@ I've prepared your project for Fleek deployment. The files work as-is!
 - ✅ Auto-updates on every GitHub push
 
 ### Fleek Benefits:
+
 - 🌐 IPFS hosting (decentralized)
 - ⚡ Fast CDN
 - 🔄 Auto-deploy from GitHub
@@ -172,16 +188,19 @@ Add your project logo to ENS:
 ### For Best Web3 Experience:
 
 1. **Set up IPNS** (InterPlanetary Name System):
+
    - Permanent IPFS address that updates
    - Link ENS to IPNS instead of IPFS hash
    - No need to update ENS after each deploy
 
 2. **Add Multiple Content Hashes**:
+
    - Primary: IPFS/IPNS
    - Fallback: Arweave (permanent storage)
    - Backup: Traditional hosting
 
 3. **Use ENS for Everything**:
+
    - Update token contracts to use ENS
    - Set wallet address in ENS
    - Link social profiles
@@ -211,24 +230,26 @@ If you want to deploy to IPFS NOW without buying ENS:
 
 ## 📊 Cost Comparison
 
-| Option | Initial Cost | Annual Cost | Renewal? |
-|--------|-------------|-------------|----------|
-| **ENS .eth** | $15-60 | $5/year | Yes |
-| **Unstoppable** | $10-40 | $0 | No |
-| **Fleek only** | $0 | $0 | No |
-| **ENS + Fleek** | $15-60 | $5/year | Yes |
+| Option          | Initial Cost | Annual Cost | Renewal? |
+| --------------- | ------------ | ----------- | -------- |
+| **ENS .eth**    | $15-60       | $5/year     | Yes      |
+| **Unstoppable** | $10-40       | $0          | No       |
+| **Fleek only**  | $0           | $0          | No       |
+| **ENS + Fleek** | $15-60       | $5/year     | Yes      |
 
 ---
 
 ## 🎯 Recommended Path
 
 ### For Immediate Deployment (FREE):
+
 1. Deploy to Fleek now (5 min)
 2. Get URL: `aetheron.on.fleek.co`
 3. Test everything
 4. Buy ENS domain later
 
 ### For Full Web3 Experience:
+
 1. Buy ENS domain `aetheron.eth` ($15-60)
 2. Deploy to Fleek (free)
 3. Link ENS to IPFS
@@ -239,14 +260,17 @@ If you want to deploy to IPFS NOW without buying ENS:
 ## 🆘 Need Help?
 
 **Fleek Setup Issues:**
+
 - Discord: https://discord.gg/fleek
 - Docs: https://docs.fleek.co/
 
 **ENS Registration Help:**
+
 - Discord: https://chat.ens.domains/
 - Docs: https://docs.ens.domains/
 
 **Funding Help:**
+
 - Buy ETH on: Coinbase, Binance, Kraken
 - Send to MetaMask address
 

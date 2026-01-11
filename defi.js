@@ -76,7 +76,9 @@ class DeFiLending {
 
   async swap(tokenIn, tokenOut, amountIn, slippageTolerance) {
     // Find the pool (check both directions)
-    let pool, poolKey, isReverse = false;
+    let pool,
+      poolKey,
+      isReverse = false;
     poolKey = `${tokenIn}-${tokenOut}`;
     pool = this.liquidityPools[poolKey];
 
@@ -147,7 +149,7 @@ class DeFiLending {
   async stake(token, amount, lockDays) {
     const stakeId = this.nextStakeId++;
     const now = Date.now();
-    const unlockTime = now + (lockDays * 24 * 60 * 60 * 1000);
+    const unlockTime = now + lockDays * 24 * 60 * 60 * 1000;
 
     // Calculate APY based on lock period
     let apy;
@@ -184,7 +186,7 @@ class DeFiLending {
   }
 
   async unstake(stakeId) {
-    const stake = this.stakes.find(s => s.stakeId === stakeId);
+    const stake = this.stakes.find((s) => s.stakeId === stakeId);
     if (!stake) {
       throw new Error('Stake not found');
     }
@@ -195,7 +197,7 @@ class DeFiLending {
     }
 
     const rewards = this.calculateStakeRewards(stake);
-    this.stakes = this.stakes.filter(s => s.stakeId !== stakeId);
+    this.stakes = this.stakes.filter((s) => s.stakeId !== stakeId);
 
     return {
       success: true,
@@ -215,7 +217,7 @@ class DeFiLending {
   }
 
   async getStakingRewards(userId) {
-    const userStakes = this.stakes.filter(s => s.userId === userId);
+    const userStakes = this.stakes.filter((s) => s.userId === userId);
     return userStakes.reduce((total, stake) => {
       return total + this.calculateStakeRewards(stake);
     }, 0);
@@ -243,7 +245,7 @@ class DeFiLending {
   }
 
   async getFarmingRewards(userId) {
-    const userPositions = this.farmingPositions.filter(p => p.userId === userId);
+    const userPositions = this.farmingPositions.filter((p) => p.userId === userId);
     const rewardRate = 0.0001; // 0.01% per second
 
     return userPositions.reduce((total, position) => {
@@ -257,7 +259,7 @@ class DeFiLending {
     const rewards = await this.getFarmingRewards('test-user');
 
     // Reset start times for all positions
-    this.farmingPositions.forEach(p => {
+    this.farmingPositions.forEach((p) => {
       if (p.userId === 'test-user') {
         p.startTime = Date.now();
       }
@@ -387,7 +389,7 @@ class DeFiLending {
     gasSaved = gasUsed * 0.2;
 
     return {
-      success: results.every(r => r.success !== false),
+      success: results.every((r) => r.success !== false),
       results,
       gasUsed,
       savedGas: gasSaved

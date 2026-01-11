@@ -108,9 +108,10 @@ app.use(rateLimiter);
 
 // Test database connection on startup (skip in test environment)
 if (process.env.NODE_ENV !== 'test') {
-  sequelize.authenticate()
+  sequelize
+    .authenticate()
     .then(() => console.log('✅ Database connected successfully'))
-    .catch(err => console.error('❌ Database connection failed:', err.message));
+    .catch((err) => console.error('❌ Database connection failed:', err.message));
 }
 
 // Authentication routes (public)
@@ -251,7 +252,7 @@ app.get('/stats', basicAuth, async (req, res) => {
   try {
     const totalUsers = await User.count();
     const totalTransactions = await Transaction.count();
-    const totalVolume = await Transaction.sum('amount') || 0;
+    const totalVolume = (await Transaction.sum('amount')) || 0;
 
     res.json({
       totalUsers,
@@ -505,7 +506,11 @@ server.listen(PORT, () => {
   console.log(`📊 Dashboard: http://localhost:${PORT}`);
   console.log(`💚 Health check: http://localhost:${PORT}/health`);
   console.log(`🌐 WebSocket: ws://localhost:${PORT}`);
-  console.log(`🔐 Auth: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD === 'admin123' ? '⚠️  DEFAULT PASSWORD' : '✓ Custom'}`);
+  console.log(
+    `🔐 Auth: ${ADMIN_USERNAME} / ${
+      ADMIN_PASSWORD === 'admin123' ? '⚠️  DEFAULT PASSWORD' : '✓ Custom'
+    }`
+  );
   console.log(`🛡️  Rate limit: ${MAX_REQUESTS} req/min`);
   console.log(`🌍 CORS: ${ALLOWED_ORIGINS.length} allowed origin(s)`);
   console.log('='.repeat(60));

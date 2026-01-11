@@ -142,7 +142,7 @@ describe('Fraud Detector', () => {
 
       const patterns = detector.detectPatterns(tx);
       expect(patterns.length).toBeGreaterThan(0);
-      expect(patterns.some(p => p.type === 'PHISHING')).toBe(true);
+      expect(patterns.some((p) => p.type === 'PHISHING')).toBe(true);
     });
   });
 
@@ -173,14 +173,16 @@ describe('Fraud Detector', () => {
     test('should provide recommendations for blocked transactions', () => {
       const recommendations = detector.getRecommendations('BLOCK', ['BLACKLISTED']);
       expect(Array.isArray(recommendations)).toBe(true);
-      expect(recommendations.some(rec => rec.includes('block') || rec.includes('reject'))).toBe(true);
+      expect(recommendations.some((rec) => rec.includes('block') || rec.includes('reject'))).toBe(
+        true
+      );
     });
   });
 
   describe('Utility Functions', () => {
     test('should identify round numbers', () => {
       expect(detector.isRoundNumber(1000)).toBe(true);
-      expect(detector.isRoundNumber(100.50)).toBe(false);
+      expect(detector.isRoundNumber(100.5)).toBe(false);
       expect(detector.isRoundNumber(999)).toBe(false);
     });
   });

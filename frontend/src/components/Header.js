@@ -1,12 +1,6 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Box,
-  Chip,
-  useTheme
-} from '@mui/material';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { AppBar, Toolbar, Typography, IconButton, Box, Chip, useTheme } from '@mui/material';
 import {
   Menu as MenuIcon,
   Notifications as NotificationsIcon,
@@ -20,8 +14,8 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
   const theme = useTheme();
   const { connected, messages } = useWebSocket();
 
-  const unreadNotifications = messages.filter(msg =>
-    msg.type === 'systemAlert' || msg.type === 'error'
+  const unreadNotifications = messages.filter(
+    (msg) => msg.type === 'systemAlert' || msg.type === 'error'
   ).length;
 
   return (
@@ -112,6 +106,11 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
       </Toolbar>
     </AppBar>
   );
+};
+
+Header.propTypes = {
+  sidebarOpen: PropTypes.bool.isRequired,
+  setSidebarOpen: PropTypes.func.isRequired
 };
 
 export default Header;

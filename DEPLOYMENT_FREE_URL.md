@@ -7,11 +7,13 @@
 ### Deploy Steps:
 
 1. **Sign up for Netlify:**
+
    - Go to: https://www.netlify.com/
    - Click "Sign up" → Choose "GitHub"
    - Authorize Netlify to access your repositories
 
 2. **Deploy from GitHub:**
+
    - Click "Add new site" → "Import an existing project"
    - Choose "GitHub"
    - Select your `Aetheron` repository
@@ -21,6 +23,7 @@
    - Click "Deploy site"
 
 3. **Customize URL (Optional):**
+
    - Go to "Site settings" → "Domain management"
    - Click "Options" → "Edit site name"
    - Change to: `aetheron` (becomes `aetheron.netlify.app`)
@@ -40,10 +43,12 @@
 ### Deploy Steps:
 
 1. **Sign up for Vercel:**
+
    - Go to: https://vercel.com/
    - Click "Sign Up" → Choose "Continue with GitHub"
 
 2. **Import Project:**
+
    - Click "Add New" → "Project"
    - Import your `Aetheron` repository
    - Configure:
@@ -64,10 +69,12 @@
 ### Deploy Steps:
 
 1. **Sign up for Cloudflare:**
+
    - Go to: https://pages.cloudflare.com/
    - Create an account
 
 2. **Create Project:**
+
    - Click "Create a project"
    - Connect to GitHub
    - Select `Aetheron` repository
@@ -86,6 +93,7 @@
 ### Using Freenom (Free Domain for 1 year):
 
 1. **Get a free domain:**
+
    - Go to: https://www.freenom.com/
    - Search for available domains (.tk, .ml, .ga, .cf, .gq)
    - Example: `aetheron.tk`, `aetheron.ml`
@@ -103,18 +111,19 @@
 
 ## 📊 Comparison
 
-| Platform | URL Example | Auto-Deploy | SSL | Custom Domain |
-|----------|-------------|-------------|-----|---------------|
-| **Netlify** | aetheron.netlify.app | ✅ Yes | ✅ Free | ✅ Yes |
-| **Vercel** | aetheron.vercel.app | ✅ Yes | ✅ Free | ✅ Yes |
-| **Cloudflare** | aetheron.pages.dev | ✅ Yes | ✅ Free | ✅ Yes |
-| **GitHub Pages** | mastatrill.github.io/Aetheron | ✅ Yes | ✅ Free | ✅ Yes |
+| Platform         | URL Example                   | Auto-Deploy | SSL     | Custom Domain |
+| ---------------- | ----------------------------- | ----------- | ------- | ------------- |
+| **Netlify**      | aetheron.netlify.app          | ✅ Yes      | ✅ Free | ✅ Yes        |
+| **Vercel**       | aetheron.vercel.app           | ✅ Yes      | ✅ Free | ✅ Yes        |
+| **Cloudflare**   | aetheron.pages.dev            | ✅ Yes      | ✅ Free | ✅ Yes        |
+| **GitHub Pages** | mastatrill.github.io/Aetheron | ✅ Yes      | ✅ Free | ✅ Yes        |
 
 ---
 
 ## 🎯 Recommended: Netlify
 
 **Why Netlify?**
+
 - ✅ Easiest setup (3 clicks)
 - ✅ Auto-deploys on every GitHub push
 - ✅ Clean URL (`aetheron.netlify.app`)
@@ -129,6 +138,7 @@
 ## 🚀 Quick Start (5 Minutes)
 
 1. **Push the new config files:**
+
    ```bash
    git add netlify.toml vercel.json DEPLOYMENT_FREE_URL.md
    git commit -m "Add Netlify and Vercel deployment configs"
@@ -136,6 +146,7 @@
    ```
 
 2. **Go to Netlify:**
+
    - Visit: https://app.netlify.com/start
    - Click "GitHub" → Select "Aetheron"
    - Click "Deploy"

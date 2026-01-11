@@ -19,8 +19,20 @@ if (!fs.existsSync(envPath)) {
 }
 
 // Clear any environment variables that might be loaded from default .env
-const varsToClear = ['DATABASE_URL', 'JWT_SECRET', 'ALCHEMY_API_KEY', 'INFURA_PROJECT_ID', 'ETHERSCAN_API_KEY', 'POLYGONSCAN_API_KEY', 'BASESCAN_API_KEY', 'DEPLOYER_PRIVATE_KEY', 'TESTNET_PRIVATE_KEY', 'COINBASE_API_KEY', 'COINBASE_API_SECRET'];
-varsToClear.forEach(key => {
+const varsToClear = [
+  'DATABASE_URL',
+  'JWT_SECRET',
+  'ALCHEMY_API_KEY',
+  'INFURA_PROJECT_ID',
+  'ETHERSCAN_API_KEY',
+  'POLYGONSCAN_API_KEY',
+  'BASESCAN_API_KEY',
+  'DEPLOYER_PRIVATE_KEY',
+  'TESTNET_PRIVATE_KEY',
+  'COINBASE_API_KEY',
+  'COINBASE_API_SECRET'
+];
+varsToClear.forEach((key) => {
   delete process.env[key];
 });
 
@@ -44,7 +56,7 @@ let valid = true;
 
 console.log('Required Variables:');
 console.log('==================');
-required.forEach(key => {
+required.forEach((key) => {
   const value = process.env[key];
   if (!value) {
     console.log(`❌ ${key}: Missing`);

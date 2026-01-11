@@ -8,7 +8,7 @@ export default defineConfig({
     headless: true
   },
   webServer: {
-    command: 'NODE_ENV=development npm start',
+    command: 'node test-app.js',
     port: 3001,
     reuseExistingServer: !process.env.CI
   },

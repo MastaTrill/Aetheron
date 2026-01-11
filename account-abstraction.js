@@ -33,10 +33,7 @@ class SmartAccount {
   }
 
   generateAccountAddress(owner) {
-    const hash = crypto
-      .createHash('sha256')
-      .update(owner)
-      .digest('hex');
+    const hash = crypto.createHash('sha256').update(owner).digest('hex');
     return '0xAA' + hash.slice(0, 38); // AA prefix for Account Abstraction
   }
 
@@ -564,7 +561,7 @@ class AccountAbstraction {
       accountAddress,
       permissions,
       createdAt: Date.now(),
-      expiresAt: permissions.validUntil || (Date.now() + 86400000),
+      expiresAt: permissions.validUntil || Date.now() + 86400000,
       active: true
     };
 
@@ -670,7 +667,6 @@ class AccountAbstraction {
     // Create new account
     this.accounts.set(account.address, account);
     return {
-
       success: true,
       account: {
         address: account.address,
@@ -708,4 +704,11 @@ class AccountAbstraction {
 }
 
 export default AccountAbstraction;
-export { AccountAbstraction, SmartAccount, AccountFactory, UserOperationMempool, EntryPoint, ValidationRules };
+export {
+  AccountAbstraction,
+  SmartAccount,
+  AccountFactory,
+  UserOperationMempool,
+  EntryPoint,
+  ValidationRules
+};

@@ -7,6 +7,7 @@ async function main() {
 
   // 🚨 MAINNET SAFETY CHECKS
   const mainnetChains = [1, 137, 8453]; // Ethereum, Polygon, Base
+  const testnetChains = [11155111, 80002, 84532, 10143]; // Sepolia, Polygon Amoy, Base Sepolia, Monad Testnet
   if (mainnetChains.includes(chainId)) {
     console.log('\n⚠️  WARNING: You are deploying to MAINNET!');
     console.log('💰 This will cost real money and cannot be undone!');
@@ -21,16 +22,26 @@ async function main() {
     // For now, we'll proceed with warnings
   }
 
+
   const [deployer] = await hre.ethers.getSigners();
   const deployerAddress = await deployer.getAddress();
   const balance = await hre.ethers.provider.getBalance(deployerAddress);
   console.log(`👤 Deployer: ${deployerAddress}`);
-  console.log(`💰 Balance: ${hre.ethers.formatEther(balance)} ${network === 'polygon' || network === 'polygonAmoy' ? 'MATIC' : 'ETH'}`);
+  console.log(
+    `💰 Balance: ${hre.ethers.formatEther(balance)} ${
+      network === 'polygon' || network === 'polygonAmoy' ? 'MATIC' : 'ETH'
+    }`
+  );
 
   // Estimate deployment costs
   console.log('\n📊 Estimating deployment costs...');
   const gasPrice = await hre.ethers.provider.getFeeData();
-  console.log(`⛽ Gas Price: ${hre.ethers.formatUnits(gasPrice.gasPrice || gasPrice.maxFeePerGas || 0, 'gwei')} gwei`);
+  console.log(
+    `⛽ Gas Price: ${hre.ethers.formatUnits(
+      gasPrice.gasPrice || gasPrice.maxFeePerGas || 0,
+      'gwei'
+    )} gwei`
+  );
 
   // 1. Deploy ERC20 Token
   console.log('\n🏭 Deploying AetheronToken (ERC20)...');
@@ -96,8 +107,8 @@ async function main() {
     console.log(`npx hardhat verify --network ${network} ${tokenAddress} "${initialSupply}"`);
     console.log(`npx hardhat verify --network ${network} ${nftAddress}`);
 
-    // Auto-verify if on mainnet (optional)
-    if (mainnetChains.includes(chainId)) {
+    // Auto-verify if on mainnet or supported testnet
+    if (mainnetChains.includes(chainId) || testnetChains.includes(chainId)) {
       console.log('\n⏳ Auto-verifying contracts...');
       try {
         await hre.run('verify:verify', {

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+test-results/
+*.min.js
+frontend/dist/
+mobile/android/
+mobile/ios/

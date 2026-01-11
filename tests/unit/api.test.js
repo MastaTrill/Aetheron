@@ -5,7 +5,7 @@ import request from 'supertest';
 jest.mock('../../blockchain', () => ({
   Blockchain: jest.fn().mockImplementation(() => ({
     chain: [{ index: 0, timestamp: Date.now(), transactions: [], hash: 'genesis' }],
-    getBalance: jest.fn((address) => address === 'test-address' ? 100 : 0),
+    getBalance: jest.fn((address) => (address === 'test-address' ? 100 : 0)),
     addTransaction: jest.fn(),
     createBlock: jest.fn(() => ({ index: 1, hash: 'block-hash' }))
   })),
@@ -22,7 +22,7 @@ jest.mock('../../blockchain', () => ({
     publicKey: 'mock-public-key-' + Math.random().toString(36).substr(2, 9),
     privateKey: password ? 'encrypted-private-key' : 'plain-private-key',
     encrypted: !!password,
-    getDecryptedPrivateKey: jest.fn((pwd) => pwd === password ? 'decrypted-private-key' : null)
+    getDecryptedPrivateKey: jest.fn((pwd) => (pwd === password ? 'decrypted-private-key' : null))
   })),
   saveBlockchain: jest.fn(),
   loadBlockchain: jest.fn()
@@ -106,8 +106,16 @@ jest.mock('../../multichain', () => ({
     getBlockNumber: jest.fn(() => 12345678),
     getChainConfig: jest.fn((chain) => {
       const configs = {
-        ethereum: { rpcUrl: 'https://mainnet.infura.io', chainId: 1, nativeCurrency: { symbol: 'ETH' } },
-        polygon: { rpcUrl: 'https://polygon-rpc.com', chainId: 137, nativeCurrency: { symbol: 'MATIC' } }
+        ethereum: {
+          rpcUrl: 'https://mainnet.infura.io',
+          chainId: 1,
+          nativeCurrency: { symbol: 'ETH' }
+        },
+        polygon: {
+          rpcUrl: 'https://polygon-rpc.com',
+          chainId: 137,
+          nativeCurrency: { symbol: 'MATIC' }
+        }
       };
       if (!configs[chain]) throw new Error('Chain not found');
       return configs[chain];
@@ -140,9 +148,7 @@ describe('API Endpoints', () => {
 
   describe('GET /chain', () => {
     test('should return blockchain data', async () => {
-      const response = await request(app)
-        .get('/chain')
-        .expect(200);
+      const response = await request(app).get('/chain').expect(200);
 
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body[0]).toHaveProperty('index');
@@ -153,9 +159,7 @@ describe('API Endpoints', () => {
 
   describe('GET /balance/:address', () => {
     test('should return balance for address', async () => {
-      const response = await request(app)
-        .get('/balance/test-address')
-        .expect(200);
+      const response = await request(app).get('/balance/test-address').expect(200);
 
       expect(response.body).toHaveProperty('balance');
       expect(typeof response.body.balance).toBe('number');
@@ -179,10 +183,7 @@ describe('API Endpoints', () => {
         password: 'test-password'
       };
 
-      const response = await request(app)
-        .post('/transaction')
-        .send(txData)
-        .expect(200);
+      const response = await request(app).post('/transaction').send(txData).expect(200);
 
       expect(response.body).toHaveProperty('status', 'Transaction added');
     });
@@ -199,9 +200,7 @@ describe('API Endpoints', () => {
 
   describe('GET /stats', () => {
     test('should return platform statistics', async () => {
-      const response = await request(app)
-        .get('/stats')
-        .expect(200);
+      const response = await request(app).get('/stats').expect(200);
 
       expect(response.body).toHaveProperty('txCount');
       expect(response.body).toHaveProperty('blockCount');
@@ -217,9 +216,7 @@ describe('API Endpoints', () => {
   describe('Multi-Chain Endpoints', () => {
     describe('GET /multichain/chains', () => {
       test('should return list of supported chains', async () => {
-        const response = await request(app)
-          .get('/multichain/chains')
-          .expect(200);
+        const response = await request(app).get('/multichain/chains').expect(200);
 
         expect(Array.isArray(response.body)).toBe(true);
         expect(response.body.length).toBeGreaterThan(0);
@@ -228,18 +225,14 @@ describe('API Endpoints', () => {
 
     describe('GET /multichain/config/:chain', () => {
       test('should return config for valid chain', async () => {
-        const response = await request(app)
-          .get('/multichain/config/ethereum')
-          .expect(200);
+        const response = await request(app).get('/multichain/config/ethereum').expect(200);
 
         expect(response.body).toHaveProperty('rpcUrl');
         expect(response.body).toHaveProperty('chainId');
       });
 
       test('should return 404 for invalid chain', async () => {
-        const response = await request(app)
-          .get('/multichain/config/invalid-chain')
-          .expect(404);
+        const response = await request(app).get('/multichain/config/invalid-chain').expect(404);
 
         expect(response.body).toHaveProperty('error');
       });
@@ -258,9 +251,7 @@ describe('API Endpoints', () => {
     });
 
     test('should return 404 for unknown routes', async () => {
-      await request(app)
-        .get('/unknown-route')
-        .expect(404);
+      await request(app).get('/unknown-route').expect(404);
     });
   });
 });

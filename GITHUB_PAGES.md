@@ -14,6 +14,7 @@ Live demo: https://mastatrill.github.io/Aetheron/
 ## Setup Instructions
 
 1. **Enable GitHub Pages**:
+
    - Go to your repository settings on GitHub
    - Navigate to "Pages" section
    - Under "Source", select "Deploy from a branch"
@@ -21,6 +22,7 @@ Live demo: https://mastatrill.github.io/Aetheron/
    - Click "Save"
 
 2. **Wait for Deployment**:
+
    - GitHub will automatically build and deploy your site
    - This usually takes 1-3 minutes
    - You'll see a green checkmark when deployment is complete

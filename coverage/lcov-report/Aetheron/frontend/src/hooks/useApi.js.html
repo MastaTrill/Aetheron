@@ -318,6 +318,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -326,15 +327,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -342,9 +334,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -352,6 +343,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { createContext, useContext, useState, useCallback } from 'react';
 import axios from 'axios';
@@ -462,19 +462,22 @@ export const ApiProvider = <span class="cstat-no" title="statement not covered" 
     }
   }, [api]);
 &nbsp;
-  const getLogs = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >as</span>ync (limit = <span class="branch-0 cbranch-no" title="branch not covered" >100)</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
-<span class="cstat-no" title="statement not covered" >    setError(null);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const response = <span class="cstat-no" title="statement not covered" >await api.get(`/logs?limit=${limit}`);</span>
-<span class="cstat-no" title="statement not covered" >      return response.data;</span>
-    } catch (err) {
-<span class="cstat-no" title="statement not covered" >      setError(err.response?.data?.error || 'Failed to fetch logs');</span>
-<span class="cstat-no" title="statement not covered" >      throw err;</span>
-    } finally {
-<span class="cstat-no" title="statement not covered" >      setLoading(false);</span>
-    }
-  }, [api]);
+  const getLogs = <span class="cstat-no" title="statement not covered" >useCallback(</span>
+<span class="fstat-no" title="function not covered" >    as</span>ync (limit = <span class="branch-0 cbranch-no" title="branch not covered" >100)</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >      setLoading(true);</span>
+<span class="cstat-no" title="statement not covered" >      setError(null);</span>
+<span class="cstat-no" title="statement not covered" >      try {</span>
+        const response = <span class="cstat-no" title="statement not covered" >await api.get(`/logs?limit=${limit}`);</span>
+<span class="cstat-no" title="statement not covered" >        return response.data;</span>
+      } catch (err) {
+<span class="cstat-no" title="statement not covered" >        setError(err.response?.data?.error || 'Failed to fetch logs');</span>
+<span class="cstat-no" title="statement not covered" >        throw err;</span>
+      } finally {
+<span class="cstat-no" title="statement not covered" >        setLoading(false);</span>
+      }
+    },
+    [api]
+  );
 &nbsp;
   const getHealth = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
     const response = <span class="cstat-no" title="statement not covered" >await axios.get('/health');</span>
@@ -493,19 +496,16 @@ export const ApiProvider = <span class="cstat-no" title="statement not covered" 
     clearError: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setError(null)</span>
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
-    &lt;ApiContext.Provider value={value}&gt;
-      {children}
-    &lt;/ApiContext.Provider&gt;
-  );
-};</pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >  return &lt;ApiContext.Provider value={value}&gt;{children}&lt;/ApiContext.Provider&gt;;</span>
+};
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T03:39:16.281Z
+                at 2026-01-11T15:45:21.775Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

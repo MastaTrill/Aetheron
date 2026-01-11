@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Grid,
@@ -51,12 +52,12 @@ const Blockchain = () => {
 
     // Subscribe to real-time blockchain updates
     const handleBlockUpdate = (data) => {
-      setBlocks(prev => [data, ...prev.slice(0, 19)]);
-      setNetworkStats(prev => ({ ...prev, latestBlock: data.number }));
+      setBlocks((prev) => [data, ...prev.slice(0, 19)]);
+      setNetworkStats((prev) => ({ ...prev, latestBlock: data.number }));
     };
 
     const handleTransactionUpdate = (data) => {
-      setTransactions(prev => [data, ...prev.slice(0, 19)]);
+      setTransactions((prev) => [data, ...prev.slice(0, 19)]);
     };
 
     subscribe('newBlock', handleBlockUpdate);
@@ -104,24 +105,30 @@ const Blockchain = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-    case 'confirmed': return 'success';
-    case 'pending': return 'warning';
-    case 'failed': return 'error';
-    default: return 'default';
+    case 'confirmed':
+      return 'success';
+    case 'pending':
+      return 'warning';
+    case 'failed':
+      return 'error';
+    default:
+      return 'default';
     }
   };
 
   const StatCard = ({ title, value, subtitle, icon: Icon, color = '#00eaff' }) => (
-    <Card sx={{
-      background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-      border: '1px solid #2a2d3a',
-      borderRadius: 2,
-      '&:hover': {
-        borderColor: color,
-        boxShadow: `0 0 20px ${color}20`
-      },
-      transition: 'all 0.3s ease'
-    }}>
+    <Card
+      sx={{
+        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+        border: '1px solid #2a2d3a',
+        borderRadius: 2,
+        '&:hover': {
+          borderColor: color,
+          boxShadow: `0 0 20px ${color}20`
+        },
+        transition: 'all 0.3s ease'
+      }}
+    >
       <CardContent>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
           <Typography variant="h6" sx={{ color: '#b2ebf2', fontSize: '0.9rem' }}>
@@ -140,6 +147,14 @@ const Blockchain = () => {
       </CardContent>
     </Card>
   );
+
+  StatCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    subtitle: PropTypes.string,
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string
+  };
 
   if (loading) {
     return (
@@ -260,11 +275,14 @@ const Blockchain = () => {
       </Box>
 
       {/* Tabs */}
-      <Card sx={{
-        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-        border: '1px solid #2a2d3a',
-        borderRadius: 2
-      }}>
+      <Card
+        sx={{
+          background:
+            'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+          border: '1px solid #2a2d3a',
+          borderRadius: 2
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={(e, newValue) => setActiveTab(newValue)}
@@ -317,9 +335,7 @@ const Blockchain = () => {
                     <TableCell sx={{ color: '#b2ebf2', fontFamily: 'monospace' }}>
                       {formatAddress(block.hash)}
                     </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {block.transactions}
-                    </TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{block.transactions}</TableCell>
                     <TableCell sx={{ color: '#8892a0' }}>
                       {formatTimestamp(block.timestamp)}
                     </TableCell>
@@ -375,9 +391,7 @@ const Blockchain = () => {
                     <TableCell sx={{ color: '#ffffff', fontFamily: 'monospace' }}>
                       {formatAddress(tx.to)}
                     </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {tx.value} ETH
-                    </TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{tx.value} ETH</TableCell>
                     <TableCell>
                       <Chip
                         label={tx.status}

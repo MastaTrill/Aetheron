@@ -7,6 +7,7 @@
 Or with custom domain: `https://aetheron.AETX.com`
 
 ### Features:
+
 - ✅ **100GB bandwidth/month** (free tier)
 - ✅ **Free SSL certificate**
 - ✅ **Global CDN** (fast worldwide)
@@ -22,10 +23,12 @@ Or with custom domain: `https://aetheron.AETX.com`
 ### Step 1: Create Azure Account (Free)
 
 1. **Go to Azure Portal:**
+
    - Visit: https://portal.azure.com/
    - Click "Start Free" or "Sign In"
 
 2. **Sign up options:**
+
    - Use GitHub account (recommended)
    - Use Microsoft account
    - Use email
@@ -38,11 +41,13 @@ Or with custom domain: `https://aetheron.AETX.com`
 ### Step 2: Create Static Web App
 
 1. **In Azure Portal:**
+
    - Click "Create a resource"
    - Search for "Static Web App"
    - Click "Create"
 
 2. **Configure basics:**
+
    - **Subscription:** Your free subscription
    - **Resource Group:** Create new → Name it "aetheron-rg"
    - **Name:** `aetheron` (will become `aetheron.azurestaticapps.net`)
@@ -50,6 +55,7 @@ Or with custom domain: `https://aetheron.AETX.com`
    - **Plan type:** Free
 
 3. **Configure deployment:**
+
    - **Source:** GitHub
    - Click "Sign in with GitHub"
    - **Organization:** MastaTrill
@@ -57,6 +63,7 @@ Or with custom domain: `https://aetheron.AETX.com`
    - **Branch:** main
 
 4. **Build Details:**
+
    - **Build Presets:** Custom
    - **App location:** `/` (root)
    - **Api location:** (leave empty)
@@ -67,6 +74,7 @@ Or with custom domain: `https://aetheron.AETX.com`
 ### Step 3: Automatic Deployment
 
 Azure will automatically:
+
 1. Add a GitHub Action workflow to your repo
 2. Create deployment token (stored as GitHub secret)
 3. Deploy your site
@@ -77,6 +85,7 @@ Azure will automatically:
 ### Step 4: Get Your URL
 
 1. **In Azure Portal:**
+
    - Go to your Static Web App resource
    - Look for "URL" in the Overview page
    - Copy your URL
@@ -92,15 +101,18 @@ Azure will automatically:
 ### Add Your Own Domain:
 
 1. **In Azure Portal:**
+
    - Go to your Static Web App
    - Click "Custom domains" in the left menu
    - Click "Add"
 
 2. **Choose option:**
+
    - **Custom domain on other DNS:** Use any domain
    - **Custom domain on Azure DNS:** Use Azure-managed DNS
 
 3. **Add DNS records:**
+
    - Type: `CNAME`
    - Name: `aetheron` or `www`
    - Value: Your Azure URL
@@ -108,6 +120,7 @@ Azure will automatically:
 4. **Validate and add**
 
 **Free Azure DNS domains:**
+
 - You can use `aetheron.azurewebsites.net` for free
 
 ---
@@ -140,6 +153,7 @@ Azure will automatically:
 Azure automatically created: `.github/workflows/azure-static-web-apps.yml`
 
 This workflow:
+
 - ✅ Deploys on every push to `main`
 - ✅ Creates preview environments for PRs
 - ✅ Auto-closes preview when PR is closed
@@ -154,11 +168,13 @@ This workflow:
 ### Using Azure Extension:
 
 1. **Install Azure Static Web Apps extension:**
+
    - In VS Code
    - Search for "Azure Static Web Apps"
    - Click "Install"
 
 2. **Sign in to Azure:**
+
    - Click Azure icon in sidebar
    - Sign in with Azure account
 
@@ -175,6 +191,7 @@ This workflow:
 If you add backend API later:
 
 1. **In Azure Portal:**
+
    - Go to your Static Web App
    - Click "Configuration"
    - Add application settings:
@@ -192,6 +209,7 @@ If you add backend API later:
 ## 💰 Pricing
 
 ### Free Tier Includes:
+
 - ✅ 100 GB bandwidth/month
 - ✅ 2 custom domains
 - ✅ Free SSL certificates
@@ -199,6 +217,7 @@ If you add backend API later:
 - ✅ GitHub integration
 
 ### If You Exceed (unlikely):
+
 - Extra bandwidth: $0.20/GB
 - You'll get warnings before charges
 
@@ -209,6 +228,7 @@ If you add backend API later:
 ## 🔄 Update Your Site
 
 **Automatic deployment:**
+
 ```bash
 # Make changes to your HTML files
 git add .
@@ -219,6 +239,7 @@ git push origin main
 ```
 
 **View deployment status:**
+
 - GitHub Actions tab
 - Azure Portal → Deployment History
 
@@ -227,6 +248,7 @@ git push origin main
 ## 🌟 Staging Environments
 
 **Automatic PR previews:**
+
 1. Create a pull request
 2. Azure creates preview environment
 3. Get unique URL: `https://aetheron-[random]-[pr-number].azurestaticapps.net`
@@ -238,12 +260,15 @@ git push origin main
 ## 📚 Additional Resources
 
 **Azure Docs:**
+
 - https://docs.microsoft.com/azure/static-web-apps/
 
 **Pricing Details:**
+
 - https://azure.microsoft.com/pricing/details/app-service/static/
 
 **Support:**
+
 - Azure Portal → Support
 - GitHub Issues → Azure/static-web-apps
 
@@ -252,15 +277,18 @@ git push origin main
 ## 🚨 Troubleshooting
 
 ### Site not deploying?
+
 - Check GitHub Actions tab for errors
 - Verify `staticwebapp.config.json` is valid
 - Check Azure Portal → Deployment History
 
 ### 404 errors?
+
 - Verify file paths in `staticwebapp.config.json`
 - Check files are in root directory
 
 ### Custom domain not working?
+
 - Verify DNS records propagated (24-48 hours)
 - Check CNAME points to correct Azure URL
 

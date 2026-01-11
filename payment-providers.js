@@ -62,7 +62,7 @@ class PaymentProviderIntegration {
 
       const req = https.request(options, (res) => {
         let data = '';
-        res.on('data', chunk => data += chunk);
+        res.on('data', (chunk) => (data += chunk));
         res.on('end', () => {
           if (res.statusCode === 200) {
             resolve(JSON.parse(data));
@@ -148,7 +148,7 @@ class PaymentProviderIntegration {
         path: '/v1/payment_intents',
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.stripeSecretKey}`,
+          Authorization: `Bearer ${this.stripeSecretKey}`,
           'Content-Type': 'application/x-www-form-urlencoded',
           'Content-Length': data.toString().length
         }
@@ -156,7 +156,7 @@ class PaymentProviderIntegration {
 
       const req = https.request(options, (res) => {
         let responseData = '';
-        res.on('data', chunk => responseData += chunk);
+        res.on('data', (chunk) => (responseData += chunk));
         res.on('end', () => {
           if (res.statusCode === 200) {
             const paymentIntent = JSON.parse(responseData);
@@ -197,7 +197,7 @@ class PaymentProviderIntegration {
         path: `/v1/payment_intents/${paymentIntentId}/confirm`,
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.stripeSecretKey}`,
+          Authorization: `Bearer ${this.stripeSecretKey}`,
           'Content-Type': 'application/x-www-form-urlencoded',
           'Content-Length': data.toString().length
         }
@@ -205,7 +205,7 @@ class PaymentProviderIntegration {
 
       const req = https.request(options, (res) => {
         let responseData = '';
-        res.on('data', chunk => responseData += chunk);
+        res.on('data', (chunk) => (responseData += chunk));
         res.on('end', () => {
           if (res.statusCode === 200) {
             resolve(JSON.parse(responseData));

@@ -23,11 +23,7 @@ router.post('/register', async (req, res) => {
     // Check if user exists
     const existing = await User.findOne({
       where: {
-        $or: [
-          { address },
-          { email: email || null },
-          { username }
-        ]
+        $or: [{ address }, { email: email || null }, { username }]
       }
     });
 
@@ -124,10 +120,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Verify password
-    const validPassword = await authService.comparePassword(
-      password,
-      user.passwordHash
-    );
+    const validPassword = await authService.comparePassword(password, user.passwordHash);
 
     if (!validPassword) {
       return res.status(401).json({

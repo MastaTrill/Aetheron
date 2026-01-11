@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Grid,
@@ -30,7 +31,17 @@ import {
   Refresh as RefreshIcon,
   BarChart as ChartIcon
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar
+} from 'recharts';
 import { useApi } from '../hooks/useApi';
 import { useWebSocket } from '../hooks/useWebSocket';
 
@@ -68,15 +79,13 @@ const Defi = () => {
 
     // Subscribe to real-time DeFi updates
     const handlePoolUpdate = (data) => {
-      setPools(prev => prev.map(pool =>
-        pool.id === data.id ? { ...pool, ...data } : pool
-      ));
+      setPools((prev) => prev.map((pool) => (pool.id === data.id ? { ...pool, ...data } : pool)));
     };
 
     const handleYieldUpdate = (data) => {
-      setYields(prev => prev.map(yield_ =>
-        yield_.protocol === data.protocol ? { ...yield_, ...data } : yield_
-      ));
+      setYields((prev) =>
+        prev.map((yield_) => (yield_.protocol === data.protocol ? { ...yield_, ...data } : yield_))
+      );
     };
 
     subscribe('poolUpdate', handlePoolUpdate);
@@ -125,16 +134,18 @@ const Defi = () => {
   };
 
   const StatCard = ({ title, value, change, icon: Icon, color = '#00eaff' }) => (
-    <Card sx={{
-      background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-      border: '1px solid #2a2d3a',
-      borderRadius: 2,
-      '&:hover': {
-        borderColor: color,
-        boxShadow: `0 0 20px ${color}20`
-      },
-      transition: 'all 0.3s ease'
-    }}>
+    <Card
+      sx={{
+        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+        border: '1px solid #2a2d3a',
+        borderRadius: 2,
+        '&:hover': {
+          borderColor: color,
+          boxShadow: `0 0 20px ${color}20`
+        },
+        transition: 'all 0.3s ease'
+      }}
+    >
       <CardContent>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
           <Typography variant="h6" sx={{ color: '#b2ebf2', fontSize: '0.9rem' }}>
@@ -166,6 +177,14 @@ const Defi = () => {
       </CardContent>
     </Card>
   );
+
+  StatCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    change: PropTypes.number,
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string
+  };
 
   if (loading) {
     return (
@@ -250,11 +269,14 @@ const Defi = () => {
       {/* Charts */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={8}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 TVL Trend (6 Months)
@@ -286,11 +308,14 @@ const Defi = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 Top Yields by APY
@@ -317,11 +342,14 @@ const Defi = () => {
       </Grid>
 
       {/* Tabs for detailed data */}
-      <Card sx={{
-        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-        border: '1px solid #2a2d3a',
-        borderRadius: 2
-      }}>
+      <Card
+        sx={{
+          background:
+            'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+          border: '1px solid #2a2d3a',
+          borderRadius: 2
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={(e, newValue) => setActiveTab(newValue)}
@@ -373,15 +401,9 @@ const Defi = () => {
                         {pool.name}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: '#b2ebf2' }}>
-                      {pool.tokens.join(' / ')}
-                    </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {formatCurrency(pool.tvl)}
-                    </TableCell>
-                    <TableCell sx={{ color: '#4caf50', fontWeight: 600 }}>
-                      {pool.apy}%
-                    </TableCell>
+                    <TableCell sx={{ color: '#b2ebf2' }}>{pool.tokens.join(' / ')}</TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{formatCurrency(pool.tvl)}</TableCell>
+                    <TableCell sx={{ color: '#4caf50', fontWeight: 600 }}>{pool.apy}%</TableCell>
                     <TableCell sx={{ color: '#ffffff' }}>
                       {formatCurrency(pool.volume24h)}
                     </TableCell>
@@ -434,23 +456,20 @@ const Defi = () => {
                         {yield_.protocol}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: '#b2ebf2' }}>
-                      {yield_.asset}
-                    </TableCell>
-                    <TableCell sx={{ color: '#4caf50', fontWeight: 600 }}>
-                      {yield_.apy}%
-                    </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {formatCurrency(yield_.tvl)}
-                    </TableCell>
+                    <TableCell sx={{ color: '#b2ebf2' }}>{yield_.asset}</TableCell>
+                    <TableCell sx={{ color: '#4caf50', fontWeight: 600 }}>{yield_.apy}%</TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{formatCurrency(yield_.tvl)}</TableCell>
                     <TableCell>
                       <Chip
                         label={yield_.risk}
                         size="small"
                         sx={{
                           backgroundColor:
-                            yield_.risk === 'Low' ? '#4caf50' :
-                              yield_.risk === 'Medium' ? '#ff9800' : '#f44336',
+                            yield_.risk === 'Low'
+                              ? '#4caf50'
+                              : yield_.risk === 'Medium'
+                                ? '#ff9800'
+                                : '#f44336',
                           color: '#ffffff'
                         }}
                       />
@@ -510,12 +529,8 @@ const Defi = () => {
                         {protocol.name}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: '#b2ebf2' }}>
-                      {protocol.category}
-                    </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {formatCurrency(protocol.tvl)}
-                    </TableCell>
+                    <TableCell sx={{ color: '#b2ebf2' }}>{protocol.category}</TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{formatCurrency(protocol.tvl)}</TableCell>
                     <TableCell sx={{ color: '#ffffff' }}>
                       {protocol.users?.toLocaleString()}
                     </TableCell>

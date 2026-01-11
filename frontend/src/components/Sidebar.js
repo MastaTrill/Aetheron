@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Drawer,
   List,
@@ -145,6 +146,12 @@ const Sidebar = ({ open, currentPage, setCurrentPage }) => {
       </Box>
     </StyledDrawer>
   );
+};
+
+Sidebar.propTypes = {
+  open: PropTypes.bool.isRequired,
+  currentPage: PropTypes.string.isRequired,
+  setCurrentPage: PropTypes.func.isRequired
 };
 
 export default Sidebar;

@@ -1,4 +1,4 @@
 {
-    "circleci.filters.branchFilter": "allBranches",
-    "circleci.persistedProjectSelection": []
+  "circleci.filters.branchFilter": "allBranches",
+  "circleci.persistedProjectSelection": []
 }

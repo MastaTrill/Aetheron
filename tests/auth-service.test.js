@@ -48,7 +48,8 @@ describe('AuthService', () => {
     });
 
     it('should throw error for expired token', () => {
-      const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMyIsImlhdCI6MTYxNjE2MTYxNiwiZXhwIjoxNjE2MTYxNjE3fQ.invalid';
+      const expiredToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMyIsImlhdCI6MTYxNjE2MTYxNiwiZXhwIjoxNjE2MTYxNjE3fQ.invalid';
       expect(() => {
         authService.verifyToken(expiredToken);
       }).toThrow();

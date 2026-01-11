@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">23.72% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>30/120</span>
+                <span class='fraction'>28/118</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.25% </span>
+                <span class="strong">22.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>21/80</span>
+                <span class='fraction'>18/80</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25.21% </span>
+                <span class="strong">23.93% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>30/119</span>
+                <span class='fraction'>28/117</span>
             </div>
         
             
@@ -649,7 +649,14 @@
 <a name='L584'></a><a href='#L584'>584</a>
 <a name='L585'></a><a href='#L585'>585</a>
 <a name='L586'></a><a href='#L586'>586</a>
-<a name='L587'></a><a href='#L587'>587</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L587'></a><a href='#L587'>587</a>
+<a name='L588'></a><a href='#L588'>588</a>
+<a name='L589'></a><a href='#L589'>589</a>
+<a name='L590'></a><a href='#L590'>590</a>
+<a name='L591'></a><a href='#L591'>591</a>
+<a name='L592'></a><a href='#L592'>592</a>
+<a name='L593'></a><a href='#L593'>593</a>
+<a name='L594'></a><a href='#L594'>594</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -657,12 +664,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -713,6 +720,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1234,18 +1248,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const crypto = require('crypto');
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import crypto from 'crypto';
 &nbsp;
 /**
  * Fiat On-Ramp Integration
  * Supports MoonPay, Stripe, Ramp Network for crypto purchases with fiat
  */
 class FiatOnRamp {
-  constructor(config = {}) {
-    this.moonpayApiKey = config.moonpayApiKey || process.env.MOONPAY_API_KEY;
+  constructor(config = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span> {
+    this.moonpayApiKey = config.moonpayApiKey || <span class="branch-1 cbranch-no" title="branch not covered" >process.env.MOONPAY_API_KEY;</span>
     this.moonpaySecretKey = config.moonpaySecretKey || process.env.MOONPAY_SECRET_KEY;
-    this.stripeApiKey = config.stripeApiKey || process.env.STRIPE_API_KEY;
+    this.stripeApiKey = config.stripeApiKey || <span class="branch-1 cbranch-no" title="branch not covered" >process.env.STRIPE_API_KEY;</span>
     this.rampApiKey = config.rampApiKey || process.env.RAMP_API_KEY;
     this.transactions = new Map();
     this.limits = {
@@ -1293,9 +1307,9 @@ class FiatOnRamp {
   async getExchangeRate(fiatCurrency, cryptoCurrency) {
     // Mock exchange rates
     const rates = {
-      'ETH': { USD: 2000, EUR: 1800, GBP: 1600 },
-      'BTC': { USD: 40000, EUR: 36000, GBP: 32000 },
-      'USDC': { USD: 1, EUR: 0.9, GBP: 0.8 }
+      ETH: { USD: 2000, EUR: 1800, GBP: 1600 },
+      BTC: { USD: 40000, EUR: 36000, GBP: 32000 },
+      USDC: { USD: 1, EUR: 0.9, GBP: 0.8 }
     };
 &nbsp;
     return rates[cryptoCurrency]?.[fiatCurrency] || <span class="branch-1 cbranch-no" title="branch not covered" >1;</span>
@@ -1304,7 +1318,14 @@ class FiatOnRamp {
   /**
    * Buy crypto with fiat
    */
-  async buyCrypto(provider, fiatAmount, fiatCurrency, cryptoCurrency, paymentMethod, walletAddress) {
+  async buyCrypto(
+    provider,
+    fiatAmount,
+    fiatCurrency,
+    cryptoCurrency,
+    paymentMethod,
+    walletAddress
+  ) {
     // Validate wallet address
     if (!walletAddress || !walletAddress.startsWith('0x') || walletAddress.length !== 42) {
       return {
@@ -1820,7 +1841,7 @@ class FiatOnRamp {
   }
 }
 &nbsp;
-module.exports = FiatOnRamp;
+export default FiatOnRamp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1828,7 +1849,7 @@ module.exports = FiatOnRamp;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T03:39:16.281Z
+                at 2026-01-11T15:45:21.775Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Grid,
@@ -54,11 +55,11 @@ const Security = () => {
 
     // Subscribe to real-time security updates
     const handleAlertUpdate = (data) => {
-      setAlerts(prev => [data, ...prev.slice(0, 19)]);
+      setAlerts((prev) => [data, ...prev.slice(0, 19)]);
     };
 
     const handleThreatUpdate = (data) => {
-      setThreats(prev => [data, ...prev.slice(0, 19)]);
+      setThreats((prev) => [data, ...prev.slice(0, 19)]);
     };
 
     subscribe('security-alert', handleAlertUpdate);
@@ -99,36 +100,49 @@ const Security = () => {
 
   const getSeverityColor = (severity) => {
     switch (severity.toLowerCase()) {
-    case 'critical': return '#f44336';
-    case 'high': return '#ff9800';
-    case 'medium': return '#ff9800';
-    case 'low': return '#4caf50';
-    default: return '#9e9e9e';
+    case 'critical':
+      return '#f44336';
+    case 'high':
+      return '#ff9800';
+    case 'medium':
+      return '#ff9800';
+    case 'low':
+      return '#4caf50';
+    default:
+      return '#9e9e9e';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-    case 'active': return '#f44336';
-    case 'resolved': return '#4caf50';
-    case 'investigating': return '#ff9800';
-    case 'passed': return '#4caf50';
-    case 'failed': return '#f44336';
-    default: return '#9e9e9e';
+    case 'active':
+      return '#f44336';
+    case 'resolved':
+      return '#4caf50';
+    case 'investigating':
+      return '#ff9800';
+    case 'passed':
+      return '#4caf50';
+    case 'failed':
+      return '#f44336';
+    default:
+      return '#9e9e9e';
     }
   };
 
   const StatCard = ({ title, value, subtitle, icon: Icon, color = '#00eaff' }) => (
-    <Card sx={{
-      background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-      border: '1px solid #2a2d3a',
-      borderRadius: 2,
-      '&:hover': {
-        borderColor: color,
-        boxShadow: `0 0 20px ${color}20`
-      },
-      transition: 'all 0.3s ease'
-    }}>
+    <Card
+      sx={{
+        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+        border: '1px solid #2a2d3a',
+        borderRadius: 2,
+        '&:hover': {
+          borderColor: color,
+          boxShadow: `0 0 20px ${color}20`
+        },
+        transition: 'all 0.3s ease'
+      }}
+    >
       <CardContent>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
           <Typography variant="h6" sx={{ color: '#b2ebf2', fontSize: '0.9rem' }}>
@@ -147,6 +161,14 @@ const Security = () => {
       </CardContent>
     </Card>
   );
+
+  StatCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    subtitle: PropTypes.string,
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string
+  };
 
   if (loading) {
     return (
@@ -231,51 +253,90 @@ const Security = () => {
       {/* Security Overview */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={6}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 System Health
               </Typography>
               <Box sx={{ mb: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     Firewall Status
                   </Typography>
-                  <Chip label="Active" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="Active"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={100} sx={{ mb: 2 }} />
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     Encryption
                   </Typography>
-                  <Chip label="AES-256" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="AES-256"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={100} sx={{ mb: 2 }} />
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     Multi-Sig Wallets
                   </Typography>
-                  <Chip label="Enabled" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="Enabled"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={100} sx={{ mb: 2 }} />
               </Box>
 
               <Box>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     DDoS Protection
                   </Typography>
-                  <Chip label="Active" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="Active"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={95} />
               </Box>
@@ -284,11 +345,14 @@ const Security = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 Recent Security Events
@@ -298,11 +362,13 @@ const Security = () => {
                   <React.Fragment key={index}>
                     <ListItem>
                       <ListItemAvatar>
-                        <Avatar sx={{
-                          bgcolor: getSeverityColor(alert.severity),
-                          width: 32,
-                          height: 32
-                        }}>
+                        <Avatar
+                          sx={{
+                            bgcolor: getSeverityColor(alert.severity),
+                            width: 32,
+                            height: 32
+                          }}
+                        >
                           {alert.type === 'intrusion' && <WarningIcon sx={{ fontSize: 16 }} />}
                           {alert.type === 'suspicious' && <BugIcon sx={{ fontSize: 16 }} />}
                           {alert.type === 'audit' && <AuditIcon sx={{ fontSize: 16 }} />}
@@ -329,7 +395,9 @@ const Security = () => {
                         }}
                       />
                     </ListItem>
-                    {index < alerts.slice(0, 5).length - 1 && <Divider sx={{ borderColor: '#2a2d3a' }} />}
+                    {index < alerts.slice(0, 5).length - 1 && (
+                      <Divider sx={{ borderColor: '#2a2d3a' }} />
+                    )}
                   </React.Fragment>
                 ))}
               </List>
@@ -339,11 +407,14 @@ const Security = () => {
       </Grid>
 
       {/* Detailed Security Tabs */}
-      <Card sx={{
-        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-        border: '1px solid #2a2d3a',
-        borderRadius: 2
-      }}>
+      <Card
+        sx={{
+          background:
+            'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+          border: '1px solid #2a2d3a',
+          borderRadius: 2
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={(e, newValue) => setActiveTab(newValue)}
@@ -394,15 +465,19 @@ const Security = () => {
                     </TableCell>
                     <TableCell sx={{ color: '#b2ebf2' }}>
                       <Box display="flex" alignItems="center">
-                        {alert.type === 'intrusion' && <WarningIcon sx={{ color: '#f44336', mr: 1, fontSize: 18 }} />}
-                        {alert.type === 'suspicious' && <BugIcon sx={{ color: '#ff9800', mr: 1, fontSize: 18 }} />}
-                        {alert.type === 'audit' && <AuditIcon sx={{ color: '#4caf50', mr: 1, fontSize: 18 }} />}
+                        {alert.type === 'intrusion' && (
+                          <WarningIcon sx={{ color: '#f44336', mr: 1, fontSize: 18 }} />
+                        )}
+                        {alert.type === 'suspicious' && (
+                          <BugIcon sx={{ color: '#ff9800', mr: 1, fontSize: 18 }} />
+                        )}
+                        {alert.type === 'audit' && (
+                          <AuditIcon sx={{ color: '#4caf50', mr: 1, fontSize: 18 }} />
+                        )}
                         {alert.type}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {alert.description}
-                    </TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{alert.description}</TableCell>
                     <TableCell sx={{ color: '#b2ebf2', fontFamily: 'monospace' }}>
                       {alert.sourceIP || 'N/A'}
                     </TableCell>
@@ -460,12 +535,8 @@ const Security = () => {
                     <TableCell sx={{ color: '#b2ebf2', fontFamily: 'monospace' }}>
                       {threat.id}
                     </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {threat.type}
-                    </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {threat.description}
-                    </TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{threat.type}</TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{threat.description}</TableCell>
                     <TableCell>
                       <Chip
                         label={threat.riskLevel}
@@ -529,15 +600,9 @@ const Security = () => {
                     <TableCell sx={{ color: '#ffffff' }}>
                       {new Date(audit.timestamp).toLocaleString()}
                     </TableCell>
-                    <TableCell sx={{ color: '#b2ebf2' }}>
-                      {audit.user}
-                    </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {audit.action}
-                    </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {audit.resource}
-                    </TableCell>
+                    <TableCell sx={{ color: '#b2ebf2' }}>{audit.user}</TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{audit.action}</TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{audit.resource}</TableCell>
                     <TableCell>
                       <Chip
                         label={audit.result}

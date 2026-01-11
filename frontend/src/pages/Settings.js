@@ -101,7 +101,7 @@ const Settings = () => {
   };
 
   const handleSettingChange = (category, field, value) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [category]: {
         ...prev[category],
@@ -165,11 +165,14 @@ const Settings = () => {
         </Alert>
       )}
 
-      <Card sx={{
-        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-        border: '1px solid #2a2d3a',
-        borderRadius: 2
-      }}>
+      <Card
+        sx={{
+          background:
+            'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+          border: '1px solid #2a2d3a',
+          borderRadius: 2
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={(e, newValue) => setActiveTab(newValue)}
@@ -299,12 +302,18 @@ const Settings = () => {
               <ListItem>
                 <ListItemText
                   primary={<Typography sx={{ color: '#ffffff' }}>Email Alerts</Typography>}
-                  secondary={<Typography sx={{ color: '#8892a0' }}>Receive important alerts via email</Typography>}
+                  secondary={
+                    <Typography sx={{ color: '#8892a0' }}>
+                      Receive important alerts via email
+                    </Typography>
+                  }
                 />
                 <ListItemSecondaryAction>
                   <Switch
                     checked={settings.notifications.emailAlerts}
-                    onChange={(e) => handleSettingChange('notifications', 'emailAlerts', e.target.checked)}
+                    onChange={(e) =>
+                      handleSettingChange('notifications', 'emailAlerts', e.target.checked)
+                    }
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
                         color: '#00eaff',
@@ -324,12 +333,18 @@ const Settings = () => {
               <ListItem>
                 <ListItemText
                   primary={<Typography sx={{ color: '#ffffff' }}>Push Notifications</Typography>}
-                  secondary={<Typography sx={{ color: '#8892a0' }}>Browser push notifications for real-time updates</Typography>}
+                  secondary={
+                    <Typography sx={{ color: '#8892a0' }}>
+                      Browser push notifications for real-time updates
+                    </Typography>
+                  }
                 />
                 <ListItemSecondaryAction>
                   <Switch
                     checked={settings.notifications.pushNotifications}
-                    onChange={(e) => handleSettingChange('notifications', 'pushNotifications', e.target.checked)}
+                    onChange={(e) =>
+                      handleSettingChange('notifications', 'pushNotifications', e.target.checked)
+                    }
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
                         color: '#00eaff',
@@ -349,12 +364,18 @@ const Settings = () => {
               <ListItem>
                 <ListItemText
                   primary={<Typography sx={{ color: '#ffffff' }}>Security Alerts</Typography>}
-                  secondary={<Typography sx={{ color: '#8892a0' }}>Alerts for security-related events</Typography>}
+                  secondary={
+                    <Typography sx={{ color: '#8892a0' }}>
+                      Alerts for security-related events
+                    </Typography>
+                  }
                 />
                 <ListItemSecondaryAction>
                   <Switch
                     checked={settings.notifications.securityAlerts}
-                    onChange={(e) => handleSettingChange('notifications', 'securityAlerts', e.target.checked)}
+                    onChange={(e) =>
+                      handleSettingChange('notifications', 'securityAlerts', e.target.checked)
+                    }
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
                         color: '#00eaff',
@@ -374,12 +395,18 @@ const Settings = () => {
               <ListItem>
                 <ListItemText
                   primary={<Typography sx={{ color: '#ffffff' }}>Transaction Alerts</Typography>}
-                  secondary={<Typography sx={{ color: '#8892a0' }}>Notifications for transaction activities</Typography>}
+                  secondary={
+                    <Typography sx={{ color: '#8892a0' }}>
+                      Notifications for transaction activities
+                    </Typography>
+                  }
                 />
                 <ListItemSecondaryAction>
                   <Switch
                     checked={settings.notifications.transactionAlerts}
-                    onChange={(e) => handleSettingChange('notifications', 'transactionAlerts', e.target.checked)}
+                    onChange={(e) =>
+                      handleSettingChange('notifications', 'transactionAlerts', e.target.checked)
+                    }
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
                         color: '#00eaff',
@@ -399,12 +426,18 @@ const Settings = () => {
               <ListItem>
                 <ListItemText
                   primary={<Typography sx={{ color: '#ffffff' }}>Marketing Emails</Typography>}
-                  secondary={<Typography sx={{ color: '#8892a0' }}>Receive updates about new features and promotions</Typography>}
+                  secondary={
+                    <Typography sx={{ color: '#8892a0' }}>
+                      Receive updates about new features and promotions
+                    </Typography>
+                  }
                 />
                 <ListItemSecondaryAction>
                   <Switch
                     checked={settings.notifications.marketingEmails}
-                    onChange={(e) => handleSettingChange('notifications', 'marketingEmails', e.target.checked)}
+                    onChange={(e) =>
+                      handleSettingChange('notifications', 'marketingEmails', e.target.checked)
+                    }
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
                         color: '#00eaff',
@@ -435,7 +468,9 @@ const Settings = () => {
                   control={
                     <Switch
                       checked={settings.security.twoFactorAuth}
-                      onChange={(e) => handleSettingChange('security', 'twoFactorAuth', e.target.checked)}
+                      onChange={(e) =>
+                        handleSettingChange('security', 'twoFactorAuth', e.target.checked)
+                      }
                       sx={{
                         '& .MuiSwitch-switchBase.Mui-checked': {
                           color: '#00eaff',
@@ -449,7 +484,9 @@ const Settings = () => {
                       }}
                     />
                   }
-                  label={<Typography sx={{ color: '#ffffff' }}>Two-Factor Authentication</Typography>}
+                  label={
+                    <Typography sx={{ color: '#ffffff' }}>Two-Factor Authentication</Typography>
+                  }
                   sx={{ mb: 2 }}
                 />
 
@@ -457,7 +494,9 @@ const Settings = () => {
                   control={
                     <Switch
                       checked={settings.security.loginNotifications}
-                      onChange={(e) => handleSettingChange('security', 'loginNotifications', e.target.checked)}
+                      onChange={(e) =>
+                        handleSettingChange('security', 'loginNotifications', e.target.checked)
+                      }
                       sx={{
                         '& .MuiSwitch-switchBase.Mui-checked': {
                           color: '#00eaff',
@@ -481,7 +520,9 @@ const Settings = () => {
                   <Select
                     value={settings.security.sessionTimeout}
                     label="Session Timeout (minutes)"
-                    onChange={(e) => handleSettingChange('security', 'sessionTimeout', e.target.value)}
+                    onChange={(e) =>
+                      handleSettingChange('security', 'sessionTimeout', e.target.value)
+                    }
                     sx={{
                       color: '#ffffff',
                       '& .MuiOutlinedInput-notchedOutline': {
@@ -510,7 +551,9 @@ const Settings = () => {
                   <Select
                     value={settings.security.passwordExpiry}
                     label="Password Expiry (days)"
-                    onChange={(e) => handleSettingChange('security', 'passwordExpiry', e.target.value)}
+                    onChange={(e) =>
+                      handleSettingChange('security', 'passwordExpiry', e.target.value)
+                    }
                     sx={{
                       color: '#ffffff',
                       '& .MuiOutlinedInput-notchedOutline': {
@@ -655,7 +698,9 @@ const Settings = () => {
                   <Select
                     value={settings.appearance.dateFormat}
                     label="Date Format"
-                    onChange={(e) => handleSettingChange('appearance', 'dateFormat', e.target.value)}
+                    onChange={(e) =>
+                      handleSettingChange('appearance', 'dateFormat', e.target.value)
+                    }
                     sx={{
                       color: '#ffffff',
                       '& .MuiOutlinedInput-notchedOutline': {
@@ -694,19 +739,15 @@ const Settings = () => {
           }
         }}
       >
-        <DialogTitle sx={{ color: '#ffffff' }}>
-          Confirm Save
-        </DialogTitle>
+        <DialogTitle sx={{ color: '#ffffff' }}>Confirm Save</DialogTitle>
         <DialogContent>
           <Typography sx={{ color: '#b2ebf2' }}>
-            Are you sure you want to save these changes? Some settings may require you to refresh the page.
+            Are you sure you want to save these changes? Some settings may require you to refresh
+            the page.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => setSaveDialog(false)}
-            sx={{ color: '#8892a0' }}
-          >
+          <Button onClick={() => setSaveDialog(false)} sx={{ color: '#8892a0' }}>
             Cancel
           </Button>
           <Button

@@ -107,19 +107,22 @@ export const ApiProvider = ({ children }) => {
     }
   }, [api]);
 
-  const getLogs = useCallback(async (limit = 100) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.get(`/logs?limit=${limit}`);
-      return response.data;
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch logs');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [api]);
+  const getLogs = useCallback(
+    async (limit = 100) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await api.get(`/logs?limit=${limit}`);
+        return response.data;
+      } catch (err) {
+        setError(err.response?.data?.error || 'Failed to fetch logs');
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [api]
+  );
 
   const getHealth = useCallback(async () => {
     const response = await axios.get('/health');
@@ -138,9 +141,5 @@ export const ApiProvider = ({ children }) => {
     clearError: () => setError(null)
   };
 
-  return (
-    <ApiContext.Provider value={value}>
-      {children}
-    </ApiContext.Provider>
-  );
+  return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
 };

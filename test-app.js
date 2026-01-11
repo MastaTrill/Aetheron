@@ -1,7 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './auth/routes.js';
 import { basicAuth, jwtAuth, optionalAuth } from './auth/middleware.js';
+
+// ES Module __dirname workaround
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import new feature modules
 import { AccountAbstraction } from './account-abstraction.js';
@@ -49,6 +55,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Serve static files (CSS, JS, etc.)
+app.use(express.static(__dirname));
+
 // Rate limiting (simplified for tests)
 const rateLimiter = (req, res, next) => {
   next();
@@ -72,8 +81,8 @@ app.get('/api/health', (req, res) => {
 
 // Routes
 app.get('/', (req, res) => {
-  // Mock HTML response for tests
-  res.type('html').send('<html><body><h1>Aetheron Dashboard</h1></body></html>');
+  // Serve the actual admin dashboard HTML for E2E tests
+  res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
 });
 
 // Admin endpoints (protected with Basic Auth for legacy compatibility)
@@ -184,7 +193,10 @@ app.post('/api/aa/create-account', jwtAuth, async (req, res) => {
 
 app.post('/api/aa/create-session', jwtAuth, async (req, res) => {
   try {
-    const result = await accountAbstraction.createSessionKey(req.body.accountAddress, req.body.permissions);
+    const result = await accountAbstraction.createSessionKey(
+      req.body.accountAddress,
+      req.body.permissions
+    );
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -193,7 +205,10 @@ app.post('/api/aa/create-session', jwtAuth, async (req, res) => {
 
 app.post('/api/aa/execute', jwtAuth, async (req, res) => {
   try {
-    const result = await accountAbstraction.executeWithSessionKey(req.body.sessionKey, req.body.transaction);
+    const result = await accountAbstraction.executeWithSessionKey(
+      req.body.sessionKey,
+      req.body.transaction
+    );
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });

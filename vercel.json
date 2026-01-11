@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "aetheron",
   "builds": [
     {
       "src": "*.html",
@@ -15,30 +14,26 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/admin",
-      "dest": "/admin-dashboard.html"
+      "source": "/admin",
+      "destination": "/admin-dashboard.html"
     },
     {
-      "src": "/analytics",
-      "dest": "/analytics-dashboard.html"
+      "source": "/analytics",
+      "destination": "/analytics-dashboard.html"
     },
     {
-      "src": "/explorer",
-      "dest": "/explorer.html"
+      "source": "/explorer",
+      "destination": "/explorer.html"
     },
     {
-      "src": "/demo",
-      "dest": "/DEMO.html"
+      "source": "/demo",
+      "destination": "/DEMO.html"
     },
     {
-      "src": "/wallet",
-      "dest": "/browser-extension/popup.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/wallet",
+      "destination": "/browser-extension/popup.html"
     }
   ],
   "headers": [

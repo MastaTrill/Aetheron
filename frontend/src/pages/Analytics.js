@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Grid,
@@ -94,7 +95,7 @@ const Analytics = () => {
 
     // Subscribe to real-time analytics updates
     const handleMetricsUpdate = (data) => {
-      setAnalyticsData(prev => ({ ...prev, ...data }));
+      setAnalyticsData((prev) => ({ ...prev, ...data }));
     };
 
     subscribe('analytics-metrics', handleMetricsUpdate);
@@ -140,16 +141,18 @@ const Analytics = () => {
   };
 
   const StatCard = ({ title, value, change, icon: Icon, color = '#00eaff' }) => (
-    <Card sx={{
-      background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-      border: '1px solid #2a2d3a',
-      borderRadius: 2,
-      '&:hover': {
-        borderColor: color,
-        boxShadow: `0 0 20px ${color}20`
-      },
-      transition: 'all 0.3s ease'
-    }}>
+    <Card
+      sx={{
+        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+        border: '1px solid #2a2d3a',
+        borderRadius: 2,
+        '&:hover': {
+          borderColor: color,
+          boxShadow: `0 0 20px ${color}20`
+        },
+        transition: 'all 0.3s ease'
+      }}
+    >
       <CardContent>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
           <Typography variant="h6" sx={{ color: '#b2ebf2', fontSize: '0.9rem' }}>
@@ -165,7 +168,9 @@ const Analytics = () => {
             {change > 0 ? (
               <TrendingUpIcon sx={{ color: '#4caf50', fontSize: 16, mr: 0.5 }} />
             ) : (
-              <TrendingUpIcon sx={{ color: '#f44336', fontSize: 16, mr: 0.5, transform: 'rotate(180deg)' }} />
+              <TrendingUpIcon
+                sx={{ color: '#f44336', fontSize: 16, mr: 0.5, transform: 'rotate(180deg)' }}
+              />
             )}
             <Typography
               variant="body2"
@@ -181,6 +186,14 @@ const Analytics = () => {
       </CardContent>
     </Card>
   );
+
+  StatCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    change: PropTypes.number,
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string
+  };
 
   if (loading) {
     return (
@@ -305,11 +318,14 @@ const Analytics = () => {
       {/* Charts */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={8}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 User Growth & Activity
@@ -349,11 +365,14 @@ const Analytics = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 Device Usage
@@ -409,11 +428,14 @@ const Analytics = () => {
       </Grid>
 
       {/* Detailed Analytics Tabs */}
-      <Card sx={{
-        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-        border: '1px solid #2a2d3a',
-        borderRadius: 2
-      }}>
+      <Card
+        sx={{
+          background:
+            'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+          border: '1px solid #2a2d3a',
+          borderRadius: 2
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={(e, newValue) => setActiveTab(newValue)}
@@ -487,9 +509,7 @@ const Analytics = () => {
                     <TableCell sx={{ color: '#ffffff', fontFamily: 'monospace' }}>
                       {page.page}
                     </TableCell>
-                    <TableCell sx={{ color: '#ffffff' }}>
-                      {page.views.toLocaleString()}
-                    </TableCell>
+                    <TableCell sx={{ color: '#ffffff' }}>{page.views.toLocaleString()}</TableCell>
                     <TableCell sx={{ color: '#b2ebf2' }}>
                       {Math.floor(page.views * 0.7).toLocaleString()}
                     </TableCell>
@@ -498,7 +518,8 @@ const Analytics = () => {
                         label={`${page.bounce}%`}
                         size="small"
                         sx={{
-                          backgroundColor: page.bounce < 30 ? '#4caf50' : page.bounce < 40 ? '#ff9800' : '#f44336',
+                          backgroundColor:
+                            page.bounce < 30 ? '#4caf50' : page.bounce < 40 ? '#ff9800' : '#f44336',
                           color: '#ffffff'
                         }}
                       />
@@ -522,7 +543,12 @@ const Analytics = () => {
                   System Performance
                 </Typography>
                 <Box sx={{ mb: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
                     <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                       API Response Time
                     </Typography>
@@ -534,7 +560,12 @@ const Analytics = () => {
                 </Box>
 
                 <Box sx={{ mb: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
                     <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                       Database Query Time
                     </Typography>
@@ -546,7 +577,12 @@ const Analytics = () => {
                 </Box>
 
                 <Box>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
                     <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                       WebSocket Latency
                     </Typography>
@@ -563,7 +599,12 @@ const Analytics = () => {
                   Error Rates
                 </Typography>
                 <Box sx={{ mb: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
                     <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                       API Errors (24h)
                     </Typography>
@@ -575,7 +616,12 @@ const Analytics = () => {
                 </Box>
 
                 <Box sx={{ mb: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
                     <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                       Failed Transactions
                     </Typography>
@@ -587,7 +633,12 @@ const Analytics = () => {
                 </Box>
 
                 <Box>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ mb: 1 }}
+                  >
                     <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                       Connection Drops
                     </Typography>

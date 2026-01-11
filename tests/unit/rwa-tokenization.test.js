@@ -138,7 +138,11 @@ describe('RWA Tokenization', () => {
         '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7'
       );
 
-      const result = await rwa.updateValuation(asset.tokenId, 1100000, '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7');
+      const result = await rwa.updateValuation(
+        asset.tokenId,
+        1100000,
+        '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7'
+      );
 
       expect(result.success).toBe(true);
       expect(result.newValuation).toBe(1100000);
@@ -156,7 +160,11 @@ describe('RWA Tokenization', () => {
         '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7'
       );
 
-      const result = await rwa.verifyKYC(asset.tokenId, '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7', true);
+      const result = await rwa.verifyKYC(
+        asset.tokenId,
+        '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7',
+        true
+      );
 
       expect(result.success).toBe(true);
     });

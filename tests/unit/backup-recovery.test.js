@@ -108,10 +108,12 @@ describe('Backup Manager', () => {
     test('should handle large backup data', async () => {
       const largeData = {
         blockchain: {
-          chain: Array(1000).fill().map((_, i) => ({
-            index: i,
-            transactions: [{ hash: `tx${i}`, amount: 100 }]
-          }))
+          chain: Array(1000)
+            .fill()
+            .map((_, i) => ({
+              index: i,
+              transactions: [{ hash: `tx${i}`, amount: 100 }]
+            }))
         }
       };
 
@@ -136,13 +138,13 @@ describe('Backup Manager', () => {
       const backup = await backupManager.createBackup(testData);
 
       const backups = backupManager.listBackups();
-      const retrieved = backups.find(b => b.id === backup.id);
+      const retrieved = backups.find((b) => b.id === backup.id);
       expect(retrieved).toEqual(backup);
     });
 
     test('should return null for non-existent backup', () => {
       const backups = backupManager.listBackups();
-      const retrieved = backups.find(b => b.id === 'non-existent-id');
+      const retrieved = backups.find((b) => b.id === 'non-existent-id');
       expect(retrieved).toBeUndefined();
     });
   });
@@ -151,7 +153,7 @@ describe('Backup Manager', () => {
     test('should restore backup data', async () => {
       const originalData = {
         blockchain: { chain: [{ index: 0, hash: 'genesis' }] },
-        wallets: { 'addr1': { balance: 100 } }
+        wallets: { addr1: { balance: 100 } }
       };
 
       const backup = await backupManager.createBackup(originalData);
@@ -184,7 +186,7 @@ describe('Backup Manager', () => {
       // Create backup with old timestamp
       const oldBackup = {
         id: 'old-backup',
-        timestamp: Date.now() - (8 * 24 * 60 * 60 * 1000), // 8 days ago
+        timestamp: Date.now() - 8 * 24 * 60 * 60 * 1000, // 8 days ago
         type: 'full'
       };
 
@@ -208,7 +210,10 @@ describe('Backup Manager', () => {
       const fullBackup = await backupManager.createBackup(fullData);
 
       const incrementalData = { transactions: [{ hash: 'tx1' }] };
-      const incrementalBackup = await backupManager.createIncrementalBackup(incrementalData, fullBackup.id);
+      const incrementalBackup = await backupManager.createIncrementalBackup(
+        incrementalData,
+        fullBackup.id
+      );
 
       expect(incrementalBackup.type).toBe('incremental');
       expect(incrementalBackup).toHaveProperty('baseBackupId', fullBackup.id);

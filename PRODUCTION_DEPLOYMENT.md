@@ -5,6 +5,7 @@
 Before deploying to production, ensure you have:
 
 1. **API Keys Configured**:
+
    - MoonPay API key and secret
    - Stripe publishable and secret keys
    - Transak API key and secret
@@ -15,6 +16,7 @@ Before deploying to production, ensure you have:
    - Redis connection URL
 
 2. **Environment Setup**:
+
    - Copy `.env.example` to `.env`
    - Fill in all required API keys and secrets
    - Never commit `.env` to version control
@@ -29,21 +31,25 @@ Before deploying to production, ensure you have:
 ### Option 1: Railway.app (Recommended for Quick Deploy)
 
 1. **Install Railway CLI**:
+
    ```bash
    npm install -g @railway/cli
    ```
 
 2. **Login to Railway**:
+
    ```bash
    railway login
    ```
 
 3. **Initialize Project**:
+
    ```bash
    railway init
    ```
 
 4. **Set Environment Variables**:
+
    ```bash
    railway variables set NODE_ENV=production
    railway variables set PORT=3001
@@ -54,6 +60,7 @@ Before deploying to production, ensure you have:
    ```
 
 5. **Deploy**:
+
    ```bash
    railway up
    ```
@@ -66,23 +73,27 @@ Before deploying to production, ensure you have:
 ### Option 2: Docker Compose (Self-Hosted)
 
 1. **Ensure Docker and Docker Compose are installed**:
+
    ```bash
    docker --version
    docker-compose --version
    ```
 
 2. **Configure environment**:
+
    ```bash
    cp .env.example .env
    # Edit .env with your production values
    ```
 
 3. **Build and start services**:
+
    ```bash
    docker-compose -f docker-compose.prod.yml up -d --build
    ```
 
 4. **Check status**:
+
    ```bash
    docker-compose -f docker-compose.prod.yml ps
    docker-compose -f docker-compose.prod.yml logs -f app
@@ -95,34 +106,40 @@ Before deploying to production, ensure you have:
 ### Option 3: Manual Deployment (VPS/Cloud)
 
 1. **SSH into your server**:
+
    ```bash
    ssh user@your-server-ip
    ```
 
 2. **Install Node.js**:
+
    ```bash
    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
    sudo apt-get install -y nodejs
    ```
 
 3. **Clone repository**:
+
    ```bash
    git clone https://github.com/your-username/aetheron.git
    cd aetheron
    ```
 
 4. **Install dependencies**:
+
    ```bash
    npm ci --production
    ```
 
 5. **Configure environment**:
+
    ```bash
    cp .env.example .env
    nano .env  # Edit with your values
    ```
 
 6. **Install PM2 for process management**:
+
    ```bash
    npm install -g pm2
    pm2 start server.js --name aetheron
@@ -142,6 +159,7 @@ Before deploying to production, ensure you have:
 ## Post-Deployment Checklist
 
 ### 1. Verify Health Endpoint
+
 ```bash
 curl http://your-domain/health
 # Should return: {"status": "healthy"}
@@ -150,6 +168,7 @@ curl http://your-domain/health
 ### 2. Test New Features
 
 #### Account Abstraction
+
 ```bash
 curl -X POST http://your-domain/api/aa/create-account \
   -H "Content-Type: application/json" \
@@ -157,6 +176,7 @@ curl -X POST http://your-domain/api/aa/create-account \
 ```
 
 #### Fiat On-Ramp
+
 ```bash
 curl -X POST http://your-domain/api/fiat/quote \
   -H "Content-Type: application/json" \
@@ -164,6 +184,7 @@ curl -X POST http://your-domain/api/fiat/quote \
 ```
 
 #### Limit Orders
+
 ```bash
 curl -X POST http://your-domain/api/orders/create \
   -H "Content-Type: application/json" \
@@ -171,6 +192,7 @@ curl -X POST http://your-domain/api/orders/create \
 ```
 
 #### RWA Tokenization
+
 ```bash
 curl -X POST http://your-domain/api/rwa/tokenize \
   -H "Content-Type: application/json" \
@@ -178,6 +200,7 @@ curl -X POST http://your-domain/api/rwa/tokenize \
 ```
 
 #### L2 Integration
+
 ```bash
 curl -X POST http://your-domain/api/l2/deposit \
   -H "Content-Type: application/json" \
@@ -185,6 +208,7 @@ curl -X POST http://your-domain/api/l2/deposit \
 ```
 
 ### 3. Monitor Logs
+
 ```bash
 # Docker Compose
 docker-compose -f docker-compose.prod.yml logs -f app
@@ -199,12 +223,14 @@ railway logs
 ### 4. Set Up Monitoring
 
 #### Add Sentry for Error Tracking
+
 ```bash
 npm install @sentry/node
 # Configure in server.js
 ```
 
 #### Add Datadog for Performance Monitoring
+
 ```bash
 npm install dd-trace
 # Configure in server.js
@@ -213,10 +239,12 @@ npm install dd-trace
 ### 5. Configure Webhooks
 
 #### MoonPay Webhook
+
 - URL: `https://your-domain/api/fiat/webhook/moonpay`
 - Configure in MoonPay dashboard
 
 #### Stripe Webhook
+
 - URL: `https://your-domain/api/fiat/webhook/stripe`
 - Configure in Stripe dashboard
 - Add webhook secret to environment variables
@@ -224,24 +252,28 @@ npm install dd-trace
 ## Security Best Practices
 
 1. **API Keys**:
+
    - Never commit `.env` file
    - Use environment variables in Railway/Docker
    - Rotate keys regularly
    - Use different keys for development/production
 
 2. **HTTPS**:
+
    - Always use SSL certificates in production
    - Enable HSTS headers
    - Redirect HTTP to HTTPS
 
 3. **Rate Limiting**:
+
    - Nginx configured with rate limits (see nginx.conf)
    - API endpoints limited to 10 req/s
    - General endpoints limited to 50 req/s
 
 4. **CORS**:
+
    - Configure allowed origins in environment
-   - Don't use wildcard (*) in production
+   - Don't use wildcard (\*) in production
 
 5. **Database Security**:
    - Use strong MongoDB passwords
@@ -252,16 +284,19 @@ npm install dd-trace
 ## Scaling Considerations
 
 ### Horizontal Scaling
+
 - Deploy multiple app instances
 - Use Redis for session sharing
 - Configure load balancer (Railway/AWS ELB)
 
 ### Database Scaling
+
 - MongoDB Atlas auto-scaling
 - Read replicas for heavy read operations
 - Sharding for large datasets
 
 ### Caching
+
 - Redis for frequently accessed data
 - CDN for static assets
 - API response caching
@@ -269,6 +304,7 @@ npm install dd-trace
 ## Backup Strategy
 
 ### Database Backups
+
 ```bash
 # MongoDB backup
 mongodump --uri="your-mongodb-uri" --out=/backup/$(date +%Y%m%d)
@@ -278,6 +314,7 @@ mongodump --uri="your-mongodb-uri" --out=/backup/$(date +%Y%m%d)
 ```
 
 ### Code Backups
+
 - Use Git for version control
 - Tag releases: `git tag v1.0.0`
 - Keep production branch protected
@@ -285,11 +322,13 @@ mongodump --uri="your-mongodb-uri" --out=/backup/$(date +%Y%m%d)
 ## Rollback Procedure
 
 ### Railway
+
 ```bash
 railway rollback
 ```
 
 ### Docker Compose
+
 ```bash
 docker-compose -f docker-compose.prod.yml down
 git checkout previous-tag
@@ -297,6 +336,7 @@ docker-compose -f docker-compose.prod.yml up -d --build
 ```
 
 ### PM2
+
 ```bash
 pm2 stop aetheron
 git checkout previous-tag
@@ -309,6 +349,7 @@ pm2 restart aetheron
 ### Common Issues
 
 1. **Port Already in Use**:
+
    ```bash
    # Find process using port 3001
    lsof -i :3001
@@ -316,11 +357,13 @@ pm2 restart aetheron
    ```
 
 2. **MongoDB Connection Failed**:
+
    - Check connection string format
    - Verify network access (whitelist IP)
    - Check credentials
 
 3. **WebSocket Connection Issues**:
+
    - Ensure Nginx WebSocket proxy is configured
    - Check firewall rules
 
@@ -329,6 +372,7 @@ pm2 restart aetheron
    - Monitor with `pm2 monit`
 
 ### Getting Help
+
 - Documentation: https://github.com/your-repo/wiki
 - Issues: https://github.com/your-repo/issues
 - Email: support@aetheron.io
@@ -336,6 +380,7 @@ pm2 restart aetheron
 ## Maintenance
 
 ### Regular Updates
+
 ```bash
 # Pull latest changes
 git pull origin main
@@ -353,6 +398,7 @@ docker-compose -f docker-compose.prod.yml restart app
 ```
 
 ### Security Updates
+
 ```bash
 # Check for vulnerabilities
 npm audit
@@ -376,11 +422,13 @@ nvm use 20
 ## Compliance
 
 ### GDPR (for EU users)
+
 - Implement data deletion endpoints
 - Add cookie consent banner
 - Privacy policy and terms of service
 
 ### Financial Regulations
+
 - KYC/AML verification for RWA and security tokens
 - Partner with compliance providers (Sumsub, Onfido)
 - Regular compliance audits
@@ -390,6 +438,7 @@ nvm use 20
 **Deployment Complete! 🚀**
 
 Your Aetheron platform is now live with:
+
 - ✅ Account Abstraction (ERC-4337)
 - ✅ Fiat On-Ramp (MoonPay/Stripe/Transak)
 - ✅ Limit Orders (Advanced trading)

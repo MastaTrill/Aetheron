@@ -61,7 +61,11 @@ class Block {
   calculateHash() {
     // Simplified hash function (in real-world, use SHA256)
     return SHA256(
-      this.index + this.timestamp + this.previousHash + JSON.stringify(this.transactions) + this.nonce
+      this.index +
+        this.timestamp +
+        this.previousHash +
+        JSON.stringify(this.transactions) +
+        this.nonce
     );
   }
 

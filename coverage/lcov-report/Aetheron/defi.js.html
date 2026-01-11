@@ -482,7 +482,9 @@
 <a name='L417'></a><a href='#L417'>417</a>
 <a name='L418'></a><a href='#L418'>418</a>
 <a name='L419'></a><a href='#L419'>419</a>
-<a name='L420'></a><a href='#L420'>420</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -556,6 +558,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -979,7 +983,9 @@ class DeFiLending {
 &nbsp;
 <span class="fstat-no" title="function not covered" >  as</span>ync swap(tokenIn, tokenOut, amountIn, slippageTolerance) {
     // Find the pool (check both directions)
-    let pool, poolKey, isReverse = <span class="cstat-no" title="statement not covered" >false;</span>
+    let pool,
+      poolKey,
+      isReverse = <span class="cstat-no" title="statement not covered" >false;</span>
 <span class="cstat-no" title="statement not covered" >    poolKey = `${tokenIn}-${tokenOut}`;</span>
 <span class="cstat-no" title="statement not covered" >    pool = this.liquidityPools[poolKey];</span>
 &nbsp;
@@ -1050,7 +1056,7 @@ class DeFiLending {
 <span class="fstat-no" title="function not covered" >  as</span>ync stake(token, amount, lockDays) {
     const stakeId = <span class="cstat-no" title="statement not covered" >this.nextStakeId++;</span>
     const now = <span class="cstat-no" title="statement not covered" >Date.now();</span>
-    const unlockTime = <span class="cstat-no" title="statement not covered" >now + (lockDays * 24 * 60 * 60 * 1000);</span>
+    const unlockTime = <span class="cstat-no" title="statement not covered" >now + lockDays * 24 * 60 * 60 * 1000;</span>
 &nbsp;
     // Calculate APY based on lock period
     let apy;
@@ -1087,7 +1093,7 @@ class DeFiLending {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  as</span>ync unstake(stakeId) {
-    const stake = <span class="cstat-no" title="statement not covered" >this.stakes.find(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >s.stakeId === stakeId)</span>;</span>
+    const stake = <span class="cstat-no" title="statement not covered" >this.stakes.find(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.stakeId === stakeId)</span>;</span>
 <span class="cstat-no" title="statement not covered" >    if (!stake) {</span>
 <span class="cstat-no" title="statement not covered" >      throw new Error('Stake not found');</span>
     }
@@ -1098,7 +1104,7 @@ class DeFiLending {
     }
 &nbsp;
     const rewards = <span class="cstat-no" title="statement not covered" >this.calculateStakeRewards(stake);</span>
-<span class="cstat-no" title="statement not covered" >    this.stakes = this.stakes.filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >s.stakeId !== stakeId)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    this.stakes = this.stakes.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.stakeId !== stakeId)</span>;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
       success: true,
@@ -1118,7 +1124,7 @@ class DeFiLending {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  as</span>ync getStakingRewards(userId) {
-    const userStakes = <span class="cstat-no" title="statement not covered" >this.stakes.filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >s.userId === userId)</span>;</span>
+    const userStakes = <span class="cstat-no" title="statement not covered" >this.stakes.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.userId === userId)</span>;</span>
 <span class="cstat-no" title="statement not covered" >    return userStakes.reduce(<span class="fstat-no" title="function not covered" >(t</span>otal, stake) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      return total + this.calculateStakeRewards(stake);</span>
     }, 0);
@@ -1146,7 +1152,7 @@ class DeFiLending {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  as</span>ync getFarmingRewards(userId) {
-    const userPositions = <span class="cstat-no" title="statement not covered" >this.farmingPositions.filter(<span class="fstat-no" title="function not covered" >p </span>=&gt; <span class="cstat-no" title="statement not covered" >p.userId === userId)</span>;</span>
+    const userPositions = <span class="cstat-no" title="statement not covered" >this.farmingPositions.filter(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.userId === userId)</span>;</span>
     const rewardRate = <span class="cstat-no" title="statement not covered" >0.0001;</span> // 0.01% per second
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return userPositions.reduce(<span class="fstat-no" title="function not covered" >(t</span>otal, position) =&gt; {</span>
@@ -1160,7 +1166,7 @@ class DeFiLending {
     const rewards = <span class="cstat-no" title="statement not covered" >await this.getFarmingRewards('test-user');</span>
 &nbsp;
     // Reset start times for all positions
-<span class="cstat-no" title="statement not covered" >    this.farmingPositions.forEach(<span class="fstat-no" title="function not covered" >p </span>=&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    this.farmingPositions.forEach(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      if (p.userId === 'test-user') {</span>
 <span class="cstat-no" title="statement not covered" >        p.startTime = Date.now();</span>
       }
@@ -1290,7 +1296,7 @@ class DeFiLending {
 <span class="cstat-no" title="statement not covered" >    gasSaved = gasUsed * 0.2;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
-      success: results.every(<span class="fstat-no" title="function not covered" >r </span>=&gt; <span class="cstat-no" title="statement not covered" >r.success !== false)</span>,
+      success: results.every(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >r.success !== false)</span>,
       results,
       gasUsed,
       savedGas: gasSaved
@@ -1327,7 +1333,7 @@ class DeFiLending {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T03:39:16.281Z
+                at 2026-01-11T15:45:21.775Z
             </div>
         <script src="../prettify.js"></script>
         <script>

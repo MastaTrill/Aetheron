@@ -104,7 +104,15 @@ class LimitOrderManager extends EventEmitter {
   /**
    * Generic create order method (wrapper for specific order types)
    */
-  async createOrder(type, pair, amount, price, stopPrice = null, expiresAt = null, userAddress = '0xdefault') {
+  async createOrder(
+    type,
+    pair,
+    amount,
+    price,
+    stopPrice = null,
+    expiresAt = null,
+    userAddress = '0xdefault'
+  ) {
     const baseParams = { pair, amount, userAddress };
 
     switch (type) {
@@ -166,7 +174,7 @@ class LimitOrderManager extends EventEmitter {
 
     case 'trailing-stop': {
       const orderId = `trail_${this.orderIdCounter++}`;
-      const trailingAmount = stopPrice || (price * 0.05);
+      const trailingAmount = stopPrice || price * 0.05;
       const order = {
         orderId,
         type: 'trailing-stop',
@@ -240,7 +248,11 @@ class LimitOrderManager extends EventEmitter {
       } else if (order.type === 'stop-loss' && order.stopPrice >= priceNum) {
         order.status = 'filled';
         order.filledAt = Date.now();
-      } else if (order.type === 'take-profit' && order.targetPrice && priceNum >= order.targetPrice) {
+      } else if (
+        order.type === 'take-profit' &&
+        order.targetPrice &&
+        priceNum >= order.targetPrice
+      ) {
         order.status = 'filled';
         order.filledAt = Date.now();
       }
@@ -252,7 +264,7 @@ class LimitOrderManager extends EventEmitter {
    */
   getActiveOrders() {
     return Array.from(this.orders.values()).filter(
-      order => order.status === 'open' || order.status === 'pending' || order.status === 'active'
+      (order) => order.status === 'open' || order.status === 'pending' || order.status === 'active'
     );
   }
 
@@ -275,8 +287,14 @@ class LimitOrderManager extends EventEmitter {
    */
   getOrderBookStatistics(pair) {
     const orderBook = this.getOrderBook(pair);
-    const totalBidVolume = orderBook.bids.reduce((sum, order) => sum + Number(ethers.formatEther(order.amount)), 0);
-    const totalAskVolume = orderBook.asks.reduce((sum, order) => sum + Number(ethers.formatEther(order.amount)), 0);
+    const totalBidVolume = orderBook.bids.reduce(
+      (sum, order) => sum + Number(ethers.formatEther(order.amount)),
+      0
+    );
+    const totalAskVolume = orderBook.asks.reduce(
+      (sum, order) => sum + Number(ethers.formatEther(order.amount)),
+      0
+    );
 
     return {
       pair,
@@ -286,9 +304,12 @@ class LimitOrderManager extends EventEmitter {
       totalBidVolume,
       totalAskVolume,
       totalVolume: totalBidVolume + totalAskVolume,
-      spread: orderBook.asks.length && orderBook.bids.length
-        ? Number(ethers.formatUnits(orderBook.asks[0].limitPrice - orderBook.bids[0].limitPrice, 6))
-        : 0
+      spread:
+        orderBook.asks.length && orderBook.bids.length
+          ? Number(
+            ethers.formatUnits(orderBook.asks[0].limitPrice - orderBook.bids[0].limitPrice, 6)
+          )
+          : 0
     };
   }
 

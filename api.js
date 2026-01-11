@@ -293,6 +293,33 @@ app.get('/multichain/chains', (req, res) => {
   res.json(multichain.getSupportedChains());
 });
 
+// Get native balance from PolygonScan API
+app.get('/polygon/balance/:address', async (req, res) => {
+  const { address } = req.params;
+  const apiKey = process.env.POLYGONSCAN_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'POLYGONSCAN_API_KEY not set' });
+  }
+  try {
+    const url = `https://api.polygonscan.com/api?module=account&action=balance&address=${address}&tag=latest&apikey=${apiKey}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data.status === '1') {
+      res.json({
+        address,
+        balance: data.result,
+        unit: 'MATIC',
+        wei: data.result,
+        eth: (parseInt(data.result) / 1e18).toString()
+      });
+    } else {
+      res.status(400).json({ error: data.message });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/multichain/balance/:chain/:address', async (req, res) => {
   const { chain, address } = req.params;
   try {
@@ -352,8 +379,6 @@ process.on('exit', () => {
   saveBlockchain(chain);
 });
 
-app.listen(3000, () => console.log('API server running on port 3000'));
-
 const { ADMIN_USER, checkAdminPassword } = require('./admin-auth');
 
 function basicAuth(req, res, next) {
@@ -409,5 +434,10 @@ if (process.env.NODE_ENV === 'test') {
     chain = new Blockchain();
   };
 }
+
+const PORT = process.env.PORT || 3002;
+app.listen(PORT, () => {
+  console.log(`API server running on port ${PORT}`);
+});
 
 module.exports = app;

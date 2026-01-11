@@ -19,13 +19,15 @@ export default {
       chainId: 1337
     },
     sepolia: {
-      url: process.env.ALCHEMY_API_KEY ? `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}` : undefined,
+      url: process.env.ALCHEMY_API_KEY
+        ? `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+        : undefined,
       accounts: getAccounts(),
       chainId: 11155111,
       gasPrice: 20000000000 // 20 gwei
     },
     polygonAmoy: {
-      url: process.env.INFURA_PROJECT_ID ? `https://polygon-amoy.infura.io/v3/${process.env.INFURA_PROJECT_ID}` : undefined,
+      url: 'https://rpc-amoy.polygon.technology',
       accounts: getAccounts(),
       chainId: 80002,
       gasPrice: 40000000000 // 40 gwei
@@ -37,13 +39,15 @@ export default {
       gasPrice: 1000000000 // 1 gwei
     },
     ethereum: {
-      url: process.env.ALCHEMY_API_KEY ? `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}` : undefined,
+      url: process.env.ALCHEMY_API_KEY
+        ? `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`
+        : undefined,
       accounts: getAccounts(),
       chainId: 1,
       gasPrice: 20000000000 // 20 gwei
     },
     polygon: {
-      url: process.env.INFURA_PROJECT_ID ? `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}` : undefined,
+      url: 'https://polygon-rpc.com/',
       accounts: getAccounts(),
       chainId: 137,
       gasPrice: 40000000000 // 40 gwei
@@ -53,6 +57,12 @@ export default {
       accounts: getAccounts(),
       chainId: 8453,
       gasPrice: 1000000000 // 1 gwei
+    },
+    monadTestnet: {
+      url: process.env.MONAD_TESTNET_RPC_URL || 'https://testnet-rpc.monad.xyz',
+      accounts: getAccounts(),
+      chainId: 10143,
+      gasPrice: 20000000000 // 20 gwei
     }
   },
   etherscan: {
@@ -62,7 +72,18 @@ export default {
       baseSepolia: process.env.BASESCAN_API_KEY,
       mainnet: process.env.ETHERSCAN_API_KEY,
       polygon: process.env.POLYGONSCAN_API_KEY,
-      base: process.env.BASESCAN_API_KEY
-    }
+      base: process.env.BASESCAN_API_KEY,
+      monadTestnet: process.env.MONAD_TESTNET_API_KEY
+    },
+    customChains: [
+      {
+        network: 'monadTestnet',
+        chainId: 10143,
+        urls: {
+          apiURL: 'https://api.etherscan.io/v2/api',
+          browserURL: 'https://testnet.monadscan.com'
+        }
+      }
+    ]
   }
 };

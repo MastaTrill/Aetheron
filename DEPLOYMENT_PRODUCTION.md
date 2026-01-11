@@ -5,14 +5,17 @@ This guide covers deploying Aetheron to production environments.
 ## Prerequisites
 
 ### System Requirements
+
 - Node.js 18+ and npm
 - Docker and Docker Compose (for containerized deployment)
 - Git
 
 ### API Keys & Services
+
 Get these API keys before deployment:
 
 1. **Blockchain APIs**:
+
    - [Alchemy API Key](https://www.alchemy.com/) - Ethereum mainnet RPC
    - [Infura Project ID](https://www.infura.io/) - Polygon mainnet RPC
    - [Etherscan API Key](https://etherscan.io/) - Contract verification
@@ -20,11 +23,13 @@ Get these API keys before deployment:
    - [Basescan API Key](https://basescan.org/)
 
 2. **Payment & Fiat Gateways**:
+
    - [Stripe API Keys](https://stripe.com/) - Payment processing
    - [Moonpay API Key](https://www.moonpay.com/) - Fiat on-ramp
    - [Ramp API Key](https://ramp.network/) - Alternative fiat gateway
 
 3. **Notifications**:
+
    - [SendGrid API Key](https://sendgrid.com/) - Email notifications
    - [Twilio Credentials](https://www.twilio.com/) - SMS notifications
 
@@ -34,6 +39,7 @@ Get these API keys before deployment:
 ## Environment Setup
 
 1. **Copy environment template**:
+
    ```bash
    cp .env.production.example .env.production
    ```
@@ -52,11 +58,13 @@ Get these API keys before deployment:
 Railway provides easy deployment with built-in PostgreSQL and Redis.
 
 1. **Install Railway CLI**:
+
    ```bash
    npm install -g @railway/cli
    ```
 
 2. **Login and deploy**:
+
    ```bash
    railway login
    railway deploy
@@ -69,6 +77,7 @@ Railway provides easy deployment with built-in PostgreSQL and Redis.
 For serverless deployment:
 
 1. **Install Vercel CLI**:
+
    ```bash
    npm install -g vercel
    ```
@@ -83,6 +92,7 @@ For serverless deployment:
 For full control over infrastructure:
 
 1. **Build and run**:
+
    ```bash
    docker-compose -f docker-compose.prod.yml up -d
    ```
@@ -101,6 +111,7 @@ Run comprehensive checks before deploying:
 ```
 
 This will:
+
 - Validate environment variables
 - Run linting and tests
 - Check for security vulnerabilities
@@ -111,12 +122,14 @@ This will:
 ⚠️ **CRITICAL**: Mainnet deployment costs real money!
 
 1. **Test on testnets first**:
+
    ```bash
    npx hardhat run scripts/deploy.js --network sepolia
    npx hardhat run scripts/deploy.js --network polygonAmoy
    ```
 
 2. **Deploy to mainnet** (when ready):
+
    ```bash
    npx hardhat run scripts/deploy.js --network ethereum
    npx hardhat run scripts/deploy.js --network polygon
@@ -132,15 +145,18 @@ This will:
 ## Post-Deployment
 
 ### 1. Update Frontend
+
 - Update `chain-config.json` with deployed contract addresses
 - Deploy frontend to GitHub Pages, Vercel, or Netlify
 
 ### 2. Set Up Monitoring
+
 - Configure Prometheus metrics endpoint
 - Set up health checks
 - Enable error tracking with Sentry
 
 ### 3. Database Setup
+
 - Run database migrations:
   ```bash
   npm run db:migrate
@@ -151,11 +167,13 @@ This will:
   ```
 
 ### 4. SSL & Security
+
 - Configure SSL certificates
 - Set up firewall rules
 - Enable rate limiting
 
 ### 5. Backup Configuration
+
 - Set up automated database backups
 - Configure log rotation
 - Set up monitoring alerts
@@ -163,16 +181,19 @@ This will:
 ## Monitoring & Maintenance
 
 ### Health Checks
+
 - Application: `GET /api/health`
 - Database: `GET /api/health/db`
 - Blockchain: `GET /api/health/blockchain`
 
 ### Logs
+
 - Application logs: Check deployment platform logs
 - Database logs: Check PostgreSQL container logs
 - Error tracking: Monitor Sentry dashboard
 
 ### Scaling
+
 - Monitor resource usage
 - Scale horizontally with load balancer
 - Set up auto-scaling rules
@@ -182,26 +203,31 @@ This will:
 ### Common Issues
 
 **Database connection fails**:
+
 - Check DATABASE_URL format
 - Verify PostgreSQL is running
 - Check network connectivity
 
 **Contract deployment fails**:
+
 - Verify sufficient gas funds
 - Check RPC endpoint status
 - Validate private key format
 
 **Application won't start**:
+
 - Check environment variables
 - Verify dependencies are installed
 - Check port availability
 
 **Health checks fail**:
+
 - Wait for services to fully start (can take 30-60 seconds)
 - Check service dependencies
 - Verify network configuration
 
 ### Rollback Strategy
+
 1. Keep previous deployment version available
 2. Have database backup ready
 3. Monitor error rates post-deployment
@@ -223,6 +249,7 @@ This will:
 ## Support
 
 For deployment issues:
+
 1. Check this guide and troubleshooting section
 2. Review application logs
 3. Check GitHub Issues for similar problems

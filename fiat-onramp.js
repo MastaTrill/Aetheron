@@ -56,9 +56,9 @@ class FiatOnRamp {
   async getExchangeRate(fiatCurrency, cryptoCurrency) {
     // Mock exchange rates
     const rates = {
-      'ETH': { USD: 2000, EUR: 1800, GBP: 1600 },
-      'BTC': { USD: 40000, EUR: 36000, GBP: 32000 },
-      'USDC': { USD: 1, EUR: 0.9, GBP: 0.8 }
+      ETH: { USD: 2000, EUR: 1800, GBP: 1600 },
+      BTC: { USD: 40000, EUR: 36000, GBP: 32000 },
+      USDC: { USD: 1, EUR: 0.9, GBP: 0.8 }
     };
 
     return rates[cryptoCurrency]?.[fiatCurrency] || 1;
@@ -67,7 +67,14 @@ class FiatOnRamp {
   /**
    * Buy crypto with fiat
    */
-  async buyCrypto(provider, fiatAmount, fiatCurrency, cryptoCurrency, paymentMethod, walletAddress) {
+  async buyCrypto(
+    provider,
+    fiatAmount,
+    fiatCurrency,
+    cryptoCurrency,
+    paymentMethod,
+    walletAddress
+  ) {
     // Validate wallet address
     if (!walletAddress || !walletAddress.startsWith('0x') || walletAddress.length !== 42) {
       return {

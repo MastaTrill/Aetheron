@@ -21,9 +21,7 @@ describe('DeFi Module - Extended Tests', () => {
     });
 
     it('should reject liquidity with zero amount', async () => {
-      await expect(
-        defi.addLiquidity('ETH', 'USDC', 0, 1000)
-      ).rejects.toThrow();
+      await expect(defi.addLiquidity('ETH', 'USDC', 0, 1000)).rejects.toThrow();
     });
 
     it('should remove liquidity correctly', async () => {
@@ -53,9 +51,7 @@ describe('DeFi Module - Extended Tests', () => {
     });
 
     it('should fail swap with insufficient liquidity', async () => {
-      await expect(
-        defi.swap('USDC', 'ETH', 1000000, 0.5)
-      ).rejects.toThrow();
+      await expect(defi.swap('USDC', 'ETH', 1000000, 0.5)).rejects.toThrow();
     });
 
     it('should calculate price impact correctly', async () => {
@@ -89,9 +85,7 @@ describe('DeFi Module - Extended Tests', () => {
 
     it('should prevent unstaking before lock period', async () => {
       const stake = await defi.stake('ETH', 10, 30);
-      await expect(
-        defi.unstake(stake.stakeId)
-      ).rejects.toThrow();
+      await expect(defi.unstake(stake.stakeId)).rejects.toThrow();
     });
 
     it('should apply higher APY for longer lock periods', async () => {
@@ -113,7 +107,7 @@ describe('DeFi Module - Extended Tests', () => {
       await defi.startFarming('ETH-USDC', 50);
 
       // Simulate time passing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const rewards = await defi.getFarmingRewards('test-user');
       expect(rewards).toBeGreaterThanOrEqual(0);
@@ -195,9 +189,7 @@ describe('DeFi Module - Extended Tests', () => {
     });
 
     it('should prevent reentrancy attacks', async () => {
-      await expect(
-        defi.reentrancyTest()
-      ).rejects.toThrow('Reentrancy detected');
+      await expect(defi.reentrancyTest()).rejects.toThrow('Reentrancy detected');
     });
   });
 });

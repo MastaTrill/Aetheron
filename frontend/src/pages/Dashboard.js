@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Grid,
@@ -25,7 +26,18 @@ import {
   SwapHoriz as SwapIcon,
   MonetizationOn as MonetizationIcon
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -67,11 +79,46 @@ const Dashboard = () => {
         gasUsed: 456789
       };
       const mockActivity = [
-        { id: 1, type: 'transaction', title: 'Large ETH Transfer', description: '2.5 ETH sent', timestamp: '2 min ago', status: 'success' },
-        { id: 2, type: 'swap', title: 'Token Swap', description: 'ETH → USDC', timestamp: '5 min ago', status: 'success' },
-        { id: 3, type: 'user', title: 'New User Registration', description: 'User 0x123...abc joined', timestamp: '8 min ago', status: 'success' },
-        { id: 4, type: 'security', title: 'Security Alert', description: 'Unusual activity detected', timestamp: '12 min ago', status: 'warning' },
-        { id: 5, type: 'notification', title: 'System Update', description: 'Version 2.1.0 deployed', timestamp: '15 min ago', status: 'info' }
+        {
+          id: 1,
+          type: 'transaction',
+          title: 'Large ETH Transfer',
+          description: '2.5 ETH sent',
+          timestamp: '2 min ago',
+          status: 'success'
+        },
+        {
+          id: 2,
+          type: 'swap',
+          title: 'Token Swap',
+          description: 'ETH → USDC',
+          timestamp: '5 min ago',
+          status: 'success'
+        },
+        {
+          id: 3,
+          type: 'user',
+          title: 'New User Registration',
+          description: 'User 0x123...abc joined',
+          timestamp: '8 min ago',
+          status: 'success'
+        },
+        {
+          id: 4,
+          type: 'security',
+          title: 'Security Alert',
+          description: 'Unusual activity detected',
+          timestamp: '12 min ago',
+          status: 'warning'
+        },
+        {
+          id: 5,
+          type: 'notification',
+          title: 'System Update',
+          description: 'Version 2.1.0 deployed',
+          timestamp: '15 min ago',
+          status: 'info'
+        }
       ];
 
       setStats(mockStats);
@@ -86,16 +133,18 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, change, icon: Icon, color = '#00eaff' }) => (
-    <Card sx={{
-      background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-      border: '1px solid #2a2d3a',
-      borderRadius: 2,
-      transition: 'all 0.3s ease',
-      '&:hover': {
-        borderColor: color,
-        boxShadow: `0 0 20px ${color}20`
-      }
-    }}>
+    <Card
+      sx={{
+        background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+        border: '1px solid #2a2d3a',
+        borderRadius: 2,
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          borderColor: color,
+          boxShadow: `0 0 20px ${color}20`
+        }
+      }}
+    >
       <CardContent>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
           <Typography variant="h6" sx={{ color: '#b2ebf2', fontSize: '0.9rem' }}>
@@ -127,6 +176,14 @@ const Dashboard = () => {
       </CardContent>
     </Card>
   );
+
+  StatCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    change: PropTypes.number,
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string
+  };
 
   if (loading) {
     return (
@@ -194,11 +251,14 @@ const Dashboard = () => {
       {/* Charts Row */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={8}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 Transaction Volume (6 Months)
@@ -229,11 +289,14 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 Asset Distribution
@@ -291,11 +354,14 @@ const Dashboard = () => {
       {/* Recent Activity and System Status */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={6}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 Recent Activity
@@ -329,13 +395,18 @@ const Dashboard = () => {
                         size="small"
                         sx={{
                           backgroundColor:
-                            activity.status === 'success' ? '#4caf50' :
-                              activity.status === 'warning' ? '#ff9800' : '#2196f3',
+                            activity.status === 'success'
+                              ? '#4caf50'
+                              : activity.status === 'warning'
+                                ? '#ff9800'
+                                : '#2196f3',
                           color: '#ffffff'
                         }}
                       />
                     </ListItem>
-                    {index < recentActivity.length - 1 && <Divider sx={{ borderColor: '#2a2d3a' }} />}
+                    {index < recentActivity.length - 1 && (
+                      <Divider sx={{ borderColor: '#2a2d3a' }} />
+                    )}
                   </React.Fragment>
                 ))}
               </List>
@@ -344,51 +415,90 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
                 System Status
               </Typography>
               <Box sx={{ mb: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     Blockchain Sync
                   </Typography>
-                  <Chip label="Synced" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="Synced"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={100} sx={{ mb: 2 }} />
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     API Health
                   </Typography>
-                  <Chip label="Healthy" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="Healthy"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={98} sx={{ mb: 2 }} />
               </Box>
 
               <Box sx={{ mb: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     Database
                   </Typography>
-                  <Chip label="Connected" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="Connected"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={100} sx={{ mb: 2 }} />
               </Box>
 
               <Box>
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 1 }}
+                >
                   <Typography variant="body2" sx={{ color: '#b2ebf2' }}>
                     WebSocket
                   </Typography>
-                  <Chip label="Active" size="small" sx={{ backgroundColor: '#4caf50', color: '#ffffff' }} />
+                  <Chip
+                    label="Active"
+                    size="small"
+                    sx={{ backgroundColor: '#4caf50', color: '#ffffff' }}
+                  />
                 </Box>
                 <LinearProgress variant="determinate" value={95} />
               </Box>
@@ -404,11 +514,14 @@ const Dashboard = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#00eaff' }}>
                 User Management
@@ -470,11 +583,14 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#00eaff' }}>
                 System Configuration
@@ -537,11 +653,14 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <Card sx={{
-            background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
-            border: '1px solid #2a2d3a',
-            borderRadius: 2
-          }}>
+          <Card
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%)',
+              border: '1px solid #2a2d3a',
+              borderRadius: 2
+            }}
+          >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#00eaff' }}>
                 Export Data
