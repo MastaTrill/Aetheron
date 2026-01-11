@@ -11,7 +11,11 @@ module.exports = {
     '!scripts/**',
     '!*.config.js'
   ],
-  testMatch: ['**/tests/unit/**/*.test.js'],
+  testMatch: [
+    '**/tests/unit/**/*.test.js',
+    '**/tests/integration/**/*.test.js',
+    '**/*.test.js'
+  ],
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
@@ -28,5 +32,13 @@ module.exports = {
   },
   verbose: true,
   testTimeout: 30000,
-  testPathIgnorePatterns: ['<rootDir>/tests/e2e/']
+  testPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/tests/e2e/',
+    '<rootDir>/mobile/',
+    '<rootDir>/integration-test.js',
+    '<rootDir>/test-admin-password.js',
+    '<rootDir>/test-game-simulation.js',
+    '<rootDir>/test-app.js'
+  ]
 };
