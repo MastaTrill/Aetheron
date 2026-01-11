@@ -15,6 +15,9 @@ module.exports = {
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(supertest)/)'
+  ],
   coverageThreshold: {
     global: {
       branches: 70,

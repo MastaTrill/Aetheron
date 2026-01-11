@@ -12,7 +12,7 @@ const POSITION_MANAGER_ABI = [
 ];
 
 // Alchemy Provider & Signer
-const provider = new ethers.JsonRpcProvider(`https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`);
+const provider = new ethers.JsonRpcProvider(`https://mainnet.base.org`);
 const wallet = new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider);
 
 async function deployLiquidity() {

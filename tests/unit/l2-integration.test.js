@@ -1,4 +1,4 @@
-const L2Integration = require('../../l2-integration');
+import L2Integration from '../../l2-integration.js';
 
 describe('L2 Integration', () => {
   let l2;

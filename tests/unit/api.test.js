@@ -122,12 +122,12 @@ jest.mock('../../solana', () => ({
   }))
 }));
 
-jest.mock('../../admin-auth', () => ({
+jest.mock('../../admin-auth.js', () => ({
   ADMIN_USER: 'admin',
   checkAdminPassword: jest.fn(() => true)
 }));
 
-const apiModule = require('../../api');
+import apiModule from '../../api.js';
 const app = apiModule;
 
 describe('API Endpoints', () => {

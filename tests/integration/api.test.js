@@ -1,6 +1,6 @@
 // Integration tests for API endpoints
-const request = require('supertest');
-const { app } = require('../../server');
+import request from 'supertest';
+import { app } from '../../test-app.js';
 
 describe('API Integration Tests', () => {
   const authHeader = 'Basic ' + Buffer.from('admin:admin123').toString('base64');

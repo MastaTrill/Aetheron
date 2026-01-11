@@ -2,8 +2,14 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import http from 'http';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import { AetheronWebSocket } from './websocket.js';
 import 'dotenv/config';
+
+// ES Module __dirname workaround
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Database and Auth
 import { sequelize, User, Log, Transaction } from './database/models.js';
@@ -520,4 +526,4 @@ server.listen(PORT, () => {
   wsServer.notifySystemAlert('success', 'Server started successfully', { port: PORT });
 });
 
-module.exports = { app, wsServer };
+export { app, wsServer };
