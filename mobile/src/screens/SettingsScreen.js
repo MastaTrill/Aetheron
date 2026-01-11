@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -210,3 +211,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   }
 });
+
+SettingsScreen.propTypes = {
+  navigation: PropTypes.object.isRequired
+};

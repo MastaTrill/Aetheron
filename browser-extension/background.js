@@ -1,4 +1,3 @@
-/* global chrome */
 /**
  * Background Service Worker
  * Handles wallet operations and blockchain communication

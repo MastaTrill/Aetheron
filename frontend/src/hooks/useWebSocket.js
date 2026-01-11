@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import io from 'socket.io-client';
 
 const WebSocketContext = createContext();
@@ -100,4 +101,8 @@ export const WebSocketProvider = ({ children }) => {
   };
 
   return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>;
+};
+
+WebSocketProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };

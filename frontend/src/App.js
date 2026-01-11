@@ -25,7 +25,7 @@ const LIQUIDATION_CHANCE = 0.04;
 const NETWORKS = [
   { id: 'mainnet', name: 'Aetheron Main', color: 'text-cyan-400', yieldMod: 1.0, riskMod: 1.0 },
   { id: 'abyss', name: 'The Abyss L2', color: 'text-purple-500', yieldMod: 3.0, riskMod: 2.5 },
-  { id: 'neon', name: 'Neon Shard', color: 'text-pink-500', yieldMod: 1.8, riskMod: 1.4 },
+  { id: 'neon', name: 'Neon Shard', color: 'text-pink-500', yieldMod: 1.8, riskMod: 1.4 }
 ];
 
 const App = () => {
@@ -33,7 +33,7 @@ const App = () => {
   const [totalYield, setTotalYield] = useState(0);
   const [apy, setApy] = useState(INITIAL_APY);
   const [activeNetwork, setActiveNetwork] = useState(NETWORKS[0]);
-  const [logs, setLogs] = useState([{ msg: "Ascension Protocols Engaged. Mining modules online.", time: new Date().toLocaleTimeString() }]);
+  const [logs, setLogs] = useState([{ msg: 'Ascension Protocols Engaged. Mining modules online.', time: new Date().toLocaleTimeString() }]);
 
   // Game States
   const [activeLiquidation, setActiveLiquidation] = useState(false);
@@ -50,7 +50,7 @@ const App = () => {
   useEffect(() => {
     if (tvl >= WIN_TARGET && !hasWon) {
       setHasWon(true);
-      addLog("🏆 ASCENSION REACHED: Node has reached Tier-1 status.");
+      addLog('🏆 ASCENSION REACHED: Node has reached Tier-1 status.');
     }
   }, [tvl, hasWon, addLog]);
 
@@ -59,7 +59,7 @@ const App = () => {
     if (activeLiquidation || isMining) return;
     setIsMining(true);
     setMiningCharge(0);
-    addLog("⚒️ Initiating Liquidity Mining Burst...");
+    addLog('⚒️ Initiating Liquidity Mining Burst...');
   };
 
   const handleMiningClick = () => {
@@ -84,7 +84,7 @@ const App = () => {
     if (!activeLiquidation) {
       setActiveLiquidation(true);
       setStabilizationProgress(0);
-      addLog("⚠️ STABILITY WARNING: Cascading failure imminent!");
+      addLog('⚠️ STABILITY WARNING: Cascading failure imminent!');
     }
   }, [activeLiquidation, addLog]);
 
@@ -93,7 +93,7 @@ const App = () => {
       const next = prev + 25;
       if (next >= 100) {
         setActiveLiquidation(false);
-        addLog("✅ Manual override successful. Node stabilized.");
+        addLog('✅ Manual override successful. Node stabilized.');
         return 0;
       }
       return next;
@@ -146,18 +146,18 @@ const App = () => {
           </h1>
           <div className="flex gap-4 mt-2">
             <div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase">
-               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/> Network: <span className={activeNetwork.color}>{activeNetwork.name}</span>
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/> Network: <span className={activeNetwork.color}>{activeNetwork.name}</span>
             </div>
             <div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase">
-               <Trophy size={12} className="text-yellow-500"/> Goal: $1,000,000
+              <Trophy size={12} className="text-yellow-500"/> Goal: $1,000,000
             </div>
           </div>
         </div>
 
         <div className="flex gap-4 w-full lg:w-auto">
           <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-3xl text-right">
-             <p className="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-widest">Synthesized TVL</p>
-             <p className="text-3xl font-black text-white tracking-tighter">${tvl.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+            <p className="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-widest">Synthesized TVL</p>
+            <p className="text-3xl font-black text-white tracking-tighter">${tvl.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
           </div>
         </div>
       </div>
@@ -175,7 +175,7 @@ const App = () => {
             {isMining ? (
               <div className="space-y-4">
                 <div className="h-2 w-full bg-black rounded-full overflow-hidden border border-white/10">
-                   <div className="h-full bg-yellow-400 transition-all duration-75" style={{ width: `${miningCharge}%` }} />
+                  <div className="h-full bg-yellow-400 transition-all duration-75" style={{ width: `${miningCharge}%` }} />
                 </div>
                 <button
                   onClick={handleMiningClick}
@@ -219,46 +219,46 @@ const App = () => {
         {/* Center: Main OS Display */}
         <div className="lg:col-span-2 space-y-6">
           <div className="h-full bg-gradient-to-t from-black to-[#0a0a0f] border border-white/10 rounded-[3rem] p-8 flex flex-col relative overflow-hidden">
-             {/* Background Grid */}
-             <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+            {/* Background Grid */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
 
-             <div className="relative z-10 flex flex-col h-full">
-                <div className="flex justify-between items-start">
-                   <div className="space-y-1">
-                      <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2">
-                         <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" /> Node Status: Optimal
-                      </p>
-                      <h2 className="text-5xl font-black text-white tracking-tighter italic uppercase">{activeNetwork.id}</h2>
-                   </div>
-                   <div className="text-right">
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Global Rank</p>
-                      <p className="text-2xl font-black text-white tracking-tighter">#001</p>
-                   </div>
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" /> Node Status: Optimal
+                  </p>
+                  <h2 className="text-5xl font-black text-white tracking-tighter italic uppercase">{activeNetwork.id}</h2>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Global Rank</p>
+                  <p className="text-2xl font-black text-white tracking-tighter">#001</p>
+                </div>
+              </div>
+
+              <div className="mt-auto space-y-8">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <span>Ascension Progress</span>
+                    <span>{((tvl / WIN_TARGET) * 100).toFixed(1)}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-500" style={{ width: `${(tvl / WIN_TARGET) * 100}%` }} />
+                  </div>
                 </div>
 
-                <div className="mt-auto space-y-8">
-                   <div className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
-                         <span>Ascension Progress</span>
-                         <span>{((tvl / WIN_TARGET) * 100).toFixed(1)}%</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                         <div className="h-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-500" style={{ width: `${(tvl / WIN_TARGET) * 100}%` }} />
-                      </div>
-                   </div>
-
-                   <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <p className="text-[9px] font-black text-slate-500 uppercase mb-1">Effective APY</p>
-                        <p className="text-xl font-black text-white">{(apy * activeNetwork.yieldMod).toFixed(1)}%</p>
-                      </div>
-                      <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <p className="text-[9px] font-black text-slate-500 uppercase mb-1">Risk Multiplier</p>
-                        <p className="text-xl font-black text-orange-500">{activeNetwork.riskMod.toFixed(1)}x</p>
-                      </div>
-                   </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p className="text-[9px] font-black text-slate-500 uppercase mb-1">Effective APY</p>
+                    <p className="text-xl font-black text-white">{(apy * activeNetwork.yieldMod).toFixed(1)}%</p>
+                  </div>
+                  <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p className="text-[9px] font-black text-slate-500 uppercase mb-1">Risk Multiplier</p>
+                    <p className="text-xl font-black text-orange-500">{activeNetwork.riskMod.toFixed(1)}x</p>
+                  </div>
                 </div>
-             </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -267,7 +267,7 @@ const App = () => {
           {/* Security Alert */}
           <div className={`p-6 rounded-[2rem] border-2 transition-all duration-300 h-1/3 flex flex-col justify-center ${activeLiquidation ? 'bg-red-500/10 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.2)]' : 'bg-black border-white/10'}`}>
             <div className="flex items-center gap-3 mb-6">
-              <AlertTriangle className={activeLiquidation ? "text-red-500 animate-pulse" : "text-slate-800"} size={24} />
+              <AlertTriangle className={activeLiquidation ? 'text-red-500 animate-pulse' : 'text-slate-800'} size={24} />
               <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Security</h3>
             </div>
 

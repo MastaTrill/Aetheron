@@ -17,14 +17,12 @@
     "requireConfigFile": false
   },
   "plugins": ["react"],
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
+  "globals": {
+    "chrome": "readonly"
   },
   "rules": {
     "indent": ["error", 2],
-    "linebreak-style": ["error", "unix"],
+    "linebreak-style": "off",
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
     "no-unused-vars": ["warn"],

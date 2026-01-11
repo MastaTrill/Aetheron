@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 const ApiContext = createContext();
@@ -142,4 +143,8 @@ export const ApiProvider = ({ children }) => {
   };
 
   return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
+};
+
+ApiProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };

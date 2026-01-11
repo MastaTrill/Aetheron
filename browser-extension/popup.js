@@ -1,4 +1,3 @@
-/* global chrome */
 /**
  * Popup UI Logic
  */

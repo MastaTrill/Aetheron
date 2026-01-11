@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   View,
   Text,
@@ -215,3 +216,7 @@ const styles = StyleSheet.create({
     marginVertical: 5
   }
 });
+
+WelcomeScreen.propTypes = {
+  navigation: PropTypes.object.isRequired
+};

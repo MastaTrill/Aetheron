@@ -718,7 +718,7 @@ const LIQUIDATION_CHANCE = <span class="cstat-no" title="statement not covered" 
 const NETWORKS = <span class="cstat-no" title="statement not covered" >[</span>
   { id: 'mainnet', name: 'Aetheron Main', color: 'text-cyan-400', yieldMod: 1.0, riskMod: 1.0 },
   { id: 'abyss', name: 'The Abyss L2', color: 'text-purple-500', yieldMod: 3.0, riskMod: 2.5 },
-  { id: 'neon', name: 'Neon Shard', color: 'text-pink-500', yieldMod: 1.8, riskMod: 1.4 },
+  { id: 'neon', name: 'Neon Shard', color: 'text-pink-500', yieldMod: 1.8, riskMod: 1.4 }
 ];
 &nbsp;
 const App = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
@@ -726,7 +726,7 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
   const [totalYield, setTotalYield] = <span class="cstat-no" title="statement not covered" >useState(0);</span>
   const [apy, setApy] = <span class="cstat-no" title="statement not covered" >useState(INITIAL_APY);</span>
   const [activeNetwork, setActiveNetwork] = <span class="cstat-no" title="statement not covered" >useState(NETWORKS[0]);</span>
-  const [logs, setLogs] = <span class="cstat-no" title="statement not covered" >useState([{ msg: "Ascension Protocols Engaged. Mining modules online.", time: new Date().toLocaleTimeString() }]);</span>
+  const [logs, setLogs] = <span class="cstat-no" title="statement not covered" >useState([{ msg: 'Ascension Protocols Engaged. Mining modules online.', time: new Date().toLocaleTimeString() }]);</span>
 &nbsp;
   // Game States
   const [activeLiquidation, setActiveLiquidation] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
@@ -743,7 +743,7 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (tvl &gt;= WIN_TARGET &amp;&amp; !hasWon) {</span>
 <span class="cstat-no" title="statement not covered" >      setHasWon(true);</span>
-<span class="cstat-no" title="statement not covered" >      addLog("🏆 ASCENSION REACHED: Node has reached Tier-1 status.");</span>
+<span class="cstat-no" title="statement not covered" >      addLog('🏆 ASCENSION REACHED: Node has reached Tier-1 status.');</span>
     }
   }, [tvl, hasWon, addLog]);
 &nbsp;
@@ -752,7 +752,7 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
 <span class="cstat-no" title="statement not covered" >    if (activeLiquidation || isMining) <span class="cstat-no" title="statement not covered" >return;</span></span>
 <span class="cstat-no" title="statement not covered" >    setIsMining(true);</span>
 <span class="cstat-no" title="statement not covered" >    setMiningCharge(0);</span>
-<span class="cstat-no" title="statement not covered" >    addLog("⚒️ Initiating Liquidity Mining Burst...");</span>
+<span class="cstat-no" title="statement not covered" >    addLog('⚒️ Initiating Liquidity Mining Burst...');</span>
   };
 &nbsp;
   const handleMiningClick = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
@@ -777,7 +777,7 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
 <span class="cstat-no" title="statement not covered" >    if (!activeLiquidation) {</span>
 <span class="cstat-no" title="statement not covered" >      setActiveLiquidation(true);</span>
 <span class="cstat-no" title="statement not covered" >      setStabilizationProgress(0);</span>
-<span class="cstat-no" title="statement not covered" >      addLog("⚠️ STABILITY WARNING: Cascading failure imminent!");</span>
+<span class="cstat-no" title="statement not covered" >      addLog('⚠️ STABILITY WARNING: Cascading failure imminent!');</span>
     }
   }, [activeLiquidation, addLog]);
 &nbsp;
@@ -786,7 +786,7 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
       const next = <span class="cstat-no" title="statement not covered" >prev + 25;</span>
 <span class="cstat-no" title="statement not covered" >      if (next &gt;= 100) {</span>
 <span class="cstat-no" title="statement not covered" >        setActiveLiquidation(false);</span>
-<span class="cstat-no" title="statement not covered" >        addLog("✅ Manual override successful. Node stabilized.");</span>
+<span class="cstat-no" title="statement not covered" >        addLog('✅ Manual override successful. Node stabilized.');</span>
 <span class="cstat-no" title="statement not covered" >        return 0;</span>
       }
 <span class="cstat-no" title="statement not covered" >      return next;</span>
@@ -839,18 +839,18 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
           &lt;/h1&gt;
           &lt;div className="flex gap-4 mt-2"&gt;
             &lt;div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase"&gt;
-               &lt;span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/&gt; Network: &lt;span className={activeNetwork.color}&gt;{activeNetwork.name}&lt;/span&gt;
+              &lt;span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/&gt; Network: &lt;span className={activeNetwork.color}&gt;{activeNetwork.name}&lt;/span&gt;
             &lt;/div&gt;
             &lt;div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase"&gt;
-               &lt;Trophy size={12} className="text-yellow-500"/&gt; Goal: $1,000,000
+              &lt;Trophy size={12} className="text-yellow-500"/&gt; Goal: $1,000,000
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
 &nbsp;
         &lt;div className="flex gap-4 w-full lg:w-auto"&gt;
           &lt;div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-3xl text-right"&gt;
-             &lt;p className="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-widest"&gt;Synthesized TVL&lt;/p&gt;
-             &lt;p className="text-3xl font-black text-white tracking-tighter"&gt;${tvl.toLocaleString(undefined, { maximumFractionDigits: 0 })}&lt;/p&gt;
+            &lt;p className="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-widest"&gt;Synthesized TVL&lt;/p&gt;
+            &lt;p className="text-3xl font-black text-white tracking-tighter"&gt;${tvl.toLocaleString(undefined, { maximumFractionDigits: 0 })}&lt;/p&gt;
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -868,7 +868,7 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
             {isMining ? (
               &lt;div className="space-y-4"&gt;
                 &lt;div className="h-2 w-full bg-black rounded-full overflow-hidden border border-white/10"&gt;
-                   &lt;div className="h-full bg-yellow-400 transition-all duration-75" style={{ width: `${miningCharge}%` }} /&gt;
+                  &lt;div className="h-full bg-yellow-400 transition-all duration-75" style={{ width: `${miningCharge}%` }} /&gt;
                 &lt;/div&gt;
                 &lt;button
                   onClick={handleMiningClick}
@@ -912,46 +912,46 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
         {/* Center: Main OS Display */}
         &lt;div className="lg:col-span-2 space-y-6"&gt;
           &lt;div className="h-full bg-gradient-to-t from-black to-[#0a0a0f] border border-white/10 rounded-[3rem] p-8 flex flex-col relative overflow-hidden"&gt;
-             {/* Background Grid */}
-             &lt;div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }} /&gt;
+            {/* Background Grid */}
+            &lt;div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }} /&gt;
 &nbsp;
-             &lt;div className="relative z-10 flex flex-col h-full"&gt;
-                &lt;div className="flex justify-between items-start"&gt;
-                   &lt;div className="space-y-1"&gt;
-                      &lt;p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2"&gt;
-                         &lt;div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" /&gt; Node Status: Optimal
-                      &lt;/p&gt;
-                      &lt;h2 className="text-5xl font-black text-white tracking-tighter italic uppercase"&gt;{activeNetwork.id}&lt;/h2&gt;
-                   &lt;/div&gt;
-                   &lt;div className="text-right"&gt;
-                      &lt;p className="text-[10px] font-black text-slate-500 uppercase tracking-widest"&gt;Global Rank&lt;/p&gt;
-                      &lt;p className="text-2xl font-black text-white tracking-tighter"&gt;#001&lt;/p&gt;
-                   &lt;/div&gt;
+            &lt;div className="relative z-10 flex flex-col h-full"&gt;
+              &lt;div className="flex justify-between items-start"&gt;
+                &lt;div className="space-y-1"&gt;
+                  &lt;p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2"&gt;
+                    &lt;div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" /&gt; Node Status: Optimal
+                  &lt;/p&gt;
+                  &lt;h2 className="text-5xl font-black text-white tracking-tighter italic uppercase"&gt;{activeNetwork.id}&lt;/h2&gt;
+                &lt;/div&gt;
+                &lt;div className="text-right"&gt;
+                  &lt;p className="text-[10px] font-black text-slate-500 uppercase tracking-widest"&gt;Global Rank&lt;/p&gt;
+                  &lt;p className="text-2xl font-black text-white tracking-tighter"&gt;#001&lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              &lt;div className="mt-auto space-y-8"&gt;
+                &lt;div className="space-y-2"&gt;
+                  &lt;div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500"&gt;
+                    &lt;span&gt;Ascension Progress&lt;/span&gt;
+                    &lt;span&gt;{((tvl / WIN_TARGET) * 100).toFixed(1)}%&lt;/span&gt;
+                  &lt;/div&gt;
+                  &lt;div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden"&gt;
+                    &lt;div className="h-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-500" style={{ width: `${(tvl / WIN_TARGET) * 100}%` }} /&gt;
+                  &lt;/div&gt;
                 &lt;/div&gt;
 &nbsp;
-                &lt;div className="mt-auto space-y-8"&gt;
-                   &lt;div className="space-y-2"&gt;
-                      &lt;div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500"&gt;
-                         &lt;span&gt;Ascension Progress&lt;/span&gt;
-                         &lt;span&gt;{((tvl / WIN_TARGET) * 100).toFixed(1)}%&lt;/span&gt;
-                      &lt;/div&gt;
-                      &lt;div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden"&gt;
-                         &lt;div className="h-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-500" style={{ width: `${(tvl / WIN_TARGET) * 100}%` }} /&gt;
-                      &lt;/div&gt;
-                   &lt;/div&gt;
-&nbsp;
-                   &lt;div className="grid grid-cols-2 gap-4"&gt;
-                      &lt;div className="bg-white/5 p-4 rounded-2xl border border-white/5"&gt;
-                        &lt;p className="text-[9px] font-black text-slate-500 uppercase mb-1"&gt;Effective APY&lt;/p&gt;
-                        &lt;p className="text-xl font-black text-white"&gt;{(apy * activeNetwork.yieldMod).toFixed(1)}%&lt;/p&gt;
-                      &lt;/div&gt;
-                      &lt;div className="bg-white/5 p-4 rounded-2xl border border-white/5"&gt;
-                        &lt;p className="text-[9px] font-black text-slate-500 uppercase mb-1"&gt;Risk Multiplier&lt;/p&gt;
-                        &lt;p className="text-xl font-black text-orange-500"&gt;{activeNetwork.riskMod.toFixed(1)}x&lt;/p&gt;
-                      &lt;/div&gt;
-                   &lt;/div&gt;
+                &lt;div className="grid grid-cols-2 gap-4"&gt;
+                  &lt;div className="bg-white/5 p-4 rounded-2xl border border-white/5"&gt;
+                    &lt;p className="text-[9px] font-black text-slate-500 uppercase mb-1"&gt;Effective APY&lt;/p&gt;
+                    &lt;p className="text-xl font-black text-white"&gt;{(apy * activeNetwork.yieldMod).toFixed(1)}%&lt;/p&gt;
+                  &lt;/div&gt;
+                  &lt;div className="bg-white/5 p-4 rounded-2xl border border-white/5"&gt;
+                    &lt;p className="text-[9px] font-black text-slate-500 uppercase mb-1"&gt;Risk Multiplier&lt;/p&gt;
+                    &lt;p className="text-xl font-black text-orange-500"&gt;{activeNetwork.riskMod.toFixed(1)}x&lt;/p&gt;
+                  &lt;/div&gt;
                 &lt;/div&gt;
-             &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
 &nbsp;
@@ -960,7 +960,7 @@ const App = <span class="cstat-no" title="statement not covered" ><span class="f
           {/* Security Alert */}
           &lt;div className={`p-6 rounded-[2rem] border-2 transition-all duration-300 h-1/3 flex flex-col justify-center ${activeLiquidation ? 'bg-red-500/10 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.2)]' : 'bg-black border-white/10'}`}&gt;
             &lt;div className="flex items-center gap-3 mb-6"&gt;
-              &lt;AlertTriangle className={activeLiquidation ? "text-red-500 animate-pulse" : "text-slate-800"} size={24} /&gt;
+              &lt;AlertTriangle className={activeLiquidation ? 'text-red-500 animate-pulse' : 'text-slate-800'} size={24} /&gt;
               &lt;h3 className="text-xs font-black uppercase tracking-widest text-slate-400"&gt;Security&lt;/h3&gt;
             &lt;/div&gt;
 &nbsp;
@@ -1012,7 +1012,7 @@ export default App;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-11T15:45:21.775Z
+                at 2026-01-11T18:00:47.505Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

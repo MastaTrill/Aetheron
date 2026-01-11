@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   View,
   Text,
@@ -298,3 +299,7 @@ const styles = StyleSheet.create({
     padding: 20
   }
 });
+
+WalletScreen.propTypes = {
+  navigation: PropTypes.object.isRequired
+};

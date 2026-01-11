@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   View,
   Text,
@@ -276,3 +277,7 @@ const styles = StyleSheet.create({
     fontSize: 12
   }
 });
+
+SendScreen.propTypes = {
+  navigation: PropTypes.object.isRequired
+};
