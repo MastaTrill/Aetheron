@@ -1,11 +1,11 @@
-const { defineConfig } = require('@playwright/test');
+import { defineConfig } from '@playwright/test';
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: 'tests/e2e',
   use: {
+    baseURL: 'http://localhost:3001',
     browserName: 'chromium',
     headless: true
   },
-  reporter: 'html',
-  globalSetup: './global-setup.js'
+  reporter: 'html'
 });
