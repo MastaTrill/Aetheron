@@ -1,5 +1,5 @@
 // E2E tests for admin dashboard
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test.describe('Admin Dashboard E2E', () => {
   const credentials = { username: 'admin', password: 'admin123' };

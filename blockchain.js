@@ -1,10 +1,10 @@
 // Aetheron Blockchain Core Infrastructure (extracted from aethBLOCKCHAINCODE.txt)
 
 // Use Node.js crypto for real SHA256
-const crypto = require('crypto');
-const { encrypt, decrypt } = require('./encryption');
+import crypto from 'crypto';
+import { encrypt, decrypt } from './encryption.js';
 // Note: Token contracts would be deployed on-chain, not imported here
-const { blockchainEvents } = require('./events');
+import { blockchainEvents } from './events.js';
 
 class Wallet {
   constructor(password = null) {
@@ -269,34 +269,4 @@ class Transaction {
 }
 
 // Export all classes
-module.exports = {
-  Blockchain,
-  Block,
-  Transaction,
-  Wallet,
-  SHA256
-};
-
-// Example Usage
-if (require.main === module) {
-  // Create a new blockchain
-  let Aetheron = new Blockchain();
-
-  // Register some validators and their stakes
-  Aetheron.addValidatorStake('validator1', 100);
-  Aetheron.addValidatorStake('validator2', 200);
-
-  // Create some transactions
-  Aetheron.addTransaction(new Transaction('address1', 'address2', 10));
-  Aetheron.addTransaction(new Transaction('address3', 'address4', 25));
-  //create a new block
-  let newBlock = Aetheron.createBlock();
-  console.log('New Block', newBlock);
-
-  // Validate the blockchain
-  console.log('Is chain valid?', Aetheron.isChainValid());
-
-  // Tamper with a block
-  Aetheron.chain[1].transactions = [new Transaction('address1', 'address5', 500)];
-  console.log('Is chain valid after tampering?', Aetheron.isChainValid()); // Should now be false
-}
+export { Blockchain, Block, Transaction, Wallet, SHA256 };

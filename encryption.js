@@ -1,6 +1,6 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-function encrypt(text, password) {
+export function encrypt(text, password) {
   const iv = crypto.randomBytes(16);
   const key = crypto.scryptSync(password, 'salt', 32);
   const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
@@ -9,7 +9,7 @@ function encrypt(text, password) {
   return iv.toString('hex') + ':' + encrypted;
 }
 
-function decrypt(encrypted, password) {
+export function decrypt(encrypted, password) {
   const [ivHex, data] = encrypted.split(':');
   const iv = Buffer.from(ivHex, 'hex');
   const key = crypto.scryptSync(password, 'salt', 32);
@@ -18,5 +18,3 @@ function decrypt(encrypted, password) {
   decrypted += decipher.final('utf8');
   return decrypted;
 }
-
-module.exports = { encrypt, decrypt };

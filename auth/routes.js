@@ -1,6 +1,6 @@
-const express = require('express');
-const authService = require('./jwt-service');
-const { User, Log } = require('../database/models');
+import express from 'express';
+import authService from './jwt-service.js';
+import { User, Log } from '../database/models.js';
 
 const router = express.Router();
 
@@ -271,4 +271,4 @@ router.get('/me', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

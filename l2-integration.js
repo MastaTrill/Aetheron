@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 /**
  * Layer 2 Integration Module
@@ -446,4 +446,4 @@ class L2Integration {
   }
 }
 
-module.exports = L2Integration;
+export default L2Integration;

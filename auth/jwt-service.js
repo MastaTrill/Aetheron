@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -62,4 +62,4 @@ class AuthService {
   }
 }
 
-module.exports = new AuthService();
+export default new AuthService();

@@ -10,7 +10,7 @@ Aetheron is deployed across multiple blockchain networks for maximum accessibili
 
 - **Network:** Ethereum
 - **Chain ID:** 1
-- **Token Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
+- **Token Address:** `0x072091F554df794852E0A9d1c809F2B2bBda171E`
 - **NFT Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
 - **Explorer:** https://etherscan.io
 - **RPC:** `https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY`
@@ -19,7 +19,7 @@ Aetheron is deployed across multiple blockchain networks for maximum accessibili
 
 - **Network:** Base
 - **Chain ID:** 8453
-- **Token Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
+- **Token Address:** `0x072091F554df794852E0A9d1c809F2B2bBda171E2`
 - **NFT Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
 - **Explorer:** https://basescan.org
 - **RPC:** `https://mainnet.base.org`
@@ -28,7 +28,7 @@ Aetheron is deployed across multiple blockchain networks for maximum accessibili
 
 - **Network:** Polygon
 - **Chain ID:** 137
-- **Token Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
+- **Token Address:** `0x072091F554df794852E0A9d1c809F2B2bBda171E`
 - **NFT Address:** `0x8A3ad49656Bd07981C9CFc7aD826a808847c3452`
 - **Explorer:** https://polygonscan.com
 - **RPC:** `https://polygon-rpc.com`

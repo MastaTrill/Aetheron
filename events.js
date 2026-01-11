@@ -1,6 +1,6 @@
 // Event system for blockchain notifications
-const EventEmitter = require('events');
+import EventEmitter from 'events';
 class BlockchainEvents extends EventEmitter {}
 const blockchainEvents = new BlockchainEvents();
 
-module.exports = { blockchainEvents };
+export { blockchainEvents };

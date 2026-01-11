@@ -1,4 +1,4 @@
-const AccountAbstraction = require('../../account-abstraction');
+import AccountAbstraction from '../../account-abstraction.js';
 
 describe('Account Abstraction (ERC-4337)', () => {
   let aa;

@@ -1,0 +1,161 @@
+Attached HTML and CSS Context
+
+<div id="root"></div>
+
+
+/* Matched Rule from user-agent */
+div {
+  display: block;
+}
+
+/* Matched Rule from user-agent */
+address, blockquote, center, div, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output, [dir="ltr" i], [dir="rtl" i], [dir="auto" i] {
+  unicode-bidi: isolate;
+}
+
+/* Matched Rule from regular */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  box-sizing: border-box;
+}
+
+/* Matched Rule from regular */
+#root {
+  min-height: 100vh;
+  min-height: 100vh;
+}
+
+/* Inherited from ancestor level 1 (user-agent) */
+body {
+  display: block;
+  margin-top: 8px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  margin-left: 8px;
+}
+
+/* Inherited from ancestor level 1 (regular) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  box-sizing: border-box;
+}
+
+/* Inherited from ancestor level 1 (regular) */
+body {
+  margin: 0;
+  font-family: 'Share Tech Mono', monospace;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100vh;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  font-family: "Share Tech Mono", monospace;
+  background-image: linear-gradient(135deg, rgb(15, 15, 35) 0%, rgb(26, 26, 46) 50%, rgb(22, 33, 62) 100%);
+  background-position-x: initial;
+  background-position-y: initial;
+  background-size: initial;
+  background-repeat: initial;
+  background-attachment: initial;
+  background-origin: initial;
+  background-clip: initial;
+  background-color: initial;
+  min-height: 100vh;
+}
+
+/* Inherited from ancestor level 1 (regular) */
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: linear-gradient(135deg, var(--background-dark) 0%, var(--background-card) 50%, var(--background-light) 100%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  font-family: "Share Tech Mono", monospace;
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Inherited from ancestor level 1 (regular) */
+body {
+  font-size: 14px;
+  font-size: 14px;
+}
+
+/* Inherited from ancestor level 2 (user-agent) */
+html {
+  display: block;
+}
+
+/* Inherited from ancestor level 2 (user-agent) */
+:root {
+  view-transition-name: root;
+}
+
+/* Inherited from ancestor level 2 (regular) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  box-sizing: border-box;
+}
+
+/* Inherited from ancestor level 2 (regular) */
+:root {
+  --primary-color: #00eaff;
+  --secondary-color: #ff6b6b;
+  --accent-color: #4ecdc4;
+  --background-dark: #0f0f23;
+  --background-card: #1a1a2e;
+  --background-light: #16213e;
+  --text-primary: #ffffff;
+  --text-secondary: #b2ebf2;
+  --text-muted: #8892a0;
+  --border-color: #2a2d3a;
+  --success-color: #00d4aa;
+  --warning-color: #ffaa00;
+  --error-color: #ff4757;
+  --shadow: 0 4px 20px rgba(0, 234, 255, 0.1);
+  --primary-color: #00eaff;
+  --secondary-color: #ff6b6b;
+  --accent-color: #4ecdc4;
+  --background-dark: #0f0f23;
+  --background-card: #1a1a2e;
+  --background-light: #16213e;
+  --text-primary: #ffffff;
+  --text-secondary: #b2ebf2;
+  --text-muted: #8892a0;
+  --border-color: #2a2d3a;
+  --success-color: #00d4aa;
+  --warning-color: #ffaa00;
+  --error-color: #ff4757;
+  --shadow: 0 4px 20px rgba(0, 234, 255, 0.1);
+}

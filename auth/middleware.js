@@ -1,4 +1,4 @@
-const authService = require('./jwt-service');
+import authService from './jwt-service.js';
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
@@ -101,9 +101,4 @@ function optionalAuth(req, res, next) {
   next();
 }
 
-module.exports = {
-  basicAuth,
-  jwtAuth,
-  requireRole,
-  optionalAuth
-};
+export { basicAuth, jwtAuth, requireRole, optionalAuth };

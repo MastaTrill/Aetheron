@@ -1,5 +1,5 @@
-const { Sequelize } = require('sequelize');
-const path = require('path');
+import { Sequelize } from 'sequelize';
+import path from 'path';
 
 // Database configuration
 const sequelize = process.env.NODE_ENV === 'production'
@@ -21,8 +21,8 @@ const sequelize = process.env.NODE_ENV === 'production'
   })
   : new Sequelize({
     dialect: 'sqlite',
-    storage: path.join(__dirname, '..', 'data', 'aetheron.db'),
+    storage: path.join(path.dirname(new URL(import.meta.url).pathname), '..', 'data', 'aetheron.db'),
     logging: process.env.NODE_ENV === 'development' ? console.log : false
   });
 
-module.exports = sequelize;
+export default sequelize;

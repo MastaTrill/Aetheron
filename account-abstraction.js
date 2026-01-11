@@ -3,8 +3,8 @@
  * Implements smart contract wallets with flexible validation and execution logic
  */
 
-const crypto = require('crypto');
-const { verifySignature } = require('./encryption');
+import crypto from 'crypto';
+import { Wallet } from './blockchain.js';
 
 /**
  * Smart Account - User's programmable wallet
@@ -85,7 +85,7 @@ class SmartAccount {
 
     // 2. Verify signature
     const message = this.getUserOpHash(userOp);
-    const isValidSig = await verifySignature(message, signature, this.owner);
+    const isValidSig = await Wallet.verifySignature(this.owner, message, signature);
 
     if (!isValidSig) {
       return { valid: false, reason: 'Invalid signature' };
@@ -707,10 +707,5 @@ class AccountAbstraction {
   }
 }
 
-module.exports = AccountAbstraction;
-module.exports.AccountAbstraction = AccountAbstraction;
-module.exports.SmartAccount = SmartAccount;
-module.exports.AccountFactory = AccountFactory;
-module.exports.UserOperationMempool = UserOperationMempool;
-module.exports.EntryPoint = EntryPoint;
-module.exports.ValidationRules = ValidationRules;
+export default AccountAbstraction;
+export { AccountAbstraction, SmartAccount, AccountFactory, UserOperationMempool, EntryPoint, ValidationRules };

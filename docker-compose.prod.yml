@@ -58,7 +58,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - aetheron-network
     healthcheck:
@@ -89,11 +88,9 @@ services:
     container_name: aetheron-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
     depends_on:
       - app
     networks:

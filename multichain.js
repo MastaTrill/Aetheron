@@ -228,4 +228,4 @@ class MultiChainIntegration {
   }
 }
 
-module.exports = { MultiChainIntegration, CHAIN_CONFIGS };
+export { MultiChainIntegration, CHAIN_CONFIGS };

@@ -1,4 +1,4 @@
-const FiatOnRamp = require('../../fiat-onramp');
+import FiatOnRamp from '../../fiat-onramp.js';
 
 describe('Fiat On-Ramp Integration', () => {
   let fiatOnRamp;

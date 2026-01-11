@@ -1,21 +1,21 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-const http = require('http');
-const { AetheronWebSocket } = require('./websocket');
-require('dotenv').config();
+import express from 'express';
+import path from 'path';
+import cors from 'cors';
+import http from 'http';
+import { AetheronWebSocket } from './websocket.js';
+import 'dotenv/config';
 
 // Database and Auth
-const { sequelize, User, Log, Transaction } = require('./database/models');
-const authRoutes = require('./auth/routes');
-const { basicAuth, jwtAuth, requireRole, optionalAuth } = require('./auth/middleware');
+import { sequelize, User, Log, Transaction } from './database/models.js';
+import authRoutes from './auth/routes.js';
+import { basicAuth, jwtAuth, requireRole, optionalAuth } from './auth/middleware.js';
 
 // Import new feature modules
-const { AccountAbstraction } = require('./account-abstraction');
-const FiatOnRamp = require('./fiat-onramp');
-const { LimitOrderManager } = require('./limit-orders');
-const { RWATokenization } = require('./rwa-tokenization');
-const L2Integration = require('./l2-integration');
+import { AccountAbstraction } from './account-abstraction.js';
+import FiatOnRamp from './fiat-onramp.js';
+import { LimitOrderManager } from './limit-orders.js';
+import { RWATokenization } from './rwa-tokenization.js';
+import L2Integration from './l2-integration.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -279,7 +279,7 @@ app.get('/api', (req, res) => {
 });
 
 // Multichain endpoints
-const { MultiChainIntegration } = require('./multichain');
+import { MultiChainIntegration } from './multichain.js';
 const multichain = new MultiChainIntegration();
 
 app.get('/multichain/chains', (req, res) => {

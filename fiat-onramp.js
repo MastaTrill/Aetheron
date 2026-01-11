@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 /**
  * Fiat On-Ramp Integration
@@ -583,4 +583,4 @@ class FiatOnRamp {
   }
 }
 
-module.exports = FiatOnRamp;
+export default FiatOnRamp;

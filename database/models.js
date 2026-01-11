@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./connection');
+import { DataTypes } from 'sequelize';
+import sequelize from './connection.js';
 
 const User = sequelize.define('User', {
   id: {
@@ -146,9 +146,4 @@ const Transaction = sequelize.define('Transaction', {
 User.hasMany(Log, { foreignKey: 'userId', as: 'logs' });
 Log.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-module.exports = {
-  User,
-  Log,
-  Transaction,
-  sequelize
-};
+export { User, Log, Transaction, sequelize };

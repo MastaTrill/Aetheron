@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-const EventEmitter = require('events');
-const { ethers } = require('ethers');
+import EventEmitter from 'events';
+import { ethers } from 'ethers';
 
 /**
  * Aetheron Real-World Asset (RWA) Tokenization Module
@@ -917,4 +917,4 @@ class RWATokenization extends EventEmitter {
   }
 }
 
-module.exports = { RWATokenization };
+export { RWATokenization };
