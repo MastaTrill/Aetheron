@@ -54,7 +54,7 @@ Cache-Control = "public, max-age=0, must-revalidate"
 
 [[redirects]]
 from = "/api/*"
-to = "https://your-backend-url.com/api/:splat"
+to = "https://jarvisai-u8aq.onrender.com/api/:splat"
 status = 200.0
 force = false
 
