@@ -28,8 +28,6 @@
     "contracts:deploy:mainnet": "npx hardhat run scripts/deploy.js --network ethereum && npx hardhat run scripts/deploy.js --network polygon && npx hardhat run scripts/deploy.js --network base",
     "contracts:verify": "npx hardhat verify --network ethereum $(cat deployments/ethereum.json | jq -r .tokenAddress) \"1000000000000000000000000\" && npx hardhat verify --network ethereum $(cat deployments/ethereum.json | jq -r .nftAddress)",
     "deploy:liquidity": "node deploy-liquidity.js",
-    "docker:build": "docker build -t aetheron:latest .",
-    "docker:run": "docker run -d --name aetheron-app -p 3001:3001 --env-file .env aetheron:latest",
     "docker:up": "docker-compose -f docker-compose.prod.yml up -d",
     "docker:down": "docker-compose -f docker-compose.prod.yml down",
     "docker:logs": "docker-compose -f docker-compose.prod.yml logs -f",
