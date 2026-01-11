@@ -1,4 +1,4 @@
-/* global self, caches, clients, indexedDB */
+/* global clients */
 /**
  * Service Worker for Aetheron PWA
  * Provides offline support, caching, and background sync

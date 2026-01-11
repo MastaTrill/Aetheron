@@ -1,5 +1,66 @@
 {
+  "1337": {
+    "tokenAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "nftAddress": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "network": "hardhat"
+  },
   "networks": {
+    "hardhat": {
+      "chainId": 1337,
+      "name": "Hardhat Local",
+      "rpcUrl": "http://127.0.0.1:8545",
+      "explorerUrl": "N/A",
+      "nativeCurrency": {
+        "name": "Ether",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "tokenAddress": "DEPLOY_LOCALLY_FIRST",
+      "nftAddress": "DEPLOY_LOCALLY_FIRST",
+      "note": "Run 'npx hardhat run scripts/deploy.js --network hardhat' to deploy locally"
+    },
+    "sepolia": {
+      "chainId": 11155111,
+      "name": "Sepolia Testnet",
+      "rpcUrl": "https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY",
+      "explorerUrl": "https://sepolia.etherscan.io",
+      "nativeCurrency": {
+        "name": "Sepolia Ether",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "tokenAddress": "DEPLOY_TO_TESTNET_FIRST",
+      "nftAddress": "DEPLOY_TO_TESTNET_FIRST",
+      "note": "Run 'npx hardhat run scripts/deploy.js --network sepolia' to deploy"
+    },
+    "polygonAmoy": {
+      "chainId": 80002,
+      "name": "Polygon Amoy Testnet",
+      "rpcUrl": "https://polygon-amoy.infura.io/v3/YOUR_PROJECT_ID",
+      "explorerUrl": "https://amoy.polygonscan.com",
+      "nativeCurrency": {
+        "name": "MATIC",
+        "symbol": "MATIC",
+        "decimals": 18
+      },
+      "tokenAddress": "DEPLOY_TO_TESTNET_FIRST",
+      "nftAddress": "DEPLOY_TO_TESTNET_FIRST",
+      "note": "Run 'npx hardhat run scripts/deploy.js --network polygonAmoy' to deploy"
+    },
+    "baseSepolia": {
+      "chainId": 84532,
+      "name": "Base Sepolia Testnet",
+      "rpcUrl": "https://sepolia.base.org",
+      "explorerUrl": "https://sepolia.basescan.org",
+      "nativeCurrency": {
+        "name": "Ether",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "tokenAddress": "DEPLOY_TO_TESTNET_FIRST",
+      "nftAddress": "DEPLOY_TO_TESTNET_FIRST",
+      "note": "Run 'npx hardhat run scripts/deploy.js --network baseSepolia' to deploy"
+    },
     "ethereum": {
       "chainId": 1,
       "name": "Ethereum Mainnet",
@@ -10,12 +71,13 @@
         "symbol": "ETH",
         "decimals": 18
       },
-      "tokenAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
-      "nftAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
+      "tokenAddress": "DEPLOY_TO_MAINNET_FIRST",
+      "nftAddress": "DEPLOY_TO_MAINNET_FIRST",
+      "note": "⚠️ MAINNET DEPLOYMENT - Use with caution!"
     },
     "base": {
       "chainId": 8453,
-      "name": "Base",
+      "name": "Base Mainnet",
       "rpcUrl": "https://mainnet.base.org",
       "explorerUrl": "https://basescan.org",
       "nativeCurrency": {
@@ -23,8 +85,9 @@
         "symbol": "ETH",
         "decimals": 18
       },
-      "tokenAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
-      "nftAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
+      "tokenAddress": "DEPLOY_TO_MAINNET_FIRST",
+      "nftAddress": "DEPLOY_TO_MAINNET_FIRST",
+      "note": "⚠️ MAINNET DEPLOYMENT - Use with caution!"
     },
     "polygon": {
       "chainId": 137,
@@ -36,28 +99,16 @@
         "symbol": "MATIC",
         "decimals": 18
       },
-      "tokenAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452",
-      "nftAddress": "0x8A3ad49656Bd07981C9CFc7aD826a808847c3452"
+      "tokenAddress": "DEPLOY_TO_MAINNET_FIRST",
+      "nftAddress": "DEPLOY_TO_MAINNET_FIRST",
+      "note": "⚠️ MAINNET DEPLOYMENT - Use with caution!"
     },
     "solana": {
       "name": "Solana Mainnet",
       "rpcUrl": "https://api.mainnet-beta.solana.com",
       "explorerUrl": "https://solscan.io",
-      "tokenAddress": "5fryQ4UPbZWKix8J3jtQhNTDXtSsoX24vyDQ8gQbFqki"
-    }
-  },
-  "testnet": {
-    "base-sepolia": {
-      "chainId": 84532,
-      "name": "Base Sepolia",
-      "rpcUrl": "https://sepolia.base.org",
-      "explorerUrl": "https://sepolia.basescan.org"
-    },
-    "polygon-mumbai": {
-      "chainId": 80001,
-      "name": "Polygon Mumbai",
-      "rpcUrl": "https://rpc-mumbai.maticvigil.com",
-      "explorerUrl": "https://mumbai.polygonscan.com"
+      "tokenAddress": "DEPLOY_TO_SOLANA_FIRST",
+      "note": "Solana deployment requires different tools (Anchor, Solana CLI)"
     }
   }
 }

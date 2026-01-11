@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.33% </span>
+                <span class="strong">51.42% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>21/36</span>
+                <span class='fraction'>18/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">65% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>13/20</span>
+                <span class='fraction'>10/20</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.33% </span>
+                <span class="strong">51.42% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>21/36</span>
+                <span class='fraction'>18/35</span>
             </div>
         
             
@@ -172,9 +172,7 @@
 <a name='L107'></a><a href='#L107'>107</a>
 <a name='L108'></a><a href='#L108'>108</a>
 <a name='L109'></a><a href='#L109'>109</a>
-<a name='L110'></a><a href='#L110'>110</a>
-<a name='L111'></a><a href='#L111'>111</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L110'></a><a href='#L110'>110</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -197,15 +195,15 @@
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -284,17 +282,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const authService = require('./jwt-service');
-const { User } = require('../database/models');
 &nbsp;
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || <span class="branch-1 cbranch-no" title="branch not covered" >'admin';</span>
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || <span class="branch-1 cbranch-no" title="branch not covered" >'admin123';</span>
 &nbsp;
 /**
  * Basic Authentication Middleware (for admin endpoints)
  */
 function basicAuth(req, res, next) {
   const auth = req.headers.authorization;
-  
+&nbsp;
   if (!auth || !auth.startsWith('Basic ')) {
     res.set('WWW-Authenticate', 'Basic realm="Aetheron Admin"');
     return res.status(401).json({
@@ -305,10 +302,10 @@ function basicAuth(req, res, next) {
 &nbsp;
   try {
     const [user, pass] = Buffer.from(auth.split(' ')[1], 'base64').toString().split(':');
-    
-    if (user === ADMIN_USERNAME &amp;&amp; pass === ADMIN_PASSWORD) {
-      req.user = { username: user, role: 'admin' };
-      return next();
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (user === ADMIN_USERNAME &amp;&amp; pass === ADMIN_PASSWORD) {
+<span class="cstat-no" title="statement not covered" >      req.user = { username: user, role: 'admin' };</span>
+<span class="cstat-no" title="statement not covered" >      return next();</span>
     }
   } catch (error) {
     // Invalid base64 or malformed header
@@ -375,7 +372,7 @@ function requireRole(...roles) {
 function optionalAuth(req, res, next) {
   try {
     const token = authService.extractToken(req.headers.authorization);
-    
+&nbsp;
     <span class="missing-if-branch" title="if path not taken" >I</span>if (token) {
       const decoded = <span class="cstat-no" title="statement not covered" >authService.verifyToken(token);</span>
 <span class="cstat-no" title="statement not covered" >      req.user = decoded;</span>
@@ -383,7 +380,7 @@ function optionalAuth(req, res, next) {
   } catch (error) {
     // Token invalid but that's okay for optional auth
   }
-  
+&nbsp;
   next();
 }
 &nbsp;
@@ -400,7 +397,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-12-20T02:54:34.009Z
+                at 2026-01-04T03:39:16.281Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

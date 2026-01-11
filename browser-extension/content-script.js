@@ -1,4 +1,4 @@
-/* global chrome, window, document */
+/* global chrome */
 /**
  * Content Script
  * Injected into web pages to enable dApp interaction

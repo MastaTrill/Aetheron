@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "name": "aetheron",
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/admin",
+      "dest": "/admin-dashboard.html"
+    },
+    {
+      "src": "/analytics",
+      "dest": "/analytics-dashboard.html"
+    },
+    {
+      "src": "/explorer",
+      "dest": "/explorer.html"
+    },
+    {
+      "src": "/demo",
+      "dest": "/DEMO.html"
+    },
+    {
+      "src": "/wallet",
+      "dest": "/browser-extension/popup.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}

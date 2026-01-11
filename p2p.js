@@ -1,6 +1,6 @@
 // Peer-to-peer networking for Aetheron blockchain
 const WebSocket = require('ws');
-const { Blockchain, Transaction, Wallet } = require('./blockchain');
+const { Blockchain, Transaction } = require('./blockchain');
 
 const PORT = process.env.P2P_PORT || 6001;
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
@@ -9,8 +9,8 @@ const server = new WebSocket.Server({ port: PORT });
 let sockets = [];
 let chain = new Blockchain();
 
-function broadcast(message) {
-  sockets.forEach((ws) => ws.send(JSON.stringify(message)));
+function _broadcast(_message) {
+  sockets.forEach((ws) => ws.send(JSON.stringify(_message)));
 }
 
 function connectToPeer(address) {

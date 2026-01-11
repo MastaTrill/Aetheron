@@ -481,7 +481,8 @@
 <a name='L416'></a><a href='#L416'>416</a>
 <a name='L417'></a><a href='#L417'>417</a>
 <a name='L418'></a><a href='#L418'>418</a>
-<a name='L419'></a><a href='#L419'>419</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -847,6 +848,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1109,7 +1111,7 @@ class DeFiLending {
     const now = <span class="cstat-no" title="statement not covered" >Date.now();</span>
     const duration = <span class="cstat-no" title="statement not covered" >Math.min(now - stake.startTime, stake.unlockTime - stake.startTime);</span>
     const years = <span class="cstat-no" title="statement not covered" >duration / (365 * 24 * 60 * 60 * 1000);</span>
-    
+&nbsp;
     // Ensure minimum reward even for very short durations
     const reward = <span class="cstat-no" title="statement not covered" >stake.stakedAmount * (stake.apy / 100) * years;</span>
 <span class="cstat-no" title="statement not covered" >    return reward &gt; 0 ? reward : stake.stakedAmount * 0.0000001; </span>// Minimum reward
@@ -1146,7 +1148,7 @@ class DeFiLending {
 <span class="fstat-no" title="function not covered" >  as</span>ync getFarmingRewards(userId) {
     const userPositions = <span class="cstat-no" title="statement not covered" >this.farmingPositions.filter(<span class="fstat-no" title="function not covered" >p </span>=&gt; <span class="cstat-no" title="statement not covered" >p.userId === userId)</span>;</span>
     const rewardRate = <span class="cstat-no" title="statement not covered" >0.0001;</span> // 0.01% per second
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    return userPositions.reduce(<span class="fstat-no" title="function not covered" >(t</span>otal, position) =&gt; {</span>
       const duration = <span class="cstat-no" title="statement not covered" >(Date.now() - position.startTime) / 1000;</span> // seconds
       const rewards = <span class="cstat-no" title="statement not covered" >position.lpAmount * rewardRate * duration;</span>
@@ -1156,7 +1158,7 @@ class DeFiLending {
 &nbsp;
 <span class="fstat-no" title="function not covered" >  as</span>ync claimFarmingRewards() {
     const rewards = <span class="cstat-no" title="statement not covered" >await this.getFarmingRewards('test-user');</span>
-    
+&nbsp;
     // Reset start times for all positions
 <span class="cstat-no" title="statement not covered" >    this.farmingPositions.forEach(<span class="fstat-no" title="function not covered" >p </span>=&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      if (p.userId === 'test-user') {</span>
@@ -1219,7 +1221,7 @@ class DeFiLending {
     // Time-Weighted Average Price
     // For simplicity, just return current price with small variation
     const currentPrice = <span class="cstat-no" title="statement not covered" >await this.getPrice(token1, token2);</span>
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    if (!this.priceHistory) {</span>
 <span class="cstat-no" title="statement not covered" >      this.priceHistory = {};</span>
     }
@@ -1254,27 +1256,28 @@ class DeFiLending {
 <span class="cstat-no" title="statement not covered" >      try {</span>
         let result;
 <span class="cstat-no" title="statement not covered" >        switch (op.type) {</span>
-          case 'swap':
-            // Ensure pool exists for swap
-            const poolKey1 = <span class="cstat-no" title="statement not covered" >`${op.from}-${op.to}`;</span>
-            const poolKey2 = <span class="cstat-no" title="statement not covered" >`${op.to}-${op.from}`;</span>
-<span class="cstat-no" title="statement not covered" >            if (!this.liquidityPools[poolKey1] &amp;&amp; !this.liquidityPools[poolKey2]) {</span>
-              // Create a default pool for testing
-<span class="cstat-no" title="statement not covered" >              await this.addLiquidity(op.from, op.to, 100, 200000);</span>
-            }
-<span class="cstat-no" title="statement not covered" >            result = await this.swap(op.from, op.to, op.amount, 50); </span>// Higher slippage for batch
-<span class="cstat-no" title="statement not covered" >            gasUsed += 50000; </span>// Simulated gas
-<span class="cstat-no" title="statement not covered" >            break;</span>
-          case 'stake':
-<span class="cstat-no" title="statement not covered" >            result = await this.stake(op.token, op.amount, op.days);</span>
-<span class="cstat-no" title="statement not covered" >            gasUsed += 30000;</span>
-<span class="cstat-no" title="statement not covered" >            break;</span>
-          case 'addLiquidity':
-<span class="cstat-no" title="statement not covered" >            result = await this.addLiquidity(op.token1, op.token2, op.amount1, op.amount2);</span>
-<span class="cstat-no" title="statement not covered" >            gasUsed += 60000;</span>
-<span class="cstat-no" title="statement not covered" >            break;</span>
-          default:
-<span class="cstat-no" title="statement not covered" >            throw new Error(`Unknown operation type: ${op.type}`);</span>
+        case 'swap': {
+          // Ensure pool exists for swap
+          const poolKey1 = <span class="cstat-no" title="statement not covered" >`${op.from}-${op.to}`;</span>
+          const poolKey2 = <span class="cstat-no" title="statement not covered" >`${op.to}-${op.from}`;</span>
+<span class="cstat-no" title="statement not covered" >          if (!this.liquidityPools[poolKey1] &amp;&amp; !this.liquidityPools[poolKey2]) {</span>
+            // Create a default pool for testing
+<span class="cstat-no" title="statement not covered" >            await this.addLiquidity(op.from, op.to, 100, 200000);</span>
+          }
+<span class="cstat-no" title="statement not covered" >          result = await this.swap(op.from, op.to, op.amount, 50); </span>// Higher slippage for batch
+<span class="cstat-no" title="statement not covered" >          gasUsed += 50000; </span>// Simulated gas
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        }
+        case 'stake':
+<span class="cstat-no" title="statement not covered" >          result = await this.stake(op.token, op.amount, op.days);</span>
+<span class="cstat-no" title="statement not covered" >          gasUsed += 30000;</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        case 'addLiquidity':
+<span class="cstat-no" title="statement not covered" >          result = await this.addLiquidity(op.token1, op.token2, op.amount1, op.amount2);</span>
+<span class="cstat-no" title="statement not covered" >          gasUsed += 60000;</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        default:
+<span class="cstat-no" title="statement not covered" >          throw new Error(`Unknown operation type: ${op.type}`);</span>
         }
 <span class="cstat-no" title="statement not covered" >        results.push(result);</span>
       } catch (error) {
@@ -1300,7 +1303,7 @@ class DeFiLending {
 <span class="cstat-no" title="statement not covered" >      throw new Error('Reentrancy detected');</span>
     }
 <span class="cstat-no" title="statement not covered" >    this.locked = true;</span>
-    
+&nbsp;
     // Simulate reentrancy attempt
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      await this.reentrancyTest(); </span>// Attempt reentrant call
@@ -1308,7 +1311,7 @@ class DeFiLending {
 <span class="cstat-no" title="statement not covered" >      this.locked = false;</span>
 <span class="cstat-no" title="statement not covered" >      throw error; </span>// Re-throw the reentrancy error
     }
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    this.locked = false;</span>
   }
 }
@@ -1324,7 +1327,7 @@ class DeFiLending {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-12-20T02:54:34.009Z
+                at 2026-01-04T03:39:16.281Z
             </div>
         <script src="../prettify.js"></script>
         <script>

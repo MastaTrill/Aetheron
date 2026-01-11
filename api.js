@@ -30,6 +30,16 @@ const defi = new DeFiLending();
 const game = new GamePlatform();
 const crowd = new Crowdfunding();
 
+// Export for testing
+if (process.env.NODE_ENV === 'test') {
+  module.exports.wallets = wallets;
+  module.exports.chain = chain;
+  module.exports.resetState = () => {
+    wallets = {};
+    chain = new Blockchain();
+  };
+}
+
 // Multi-chain support
 const multichain = new MultiChainIntegration('ethereum');
 const solana = new SolanaIntegration('mainnet-beta');
@@ -389,3 +399,15 @@ app.post('/plugins/uninstall', (req, res) => {
     res.status(404).json({ error: 'Plugin not found' });
   }
 });
+
+// Export for testing
+if (process.env.NODE_ENV === 'test') {
+  module.exports.wallets = wallets;
+  module.exports.chain = chain;
+  module.exports.resetState = () => {
+    wallets = {};
+    chain = new Blockchain();
+  };
+}
+
+module.exports = app;

@@ -23,7 +23,7 @@ async function seed() {
 
     // Create demo user
     const userPassword = await bcrypt.hash('user123', 10);
-    const user = await User.findOrCreate({
+    await User.findOrCreate({
       where: { username: 'demo' },
       defaults: {
         address: '0x1234567890abcdef1234567890abcdef12345678',

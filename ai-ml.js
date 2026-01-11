@@ -1,5 +1,4 @@
 // AI/ML Integration for Blockchain Analysis
-const crypto = require('crypto');
 
 class FraudDetector {
   constructor() {
@@ -353,7 +352,7 @@ class AMMOptimizer {
     };
   }
 
-  findRoutes(tokenIn, tokenOut, maxHops = 3) {
+  findRoutes(tokenIn, tokenOut, _maxHops = 3) {
     const routes = [];
 
     // Direct routes

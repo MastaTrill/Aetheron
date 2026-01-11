@@ -1,4 +1,3 @@
-/* global window */
 /**
  * Injected Provider Script
  * Provides window.ethereum API for dApps

@@ -1,9 +1,9 @@
 // Aetheron WebSocket Server for Real-Time Updates
-const WebSocket = require('ws');
+import { WebSocketServer } from 'ws';
 
 class AetheronWebSocket {
   constructor(server) {
-    this.wss = new WebSocket.Server({ server });
+    this.wss = new WebSocketServer({ server });
     this.clients = new Set();
     this.setupServer();
   }
@@ -185,4 +185,4 @@ class AetheronWebSocket {
   }
 }
 
-module.exports = { AetheronWebSocket };
+export { AetheronWebSocket };

@@ -129,13 +129,15 @@ describe('Fiat On-Ramp Integration', () => {
         '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7'
       );
 
-      // Simulate status update
-      setTimeout(() => {
-        const status = fiatOnRamp.getTransactionStatus(purchase.transactionId);
-        expect(['pending', 'processing', 'completed']).toContain(
-          status.transaction.status
-        );
-      }, 1000);
+      expect(purchase.status).toBe('pending');
+
+      // Simulate status update by updating the stored transaction
+      const storedTransaction = fiatOnRamp.transactions.get(purchase.transactionId);
+      storedTransaction.status = 'completed';
+
+      const status = fiatOnRamp.getTransactionStatus(purchase.transactionId);
+      expect(status.success).toBe(true);
+      expect(status.transaction.status).toBe('completed');
     });
   });
 

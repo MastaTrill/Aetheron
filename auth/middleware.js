@@ -1,5 +1,4 @@
 const authService = require('./jwt-service');
-const { User } = require('../database/models');
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
@@ -9,7 +8,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
  */
 function basicAuth(req, res, next) {
   const auth = req.headers.authorization;
-  
+
   if (!auth || !auth.startsWith('Basic ')) {
     res.set('WWW-Authenticate', 'Basic realm="Aetheron Admin"');
     return res.status(401).json({
@@ -20,7 +19,7 @@ function basicAuth(req, res, next) {
 
   try {
     const [user, pass] = Buffer.from(auth.split(' ')[1], 'base64').toString().split(':');
-    
+
     if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
       req.user = { username: user, role: 'admin' };
       return next();
@@ -90,7 +89,7 @@ function requireRole(...roles) {
 function optionalAuth(req, res, next) {
   try {
     const token = authService.extractToken(req.headers.authorization);
-    
+
     if (token) {
       const decoded = authService.verifyToken(token);
       req.user = decoded;
@@ -98,7 +97,7 @@ function optionalAuth(req, res, next) {
   } catch (error) {
     // Token invalid but that's okay for optional auth
   }
-  
+
   next();
 }
 

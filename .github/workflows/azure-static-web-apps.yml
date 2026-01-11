@@ -1,0 +1,145 @@
+
+# Azure Static Web Apps CI/CD
+# This workflow builds, tests, and deploys your app to Azure Static Web Apps.
+# It uses best practices for caching, Node.js version pinning, and test enforcement.
+name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - preview/**
+      - feature/**
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+      - staging
+      - preview/**
+      - feature/**
+
+permissions:
+  contents: read
+  pull-requests: write
+  deployments: write
+
+jobs:
+  build_and_deploy_job:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    name: Build and Deploy Production
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      # ...existing code...
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install dependencies (if any)
+        run: |
+          if [ -f package.json ]; then npm ci || npm install; fi
+      - name: Run tests
+        run: |
+          if [ -f package.json ]; then npm test || (echo "Tests failed" && exit 1); fi
+      - name: Build static assets (if any)
+        run: |
+          if [ -f package.json ] && npm run | grep -q "build"; then npm run build; fi
+      - name: Build And Deploy Static Site
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          api_location: ""
+          output_location: ""
+      # Job summary for production
+      - name: Job Summary
+        run: |
+          echo "## Production Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed to Azure Static Web Apps." >> $GITHUB_STEP_SUMMARY
+
+  preview_deploy_job:
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Preview/Staging
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      # ...existing code...
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install dependencies (if any)
+        run: |
+          if [ -f package.json ]; then npm ci || npm install; fi
+      - name: Run tests
+        run: |
+          if [ -f package.json ]; then npm test || (echo "Tests failed" && exit 1); fi
+      - name: Build static assets (if any)
+        run: |
+          if [ -f package.json ] && npm run | grep -q "build"; then npm run build; fi
+      # Set preview/staging environment variables (example)
+      - name: Set Preview Environment Variables
+        run: |
+          echo "PREVIEW_ENV=true" >> $GITHUB_ENV
+          echo "DEPLOYMENT_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      - name: Build And Deploy Static Site (Preview)
+        id: builddeploypreview
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          api_location: ""
+          output_location: ""
+      # Job summary for preview/staging
+      - name: Job Summary
+        run: |
+          echo "## Preview/Staging Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed to Azure Static Web Apps (Preview/Staging)." >> $GITHUB_STEP_SUMMARY
+
+  close_pull_request_job:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request Job
+    steps:
+      - name: Close Pull Request
+        id: closepullrequest
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "close"
+          app_location: "/"
+          api_location: ""
+          output_location: ""

@@ -36,7 +36,6 @@ class SmartAccount {
     const hash = crypto
       .createHash('sha256')
       .update(owner)
-      .update(Date.now().toString())
       .digest('hex');
     return '0xAA' + hash.slice(0, 38); // AA prefix for Account Abstraction
   }
@@ -130,7 +129,7 @@ class SmartAccount {
       .digest('hex');
   }
 
-  async verifyMultiSig(userOp, signatures) {
+  async verifyMultiSig(_userOp, _signatures) {
     // In real implementation, verify multiple signatures
     return this.threshold;
   }
@@ -183,7 +182,7 @@ class SmartAccount {
     };
   }
 
-  async executeCall(target, value, data, blockchain) {
+  async executeCall(target, value, data, _blockchain) {
     // Execute the actual transaction on blockchain
     if (value > this.balance) {
       throw new Error('Insufficient balance');
@@ -254,7 +253,7 @@ class AccountFactory {
   /**
    * Deploy account on-chain
    */
-  async deployAccount(address, blockchain) {
+  async deployAccount(address, _blockchain) {
     const account = this.accounts.get(address);
     if (!account) {
       throw new Error('Account not found');
@@ -347,7 +346,7 @@ class UserOperationMempool {
    */
   getPendingOperations(limit = 10) {
     const pending = Array.from(this.operations.entries())
-      .filter(([hash, op]) => {
+      .filter(([_hash, op]) => {
         // Check if still valid
         return op.validation.validUntil > Date.now();
       })
@@ -543,9 +542,11 @@ class AccountAbstraction {
   }
 
   async createSmartAccount(provider, profile) {
-    const account = await this.factory.createAccount(provider, profile);
+    // Create deterministic owner string from provider and profile
+    const owner = `${provider}:${profile.id || profile.email || JSON.stringify(profile)}`;
+    const account = await this.factory.createAccount(owner, { provider, profile });
     this.accounts.set(account.address, account);
-    
+
     return {
       success: true,
       account: {
@@ -566,9 +567,9 @@ class AccountAbstraction {
       expiresAt: permissions.validUntil || (Date.now() + 86400000),
       active: true
     };
-    
+
     this.sessionKeys.set(sessionKey.key, sessionKey);
-    
+
     return {
       success: true,
       sessionKey: sessionKey.key,
@@ -579,24 +580,24 @@ class AccountAbstraction {
 
   async executeWithSessionKey(sessionKey, transaction) {
     const session = this.sessionKeys.get(sessionKey);
-    
+
     if (!session || !session.active) {
       return { success: false, error: 'Invalid or inactive session key' };
     }
-    
+
     // Check if transaction value exceeds session limit
     if (session.permissions.maxAmount) {
       const maxAmount = BigInt(session.permissions.maxAmount);
       const txValue = BigInt(transaction.value);
-      
+
       if (txValue > maxAmount) {
-        return { 
-          success: false, 
-          error: 'Transaction value exceeds session key limit' 
+        return {
+          success: false,
+          error: 'Transaction value exceeds session key limit'
         };
       }
     }
-    
+
     return {
       success: true,
       userOpHash: '0x' + Math.random().toString(16).substr(2, 64),
@@ -607,12 +608,12 @@ class AccountAbstraction {
 
   revokeSessionKey(sessionKey) {
     const session = this.sessionKeys.get(sessionKey);
-    
+
     if (session) {
       session.active = false;
       return { success: true };
     }
-    
+
     return { success: false, error: 'Session key not found' };
   }
 
@@ -646,10 +647,13 @@ class AccountAbstraction {
   }
 
   async recoverAccount(provider, profile) {
+    // Create deterministic owner string from provider and profile
+    const owner = `${provider}:${profile.id || profile.email || JSON.stringify(profile)}`;
+
     // Try to find existing account with same provider and profile
-    const account = await this.factory.createAccount(provider, profile);
+    const account = await this.factory.createAccount(owner, { provider, profile });
     const existing = this.accounts.get(account.address);
-    
+
     if (existing) {
       return {
         success: true,
@@ -662,10 +666,11 @@ class AccountAbstraction {
         recovered: true
       };
     }
-    
+
     // Create new account
     this.accounts.set(account.address, account);
     return {
+
       success: true,
       account: {
         address: account.address,
@@ -673,23 +678,23 @@ class AccountAbstraction {
         profile,
         isDeployed: account.isDeployed
       },
-      recovered: true
+      recovered: false
     };
   }
 
   async addRecovery(accountAddress, guardians, threshold) {
     const account = this.accounts.get(accountAddress);
-    
+
     if (!account) {
       return { success: false, error: 'Account not found' };
     }
-    
+
     account.recovery = { guardians, threshold };
-    
+
     return { success: true, guardians, threshold };
   }
 
-  async initiateRecovery(accountAddress, newOwner, guardianSignatures) {
+  async initiateRecovery(accountAddress, newOwner, _guardianSignatures) {
     return {
       success: true,
       recoveryId: 'recovery_' + Math.random().toString(16).substr(2, 16),

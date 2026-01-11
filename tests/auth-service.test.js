@@ -1,5 +1,5 @@
 const authService = require('../auth/jwt-service');
-const bcrypt = require('bcryptjs');
+// const bcrypt = require('bcryptjs'); // removed unused import
 
 describe('AuthService', () => {
   const testPayload = {

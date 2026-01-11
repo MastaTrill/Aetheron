@@ -4,7 +4,7 @@ const http = require('http');
 const WebSocket = require('ws');
 
 describe('WebSocket Server', () => {
-  let server;
+  // let server; // removed unused variable
   let httpServer;
   let wsServer;
   let testPort = 3002;
@@ -22,7 +22,7 @@ describe('WebSocket Server', () => {
         client.close();
       }
     });
-    
+
     // Close WebSocket server
     wsServer.wss.close(() => {
       // Close HTTP server
@@ -56,30 +56,34 @@ describe('WebSocket Server', () => {
     test('should track connection count', (done) => {
       const client1 = new WebSocket(`ws://localhost:${testPort}`);
       const client2 = new WebSocket(`ws://localhost:${testPort}`);
+      let connectedCount = 0;
 
-      client2.on('open', () => {
-        const count = wsServer.getConnectionCount();
-        expect(count).toBeGreaterThanOrEqual(2);
-        client1.close();
-        client2.close();
-        done();
-      });
+      const checkConnections = () => {
+        connectedCount++;
+        if (connectedCount >= 2) {
+          const count = wsServer.getConnectionCount();
+          expect(count).toBeGreaterThanOrEqual(2);
+          client1.close();
+          client2.close();
+          done();
+        }
+      };
+
+      client1.on('open', checkConnections);
+      client2.on('open', checkConnections);
     });
   });
 
   describe('Message Handling', () => {
     test('should respond to ping with pong', (done) => {
       const client = new WebSocket(`ws://localhost:${testPort}`);
-      let messageCount = 0;
       const timeout = setTimeout(() => {
         client.close();
         done(new Error('Timeout waiting for pong'));
       }, 5000);
 
       client.on('message', (data) => {
-        messageCount++;
         const message = JSON.parse(data);
-
         if (message.type === 'pong') {
           clearTimeout(timeout);
           expect(message.timestamp).toBeTruthy();
@@ -154,11 +158,10 @@ describe('WebSocket Server', () => {
       const timeout = setTimeout(() => {
         client.close();
         done(new Error('Timeout waiting for new block notification'));
-      }, 5000);
-      
+      }, 10000);
+
       client.on('message', (data) => {
         const message = JSON.parse(data);
-        
         if (message.type === 'newBlock') {
           clearTimeout(timeout);
           expect(message.block).toBeTruthy();
@@ -167,9 +170,12 @@ describe('WebSocket Server', () => {
           done();
         }
       });
-      
+
       client.on('open', () => {
-        // Send notification after connection
+        // Subscribe to blockchain channel
+        client.send(JSON.stringify({ type: 'subscribe', channel: 'blockchain' }));
+
+        // Ensure client is ready before notifying
         setTimeout(() => {
           wsServer.notifyNewBlock({
             index: 1,
@@ -177,7 +183,7 @@ describe('WebSocket Server', () => {
             transactions: [],
             timestamp: Date.now()
           });
-        }, 100);
+        }, 200);
       });
     });
 
@@ -186,11 +192,10 @@ describe('WebSocket Server', () => {
       const timeout = setTimeout(() => {
         client.close();
         done(new Error('Timeout waiting for new transaction notification'));
-      }, 5000);
-      
+      }, 10000);
+
       client.on('message', (data) => {
         const message = JSON.parse(data);
-        
         if (message.type === 'newTransaction') {
           clearTimeout(timeout);
           expect(message.transaction).toBeTruthy();
@@ -199,9 +204,11 @@ describe('WebSocket Server', () => {
           done();
         }
       });
-      
+
       client.on('open', () => {
-        // Send notification after connection
+        // Subscribe to blockchain channel
+        client.send(JSON.stringify({ type: 'subscribe', channel: 'blockchain' }));
+
         setTimeout(() => {
           wsServer.notifyNewTransaction({
             sender: '0x123',

@@ -88,7 +88,7 @@ class AdvancedRateLimiter {
   /**
    * Validate and check rate limit
    */
-  checkLimit(apiKey, endpoint = 'default') {
+  checkLimit(apiKey, _endpoint = 'default') {
     const keyData = this.apiKeys.get(apiKey);
 
     if (!keyData) {

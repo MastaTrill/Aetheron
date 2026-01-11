@@ -3,8 +3,6 @@
  * Auto-generate interactive API documentation
  */
 
-const crypto = require('crypto');
-
 /**
  * OpenAPI Spec Builder
  * Build OpenAPI 3.0 specification

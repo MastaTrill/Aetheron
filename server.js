@@ -59,6 +59,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 
 // Security headers
 app.use((req, res, next) => {
@@ -158,19 +159,19 @@ app.post('/users/role', basicAuth, async (req, res) => {
   try {
     const { address, role } = req.body;
     const user = await User.findOne({ where: { address } });
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
+
     await user.update({ role });
-    
+
     await Log.create({
       type: 'INFO',
       details: { action: 'role_updated', address, role },
       userId: req.user?.id
     });
-    
+
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -181,19 +182,19 @@ app.post('/users/kyc', jwtAuth, requireRole('admin', 'moderator'), async (req, r
   try {
     const { address, kycStatus } = req.body;
     const user = await User.findOne({ where: { address } });
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
+
     await user.update({ kycStatus });
-    
+
     await Log.create({
       type: 'SUCCESS',
       details: { action: 'kyc_updated', address, kycStatus },
       userId: req.user.id
     });
-    
+
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -245,7 +246,7 @@ app.get('/stats', basicAuth, async (req, res) => {
     const totalUsers = await User.count();
     const totalTransactions = await Transaction.count();
     const totalVolume = await Transaction.sum('amount') || 0;
-    
+
     res.json({
       totalUsers,
       totalTransactions,
@@ -291,12 +292,11 @@ app.get('/multichain/chains', (req, res) => {
 });
 
 app.get('/multichain/config/:chain', (req, res) => {
-  try {
-    const config = multichain.getChainConfig(req.params.chain);
-    res.json(config);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
+  const config = multichain.getChainConfig(req.params.chain);
+  if (!config) {
+    return res.status(404).json({ error: `Chain config not found for '${req.params.chain}'` });
   }
+  res.json(config);
 });
 
 // Health check endpoint (for Railway and monitoring)
@@ -469,15 +469,24 @@ app.get('/chain', jwtAuth, (req, res) => {
   });
 });
 
+// React app fallback - serve index.html for client-side routes only (not API routes)
+app.get('*', (req, res) => {
+  // Don't serve React app for API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+});
+
 // Error handling
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error(err.stack);
-  
+
   // Handle JSON parsing errors
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     return res.status(400).json({ error: 'Invalid JSON' });
   }
-  
+
   res.status(500).json({ error: 'Internal server error' });
 });
 
