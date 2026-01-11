@@ -2,8 +2,8 @@
 # Stage 1: Build stage
 FROM node:20-alpine AS builder
 
-# Install build dependencies
-RUN apk add --no-cache python3 make g++
+# Install build dependencies including SQLite
+RUN apk add --no-cache python3 make g++ sqlite-dev
 
 # Set working directory
 WORKDIR /app
@@ -23,8 +23,8 @@ RUN npm run lint || true
 # Stage 2: Production stage
 FROM node:20-alpine AS production
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init curl
+# Install dumb-init and SQLite runtime
+RUN apk add --no-cache dumb-init curl sqlite
 
 # Create app user for security
 RUN addgroup -g 1001 -S nodejs && \

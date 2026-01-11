@@ -37,12 +37,6 @@ async function main() {
   const AetheronToken = await hre.ethers.getContractFactory('AetheronToken');
   const initialSupply = hre.ethers.parseEther('1000000'); // 1,000,000 AETH
 
-  // Estimate gas for token deployment
-  const tokenGasEstimate = await AetheronToken.signer.estimateGas(
-    AetheronToken.getDeployTransaction(initialSupply)
-  );
-  console.log(`⛽ Estimated gas for token: ${tokenGasEstimate.toString()}`);
-
   const erc20 = await AetheronToken.deploy(initialSupply);
   await erc20.waitForDeployment();
   const tokenAddress = await erc20.getAddress();
@@ -51,12 +45,6 @@ async function main() {
   // 2. Deploy ERC721 NFT
   console.log('\n🎨 Deploying AetheronGlyphs (ERC721)...');
   const AetheronGlyphs = await hre.ethers.getContractFactory('AetheronGlyphs');
-
-  // Estimate gas for NFT deployment
-  const nftGasEstimate = await AetheronGlyphs.signer.estimateGas(
-    AetheronGlyphs.getDeployTransaction()
-  );
-  console.log(`⛽ Estimated gas for NFT: ${nftGasEstimate.toString()}`);
 
   const erc721 = await AetheronGlyphs.deploy();
   await erc721.waitForDeployment();
@@ -73,11 +61,7 @@ async function main() {
     nftSymbol: 'AGLYPH',
     initialSupply: initialSupply.toString(),
     deployer: deployerAddress,
-    timestamp: new Date().toISOString(),
-    gasEstimates: {
-      token: tokenGasEstimate.toString(),
-      nft: nftGasEstimate.toString()
-    }
+    timestamp: new Date().toISOString()
   };
 
   console.log('\n📋 Deployment Summary:');
@@ -142,7 +126,6 @@ async function main() {
   console.log('2. Test the contracts on the deployed network');
   console.log('3. Set up liquidity and trading pairs if needed');
   console.log('4. Announce the deployment to your community');
-}
 }
 
 // Run script

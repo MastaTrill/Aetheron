@@ -1,5 +1,5 @@
 // Unit tests for API endpoints
-const request = require('supertest');
+import request from 'supertest';
 
 // Mock all dependencies to avoid actual blockchain operations
 jest.mock('../../blockchain', () => ({
@@ -9,8 +9,21 @@ jest.mock('../../blockchain', () => ({
     addTransaction: jest.fn(),
     createBlock: jest.fn(() => ({ index: 1, hash: 'block-hash' }))
   })),
-  Transaction: jest.fn(),
-  Wallet: jest.fn(),
+  Transaction: jest.fn().mockImplementation((sender, receiver, amount, signature, fee) => ({
+    sender,
+    receiver,
+    amount,
+    signature,
+    fee,
+    signTransaction: jest.fn(),
+    isValid: jest.fn(() => true)
+  })),
+  Wallet: jest.fn().mockImplementation((password) => ({
+    publicKey: 'mock-public-key-' + Math.random().toString(36).substr(2, 9),
+    privateKey: password ? 'encrypted-private-key' : 'plain-private-key',
+    encrypted: !!password,
+    getDecryptedPrivateKey: jest.fn((pwd) => pwd === password ? 'decrypted-private-key' : null)
+  })),
   saveBlockchain: jest.fn(),
   loadBlockchain: jest.fn()
 }));
@@ -114,9 +127,17 @@ jest.mock('../../admin-auth', () => ({
   checkAdminPassword: jest.fn(() => true)
 }));
 
-const app = require('../../api');
+const apiModule = require('../../api');
+const app = apiModule;
 
 describe('API Endpoints', () => {
+  beforeEach(() => {
+    // Reset global state for each test
+    if (process.env.NODE_ENV === 'test' && apiModule.resetState) {
+      apiModule.resetState();
+    }
+  });
+
   describe('GET /chain', () => {
     test('should return blockchain data', async () => {
       const response = await request(app)
@@ -148,9 +169,9 @@ describe('API Endpoints', () => {
         .post('/wallet')
         .send({ password: 'test-password' })
         .expect(200);
-      
+
       const senderAddress = walletResponse.body.publicKey;
-      
+
       const txData = {
         sender: senderAddress,
         receiver: 'receiver-address',
