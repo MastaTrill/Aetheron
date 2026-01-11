@@ -30,7 +30,7 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:3001', 'http://localhost:3000'];
+  : ['http://localhost:3001', 'http://localhost:3000', 'https://gregarious-strudel-850a21.netlify.app'];
 
 const server = http.createServer(app);
 
