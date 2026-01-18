@@ -5,9 +5,11 @@
  * Verifies all services are running correctly
  */
 
-const http = require('http');
-const { promisify } = require('util');
-const exec = promisify(require('child_process').exec);
+import http from 'http';
+import { promisify } from 'util';
+import { exec } from 'child_process';
+
+const execAsync = promisify(exec);
 
 const PORT = process.env.PORT || 3001;
 const TIMEOUT = 5000;

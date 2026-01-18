@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aetheron - Multi-Chain Blockchain Platform</title>
   <meta name="description" content="Aetheron is a modular, full-featured blockchain platform with DeFi, NFT, DAO, Gaming, and more">
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="//code.tidio.co/abcdefghijklmnop1234567890.js" async></script>
   <style>
     * {
       margin: 0;
@@ -28,6 +33,28 @@
       height: 100%;
       pointer-events: none;
       z-index: 0;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.3;
+      filter: blur(1px) brightness(0.4);
     }
 
     .star {
@@ -54,26 +81,86 @@
 
     header {
       text-align: center;
-      padding: 60px 20px;
+      padding: 80px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    .logo-icon {
+      font-size: 3rem;
+      animation: rocketFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes rocketFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .brand-tagline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .brand-highlight {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ff6b6b;
+      text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+      letter-spacing: 2px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 500;
     }
 
     .logo {
       font-size: 4rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #00eaff, #00bcd4, #0097a7);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 20px;
-      text-shadow: 0 0 30px rgba(0, 234, 255, 0.5);
-      letter-spacing: 4px;
+      text-shadow: 0 0 40px rgba(255, 107, 107, 0.5);
+      letter-spacing: 6px;
+      font-family: 'Inter', sans-serif;
+      animation: logoGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoGlow {
+      0% { text-shadow: 0 0 40px rgba(255, 107, 107, 0.5); }
+      100% { text-shadow: 0 0 60px rgba(255, 107, 107, 0.8), 0 0 80px rgba(78, 205, 196, 0.4); }
     }
 
     .tagline {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       opacity: 0.9;
       margin-bottom: 40px;
-      color: #00eaff;
+      color: #4ecdc4;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
     }
 
     .description {
@@ -82,6 +169,54 @@
       max-width: 800px;
       margin: 0 auto 40px;
       opacity: 0.8;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .cta-btn {
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .cta-btn.primary {
+      background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+      color: #ffffff;
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 1px;
+    }
+
+    .cta-btn.primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(255, 107, 107, 0.6);
+      background: linear-gradient(135deg, #ff5252, #26d0ce);
+    }
+
+    .cta-btn.secondary {
+      background: transparent;
+      color: #4ecdc4;
+      border: 2px solid #4ecdc4;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .cta-btn.secondary:hover {
+      background: rgba(78, 205, 196, 0.1);
+      transform: translateY(-3px);
+      border-color: #26d0ce;
+      color: #26d0ce;
     }
 
     .features-grid {
@@ -115,6 +250,50 @@
     .feature-badge p {
       opacity: 0.8;
       font-size: 0.95rem;
+    }
+
+    .stats-section {
+      margin: 80px 0;
+      text-align: center;
+    }
+
+    .stats-section h2 {
+      font-size: 2.5rem;
+      color: #00eaff;
+      margin-bottom: 40px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      background: rgba(0, 234, 255, 0.1);
+      border: 1px solid rgba(0, 234, 255, 0.3);
+      padding: 30px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      background: rgba(0, 234, 255, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #00eaff;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.8;
     }
 
     .pages-section {
@@ -257,11 +436,66 @@
       box-shadow: 0 10px 30px rgba(0, 234, 255, 0.5);
     }
 
+    .social-section {
+      text-align: center;
+      margin: 60px 0;
+    }
+
+    .social-section h2 {
+      color: #00eaff;
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+
+    .social-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .social-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 234, 255, 0.3);
+      color: #00eaff;
+      padding: 15px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .social-btn:hover {
+      background: rgba(0, 234, 255, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 234, 255, 0.3);
+    }
+
+    .social-icon {
+      font-size: 1.2rem;
+    }
+
     footer {
       text-align: center;
       padding: 40px 20px;
       opacity: 0.6;
       margin-top: 80px;
+    }
+
+    footer p {
+      margin: 5px 0;
+    }
+
+    footer a {
+      color: #00eaff;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
     }
 
     @media (max-width: 768px) {
@@ -273,8 +507,24 @@
         font-size: 1.2rem;
       }
 
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .cta-btn {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+      }
+
       .pages-grid {
         grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
       }
 
       .link-buttons {
@@ -286,21 +536,53 @@
         width: 100%;
         max-width: 300px;
       }
+
+      .social-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .social-btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
   <div class="stars" id="stars"></div>
+  <div class="particles" id="particles"></div>
+  
+  <!-- Video Background -->
+  <video autoplay muted loop class="video-background" id="video-bg">
+    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+    <!-- Fallback for browsers that don't support video -->
+    Your browser does not support the video tag.
+  </video>
 
   <div class="container">
     <header>
-      <h1 class="logo">AETHERON</h1>
-      <p class="tagline">Multi-Chain Blockchain Platform</p>
+      <div class="brand-section">
+        <div class="logo-container">
+          <div class="logo-icon">🚀</div>
+          <h1 class="logo">AETHERON</h1>
+        </div>
+        <div class="brand-tagline">
+          <span class="brand-highlight">2026</span>
+          <span class="brand-subtitle">Revolutionary DeFi Gaming</span>
+        </div>
+      </div>
+      <p class="tagline">Revolutionary DeFi Gaming Platform</p>
       <p class="description">
-        A modular, full-featured blockchain ecosystem with advanced DeFi, NFT marketplace, 
-        DAO governance, gaming integration, and enterprise-grade security features across 
-        Ethereum, Base, Polygon, and Solana networks.
+        Experience the future of blockchain gaming with real-time TVL simulation, 
+        multi-chain DeFi integration, and account abstraction. Join thousands of users 
+        already exploring the next generation of decentralized finance and gaming.
       </p>
+      <div class="cta-buttons">
+        <a href="beta/apply" class="cta-btn primary">🚀 Join Beta Testing</a>
+        <a href="#features" class="cta-btn secondary">Explore Features</a>
+      </div>
     </header>
 
     <div class="features-grid">
@@ -336,9 +618,27 @@
         <h3>🛡️ ZK Privacy</h3>
         <p>Zero-knowledge proofs & private txs</p>
       </div>
-    </div>
-
-    <section class="pages-section">
+    <section class="stats-section">
+      <h2>📈 Platform Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">$6,216+</div>
+          <div class="stat-label">Virtual TVL Achieved</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">165/165</div>
+          <div class="stat-label">Tests Passing</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">4</div>
+          <div class="stat-label">Blockchains Supported</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">8+</div>
+          <div class="stat-label">Asset Types</div>
+        </div>
+      </div>
+    </section>
       <h2>Explore Aetheron</h2>
       <div class="pages-grid">
         <a href="admin-dashboard.html" class="page-card">
@@ -410,22 +710,121 @@
       </div>
     </section>
 
+    <section class="newsletter-section">
+      <h2>📧 Stay Updated</h2>
+      <p>Join our newsletter for the latest updates, beta releases, and exclusive insights into the future of DeFi gaming.</p>
+      <div class="newsletter-form">
+        <form class="newsletter-form-element">
+          <input type="email" placeholder="Enter your email address" class="newsletter-input" required>
+          <button type="submit" class="newsletter-btn">Subscribe</button>
+        </form>
+      </div>
+      <p class="newsletter-note">No spam, unsubscribe at any time. We respect your privacy.</p>
+    </section>
+
+    <section class="social-section">
+      <h2>🌐 Connect With Us</h2>
+      <div class="social-buttons">
+        <a href="https://twitter.com/Aetheron2026" class="social-btn twitter">
+          <span class="social-icon">🐦</span>
+          Twitter
+        </a>
+        <a href="https://discord.gg/aetheron" class="social-btn discord">
+          <span class="social-icon">💬</span>
+          Discord
+        </a>
+        <a href="https://t.me/aetheron2026" class="social-btn telegram">
+          <span class="social-icon">📱</span>
+          Telegram
+        </a>
+        <a href="mailto:beta@aether.io" class="social-btn email">
+          <span class="social-icon">✉️</span>
+          Email
+        </a>
+      </div>
+    </section>
+
     <footer>
-      <p>&copy; 2025 Aetheron Platform. Multi-Chain Blockchain Ecosystem.</p>
-      <p>Built with ❤️ for the decentralized future</p>
+      <p>&copy; 2026 Aetheron Platform. Multi-Chain Blockchain Ecosystem.</p>
+      <p>Built with ❤️ for the decentralized future | <a href="beta/apply">Join Beta Testing</a></p>
     </footer>
   </div>
 
   <script>
-    // Generate random stars
+    // Generate random stars with enhanced effects
     const starsContainer = document.getElementById('stars');
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 250; i++) {
       const star = document.createElement('div');
       star.className = 'star';
       star.style.left = Math.random() * 100 + '%';
       star.style.top = Math.random() * 100 + '%';
-      star.style.animationDelay = Math.random() * 3 + 's';
+      star.style.animationDelay = Math.random() * 4 + 's';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      
+      // Add some stars with different sizes
+      if (Math.random() > 0.7) {
+        star.style.width = star.style.height = (Math.random() * 2 + 2) + 'px';
+      }
+      
       starsContainer.appendChild(star);
+    }
+
+    // Add floating particles effect
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+      const particle = document.createElement('div');
+      particle.style.cssText = `
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(255, 107, 107, 0.3);
+        border-radius: 50%;
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        animation: float ${Math.random() * 10 + 10}s linear infinite;
+      `;
+      particlesContainer.appendChild(particle);
+    }
+
+    // Add keyframes for floating animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes float {
+        0% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+        50% { opacity: 0.8; }
+        100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Video background controls
+    const video = document.getElementById('video-bg');
+    if (video) {
+      // Pause video on mobile for performance
+      if (window.innerWidth < 768) {
+        video.pause();
+        video.style.display = 'none';
+      }
+
+      // Handle video loading errors
+      video.addEventListener('error', function() {
+        console.log('Video failed to load, using fallback background');
+        video.style.display = 'none';
+      });
+    }
+
+    // Newsletter form handling
+    const newsletterForm = document.querySelector('.newsletter-form-element');
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = this.querySelector('.newsletter-input').value;
+        if (email) {
+          // Here you would integrate with your email service
+          alert('Thank you for subscribing! We\'ll keep you updated on Aetheron 2026.');
+          this.querySelector('.newsletter-input').value = '';
+        }
+      });
     }
   </script>
 </body>

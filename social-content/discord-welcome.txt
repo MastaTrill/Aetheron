@@ -1,0 +1,43 @@
+🎉 **WELCOME TO AETHERON 2026!** 🎉
+
+**The future of DeFi gaming is here!** 🚀
+
+**🌐 Live Platform:** https://aether.io
+
+**🎮 Try the Game:** Experience TVL growth mechanics firsthand
+**📊 Admin Dashboard:** Full platform management interface
+**🔍 Block Explorer:** Real-time blockchain visualization
+
+**📢 What is Aetheron?**
+A modular blockchain ecosystem combining:
+• DeFi yield farming with gaming
+• Multi-chain interoperability
+• Account abstraction (gasless tx)
+• AI-powered analytics
+• RWA tokenization
+• NFT marketplace
+• DAO governance
+
+**🧪 Beta Testing Program:**
+We're looking for early adopters! Get exclusive access to:
+• New features before public release
+• Direct developer communication
+• Platform influence
+• Community perks
+
+**Apply for beta testing:** Use `/beta-apply` command
+
+**📚 Resources:**
+• #announcements - Platform updates
+• #general - Community discussion
+• #support - Technical help
+• #beta-testing - Testing program
+• #development - Code discussions
+
+**🎯 Community Guidelines:**
+• Be respectful and constructive
+• Test responsibly (use testnet first)
+• Report bugs with detailed information
+• Help fellow community members
+
+**🚀 Let's build the future of DeFi gaming together!**

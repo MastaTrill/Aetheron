@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheron Beta Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 234, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 234, 255, 0.3);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00eaff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-badge {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 234, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: #00eaff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff88;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .progress-section {
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00eaff, #00ff88);
+            transition: width 0.3s ease;
+        }
+
+        .tasks-section {
+            margin-bottom: 2rem;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 234, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-info h4 {
+            color: #00eaff;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-points {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .task-completed {
+            opacity: 0.6;
+        }
+
+        .task-completed .task-item {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+        }
+
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-item.current-user {
+            background: rgba(0, 234, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #00eaff;
+            min-width: 30px;
+        }
+
+        .rank.current-user {
+            color: #00ff88;
+        }
+
+        .feedback-section {
+            margin-bottom: 2rem;
+        }
+
+        .feedback-form {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 234, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #00ff88;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(0, 234, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #00eaff;
+            box-shadow: 0 0 10px rgba(0, 234, 255, 0.3);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #00eaff, #00ff88);
+            border: none;
+            border-radius: 8px;
+            color: #0f2027;
+            padding: 0.75rem 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(0, 234, 255, 0.2);
+            color: #00eaff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .platform-access {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 234, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .access-btn {
+            background: linear-gradient(45deg, #00eaff, #00ff88);
+            border: none;
+            border-radius: 10px;
+            color: #0f2027;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 1rem 0.5rem 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .access-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">AETHERON BETA</div>
+        <div class="user-info">
+            <div class="user-badge">Tester ID: <span id="user-id">Loading...</span></div>
+            <div class="user-badge">Week <span id="current-week">1</span> of 4</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="platform-access">
+            <h3>🚀 Access Aetheron Platform</h3>
+            <p>Test the latest features and provide feedback</p>
+            <a href="https://gregarious-strudel-850a21.netlify.app" class="access-btn" target="_blank">
+                🌐 Open Platform
+            </a>
+            <a href="https://discord.gg/aetheron" class="access-btn" target="_blank">
+                💬 Join Discord
+            </a>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="overview">Overview</div>
+            <div class="tab" data-tab="tasks">Tasks</div>
+            <div class="tab" data-tab="leaderboard">Leaderboard</div>
+            <div class="tab" data-tab="feedback">Feedback</div>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-title">📊 Your Stats</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value" id="user-points">0</span>
+                            <span class="stat-label">Points</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="user-rank">0</span>
+                            <span class="stat-label">Rank</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="tasks-completed">0</span>
+                            <span class="stat-label">Tasks Done</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="feedback-submitted">0</span>
+                            <span class="stat-label">Feedback</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🎯 Weekly Progress</div>
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="weekly-progress" style="width: 0%"></div>
+                        </div>
+                        <div style="text-align: center; margin-top: 0.5rem;">
+                            <span id="progress-text">0/5 tasks completed</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <strong>Focus:</strong> <span id="week-focus">Core Gaming Mechanics</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🏆 Reward Tiers</div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="tier-item" data-tier="bronze">
+                            <span class="tier-name">🥉 Bronze (100 pts)</span>
+                            <span class="tier-status" id="bronze-status">Not reached</span>
+                        </div>
+                        <div class="tier-item" data-tier="silver">
+                            <span class="tier-name">🥈 Silver (500 pts)</span>
+                            <span class="tier-status" id="silver-status">Not reached</span>
+                        </div>
+                        <div class="tier-item" data-tier="gold">
+                            <span class="tier-name">🥇 Gold (1000 pts)</span>
+                            <span class="tier-status" id="gold-status">Not reached</span>
+                        </div>
+                        <div class="tier-item" data-tier="platinum">
+                            <span class="tier-name">💎 Platinum (2000+ pts)</span>
+                            <span class="tier-status" id="platinum-status">Not reached</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📈 Program Stats</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value" id="total-testers">0</span>
+                            <span class="stat-label">Total Testers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="active-testers">0</span>
+                            <span class="stat-label">Active Today</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="bugs-reported">0</span>
+                            <span class="stat-label">Bugs Found</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="features-tested">0</span>
+                            <span class="stat-label">Features Tested</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tasks" class="tab-content">
+            <div class="tasks-section">
+                <div class="card">
+                    <div class="card-title">📋 Daily Tasks (Week <span id="task-week">1</span>)</div>
+                    <div class="task-list" id="daily-tasks">
+                        <!-- Tasks will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="leaderboard" class="tab-content">
+            <div class="leaderboard">
+                <div class="card-title">🏆 Top Beta Testers</div>
+                <div id="leaderboard-list">
+                    <!-- Leaderboard will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <div id="feedback" class="tab-content">
+            <div class="feedback-section">
+                <div class="feedback-form">
+                    <div class="card-title">💬 Submit Feedback</div>
+                    <form id="feedback-form">
+                        <div class="form-group">
+                            <label for="feedback-type" class="form-label">Feedback Type</label>
+                            <select id="feedback-type" name="type" class="form-select" required>
+                                <option value="">Select feedback type</option>
+                                <option value="bug">🐛 Bug Report</option>
+                                <option value="feature">✨ Feature Request</option>
+                                <option value="improvement">🔧 Improvement Suggestion</option>
+                                <option value="general">💭 General Feedback</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedback-title" class="form-label">Title</label>
+                            <input type="text" id="feedback-title" name="title" class="form-input" placeholder="Brief description of your feedback" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedback-description" class="form-label">Description</label>
+                            <textarea id="feedback-description" name="description" class="form-textarea" placeholder="Detailed description of the issue, suggestion, or feedback..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedback-severity" class="form-label">Severity (for bugs)</label>
+                            <select id="feedback-severity" name="severity" class="form-select">
+                                <option value="">Select severity</option>
+                                <option value="critical">🔴 Critical - Blocks core functionality</option>
+                                <option value="high">🟠 High - Major issue affecting user experience</option>
+                                <option value="medium">🟡 Medium - Noticeable but workarounds exist</option>
+                                <option value="low">🟢 Low - Minor issue or enhancement</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="submit-btn">📤 Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for demonstration - in production this would come from the beta management server
+        const mockUserData = {
+            id: 'TESTER-001',
+            points: 125,
+            rank: 15,
+            tasksCompleted: 8,
+            feedbackSubmitted: 3,
+            currentWeek: 1,
+            tier: 'bronze'
+        };
+
+        const mockTasks = [
+            { id: 1, title: 'Test TVL Growth Simulation', description: 'Try different investment strategies and report accuracy', points: 10, completed: true },
+            { id: 2, title: 'Explore Multi-Chain Bridges', description: 'Test ETH, Base, and Polygon integrations', points: 15, completed: true },
+            { id: 3, title: 'Account Abstraction Login', description: 'Test social login and gasless transactions', points: 20, completed: false },
+            { id: 4, title: 'AI Analytics Dashboard', description: 'Review yield optimization suggestions', points: 15, completed: false },
+            { id: 5, title: 'Weekly Survey', description: 'Complete the end-of-week feedback survey', points: 20, completed: false }
+        ];
+
+        const mockLeaderboard = [
+            { rank: 1, name: 'CryptoTester42', points: 450, tier: 'silver' },
+            { rank: 2, name: 'DeFiExplorer', points: 380, tier: 'silver' },
+            { rank: 3, name: 'BlockChainGuru', points: 320, tier: 'bronze' },
+            { rank: 4, name: 'YieldFarmer99', points: 290, tier: 'bronze' },
+            { rank: 5, name: 'Web3Wizard', points: 275, tier: 'bronze' },
+            { rank: 15, name: 'You', points: 125, tier: 'bronze', isCurrentUser: true }
+        ];
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadTasks();
+            loadLeaderboard();
+            setupTabs();
+            setupFeedbackForm();
+        });
+
+        function loadUserData() {
+            document.getElementById('user-id').textContent = mockUserData.id;
+            document.getElementById('user-points').textContent = mockUserData.points;
+            document.getElementById('user-rank').textContent = mockUserData.rank;
+            document.getElementById('tasks-completed').textContent = mockUserData.tasksCompleted;
+            document.getElementById('feedback-submitted').textContent = mockUserData.feedbackSubmitted;
+            document.getElementById('current-week').textContent = mockUserData.currentWeek;
+            document.getElementById('task-week').textContent = mockUserData.currentWeek;
+
+            // Update progress
+            const completedTasks = mockTasks.filter(task => task.completed).length;
+            const progressPercent = (completedTasks / mockTasks.length) * 100;
+            document.getElementById('weekly-progress').style.width = progressPercent + '%';
+            document.getElementById('progress-text').textContent = `${completedTasks}/${mockTasks.length} tasks completed`;
+
+            // Update tier status
+            updateTierStatus(mockUserData.points);
+        }
+
+        function updateTierStatus(points) {
+            const tiers = [
+                { name: 'bronze', threshold: 100 },
+                { name: 'silver', threshold: 500 },
+                { name: 'gold', threshold: 1000 },
+                { name: 'platinum', threshold: 2000 }
+            ];
+
+            tiers.forEach(tier => {
+                const statusEl = document.getElementById(tier.name + '-status');
+                if (points >= tier.threshold) {
+                    statusEl.textContent = '✅ Achieved';
+                    statusEl.style.color = '#00ff88';
+                } else {
+                    statusEl.textContent = `${tier.threshold - points} points to go`;
+                    statusEl.style.color = '#ffffff';
+                }
+            });
+        }
+
+        function loadTasks() {
+            const taskList = document.getElementById('daily-tasks');
+            taskList.innerHTML = '';
+
+            mockTasks.forEach(task => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-item ${task.completed ? 'task-completed' : ''}`;
+
+                taskEl.innerHTML = `
+                    <div class="task-info">
+                        <h4>${task.title}</h4>
+                        <p>${task.description}</p>
+                    </div>
+                    <div class="task-points">+${task.points} pts</div>
+                `;
+
+                taskList.appendChild(taskEl);
+            });
+        }
+
+        function loadLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            leaderboardList.innerHTML = '';
+
+            mockLeaderboard.forEach(user => {
+                const userEl = document.createElement('div');
+                userEl.className = `leaderboard-item ${user.isCurrentUser ? 'current-user' : ''}`;
+
+                userEl.innerHTML = `
+                    <div class="rank ${user.isCurrentUser ? 'current-user' : ''}">#${user.rank}</div>
+                    <div class="user-name">${user.name}</div>
+                    <div class="user-points">${user.points} pts</div>
+                    <div class="user-tier">${getTierIcon(user.tier)}</div>
+                `;
+
+                leaderboardList.appendChild(userEl);
+            });
+        }
+
+        function getTierIcon(tier) {
+            const icons = {
+                bronze: '🥉',
+                silver: '🥈',
+                gold: '🥇',
+                platinum: '💎'
+            };
+            return icons[tier] || '🥉';
+        }
+
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Hide all tab content
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Show selected tab content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        function setupFeedbackForm() {
+            const form = document.getElementById('feedback-form');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const feedbackData = {
+                    type: formData.get('type'),
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    severity: formData.get('severity'),
+                    timestamp: new Date().toISOString(),
+                    userId: mockUserData.id
+                };
+
+                try {
+                    // In production, this would send to the beta management server
+                    console.log('Submitting feedback:', feedbackData);
+
+                    // Mock success response
+                    alert('✅ Feedback submitted successfully! You earned 25 points.');
+
+                    // Reset form
+                    this.reset();
+
+                    // Update user stats (mock)
+                    mockUserData.points += 25;
+                    mockUserData.feedbackSubmitted += 1;
+                    loadUserData();
+
+                } catch (error) {
+                    console.error('Feedback submission error:', error);
+                    alert('❌ Failed to submit feedback. Please try again.');
+                }
+            });
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // Mock occasional point increases
+            if (Math.random() < 0.1) {
+                mockUserData.points += Math.floor(Math.random() * 5) + 1;
+                loadUserData();
+            }
+        }, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>
