@@ -20,7 +20,7 @@
 - [x] Branch deploys enabled
 
 ### **Domain Setup (Action Required)**
-- [ ] Purchase domain: aetheron.io ($12-15/year)
+- [ ] Purchase domain: aetheron.online ($12-15/year)
 - [ ] Configure DNS records:
   - CNAME: @ → gregarious-strudel-850a21.netlify.app
   - CNAME: www → gregarious-strudel-850a21.netlify.app

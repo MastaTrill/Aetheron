@@ -15,9 +15,9 @@ A revolutionary DeFi gaming platform combining:
 • Account abstraction (gasless transactions)
 • AI-powered analytics
 
-🔗 **Live Demo:** https://gregarious-strudel-850a21.netlify.app
+🔗 **Live Demo:** https://aetheron.online
 
-🧪 **Beta Testing:** We're looking for early testers! Apply at: https://gregarious-strudel-850a21.netlify.app/beta/apply
+🧪 **Beta Testing:** We're looking for early testers! Apply at: https://aetheron.online/beta/apply
 
 🚀 **Join our community:** https://discord.gg/aetheron
 
@@ -31,8 +31,8 @@ A revolutionary DeFi gaming platform combining:
 ```
 🚀 Aetheron 2026 is now live! Revolutionary DeFi gaming platform with account abstraction.
 
-🔗 Live Demo: https://gregarious-strudel-850a21.netlify.app
-🧪 Beta Testing: https://gregarious-strudel-850a21.netlify.app/beta/apply
+🔗 Live Demo: https://aetheron.online
+🧪 Beta Testing: https://aetheron.online/beta/apply
 💬 Discord: https://discord.gg/aetheron
 
 Features:
@@ -51,8 +51,8 @@ Check it out and let us know what you think! #Aetheron #DeFi #Gaming
 ```
 Hey! 👋 Just launched Aetheron 2026 - revolutionary DeFi gaming with account abstraction. Would love your thoughts!
 
-🌐 Live: https://gregarious-strudel-850a21.netlify.app
-🧪 Beta: https://gregarious-strudel-850a21.netlify.app/beta/apply
+🌐 Live: https://aetheron.online
+🧪 Beta: https://aetheron.online/beta/apply
 
 Combining DeFi yields with gaming mechanics - first of its kind! #Aetheron #DeFi #Web3
 ```
@@ -70,8 +70,8 @@ Revolutionary DeFi gaming platform:
 • Account abstraction
 • AI analytics
 
-Live Demo: https://gregarious-strudel-850a21.netlify.app
-Beta Testing: https://gregarious-strudel-850a21.netlify.app/beta/apply
+Live Demo: https://aetheron.online
+Beta Testing: https://aetheron.online/beta/apply
 Discord: https://discord.gg/aetheron
 
 #Aetheron #DeFi #Gaming #Blockchain

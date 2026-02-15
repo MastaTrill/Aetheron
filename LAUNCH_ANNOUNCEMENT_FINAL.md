@@ -22,7 +22,7 @@ Aetheron is a revolutionary blockchain ecosystem that combines **DeFi yield farm
 
 ## 🎮 **Try It Now**
 
-**Live Platform:** https://aether.io
+**Live Platform:** https://aetheron.online
 
 ### **Quick Start:**
 1. **Connect** with Google, Discord, or email (no wallet needed!)

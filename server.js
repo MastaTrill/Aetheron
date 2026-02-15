@@ -17,6 +17,16 @@ import authRoutes from './auth/routes.js';
 import { basicAuth, jwtAuth, requireRole, optionalAuth } from './auth/middleware.js';
 
 // Import new feature modules
+
+import { createRequire } from 'module';
+const requireCJS = createRequire(import.meta.url);
+const {
+  RealTimeMonitoringSystem,
+  CrossChainMetricsSystem,
+  UserBehaviorAnalyticsSystem,
+  PredictiveMaintenanceSystem
+} = requireCJS('./advanced-analytics.js');
+
 import { AccountAbstraction } from './account-abstraction.js';
 import FiatOnRamp from './fiat-onramp.js';
 import { LimitOrderManager } from './limit-orders.js';
@@ -30,7 +40,7 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:3001', 'http://localhost:3000', 'https://gregarious-strudel-850a21.netlify.app'];
+  : ['http://localhost:3001', 'http://localhost:3000', 'https://aetheron.online'];
 
 const server = http.createServer(app);
 
@@ -43,6 +53,84 @@ const fiatOnRamp = new FiatOnRamp();
 const limitOrders = new LimitOrderManager();
 const rwaTokenization = new RWATokenization();
 const l2Integration = new L2Integration();
+
+// === Advanced Analytics Modules ===
+const analyticsRealtime = new RealTimeMonitoringSystem({}, {});
+const analyticsCrossChain = new CrossChainMetricsSystem({});
+const analyticsUser = new UserBehaviorAnalyticsSystem();
+const analyticsMaintenance = new PredictiveMaintenanceSystem();
+
+// Start a default monitoring session for real-time analytics
+let defaultMonitoringId;
+analyticsRealtime.startMonitoring().then((monitoring) => {
+  defaultMonitoringId = monitoring.id;
+});
+
+// === Analytics API Endpoints ===
+// Real-time monitoring metrics
+app.get('/api/analytics/realtime/metrics', basicAuth, (req, res) => {
+  if (!defaultMonitoringId) return res.status(503).json({ error: 'Monitoring not started' });
+  const metrics = analyticsRealtime.getLatestMetrics(defaultMonitoringId);
+  res.json(metrics ? metrics : { error: 'No metrics available' });
+});
+
+// Real-time monitoring alerts
+app.get('/api/analytics/realtime/alerts', basicAuth, (req, res) => {
+  if (!defaultMonitoringId) return res.status(503).json({ error: 'Monitoring not started' });
+  const alerts = analyticsRealtime.getActiveAlerts(defaultMonitoringId);
+  res.json(alerts);
+});
+
+// Real-time system health
+app.get('/api/analytics/realtime/health', basicAuth, (req, res) => {
+  res.json(analyticsRealtime.getSystemHealth());
+});
+
+// Cross-chain metrics
+app.get('/api/analytics/crosschain/metrics', basicAuth, async (req, res) => {
+  const metrics = await analyticsCrossChain.collectCrossChainMetrics();
+  res.json(metrics);
+});
+
+// Cross-chain analytics trends
+app.get('/api/analytics/crosschain/analytics', basicAuth, (req, res) => {
+  const { timeframe } = req.query;
+  const result = analyticsCrossChain.getCrossChainAnalytics(Number(timeframe) || 24);
+  res.json(result);
+});
+
+// Cross-chain bridge performance
+app.get('/api/analytics/crosschain/bridges', basicAuth, (req, res) => {
+  res.json(analyticsCrossChain.getBridgePerformance());
+});
+
+// Cross-chain transfer stats
+app.get('/api/analytics/crosschain/transfers', basicAuth, (req, res) => {
+  const { timeframe } = req.query;
+  res.json(analyticsCrossChain.getTransferStatistics(Number(timeframe) || 24));
+});
+
+// User analytics (summary for a user)
+app.get('/api/analytics/user/:userId', basicAuth, (req, res) => {
+  const { userId } = req.params;
+  res.json(analyticsUser.getUserAnalytics(userId));
+});
+
+// User segmentation
+app.get('/api/analytics/user/segmentation', basicAuth, (req, res) => {
+  res.json(analyticsUser.getUserSegmentation());
+});
+
+// Predictive maintenance recommendations
+app.get('/api/analytics/maintenance/recommendations', basicAuth, (req, res) => {
+  res.json(analyticsMaintenance.getMaintenanceRecommendations());
+});
+
+// Predictive maintenance component health
+app.get('/api/analytics/maintenance/component/:componentId', basicAuth, (req, res) => {
+  const { componentId } = req.params;
+  res.json(analyticsMaintenance.getComponentHealthStatus(componentId));
+});
 
 // Middleware
 // CORS configuration

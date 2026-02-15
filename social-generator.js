@@ -11,8 +11,8 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const PLATFORM_URL = 'https://aether.io'; // Domain is now live!
-const DOMAIN_URL = 'https://aether.io'; // Update when domain is live
+const PLATFORM_URL = 'https://aetheron.online'; // Domain is now live!
+const DOMAIN_URL = 'https://aetheron.online'; // Update when domain is live
 const GITHUB_URL = 'https://github.com/MastaTrill/Aetheron';
 const DISCORD_URL = 'https://discord.gg/aetheron'; // Update with actual invite
 const TELEGRAM_URL = 'https://t.me/aetheron2026'; // Update with actual channel

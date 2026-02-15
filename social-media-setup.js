@@ -23,7 +23,7 @@ const setupSteps = [
       '2. Create account with username: @Aetheron2026',
       '3. Display Name: Aetheron 2026',
       '4. Bio: "Revolutionary DeFi Gaming Platform | Multi-Chain | Account Abstraction | Live Now 🚀"',
-      '5. Website: https://aether.io',
+      '5. Website: https://aetheron.online',
       '6. Profile Picture: Use rocket emoji or gaming-themed logo',
       '7. Header Image: Space/gaming banner',
       '8. Post the launch thread from social-content/twitter-launch-thread.txt'
@@ -89,8 +89,8 @@ console.log('5. Create content calendar for ongoing posts');
 console.log('');
 
 console.log('📋 Ready to Launch:');
-console.log('✅ Website: https://aether.io');
-console.log('✅ Domain: aether.io configured');
+console.log('✅ Website: https://aetheron.online');
+console.log('✅ Domain: aetheron.online configured');
 console.log('✅ Content: Social media posts prepared');
 console.log('⏳ Social Accounts: Need to be created');
 console.log('⏳ Launch Announcements: Ready to post');

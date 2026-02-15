@@ -5,7 +5,7 @@
 Welcome to the Aetheron Beta Testing Program! As an early adopter, you'll get exclusive access to test our revolutionary DeFi gaming platform before public release.
 
 **Program Duration:** January 11, 2026 - February 11, 2026 (4 weeks)
-**Beta Access:** https://gregarious-strudel-850a21.netlify.app
+**Beta Access:** https://aetheron.online
 
 ## 📋 **Application Requirements**
 

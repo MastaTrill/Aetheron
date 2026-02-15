@@ -1,6 +1,9 @@
+
 /**
  * Advanced Analytics Dashboard for Aetheron
  * Features: Real-time monitoring, cross-chain metrics, user behavior analytics, predictive maintenance
+ *
+ * @module advanced-analytics
  */
 
 const EventEmitter = require('events');
@@ -8,8 +11,14 @@ const crypto = require('crypto');
 
 /**
  * Real-Time Monitoring System
+ * Provides real-time blockchain, DeFi, user, and system metrics with alerting and health monitoring.
+ * @class
  */
 class RealTimeMonitoringSystem extends EventEmitter {
+  /**
+   * @param {Object} blockchain - Blockchain interface (optional, for future extensibility)
+   * @param {Object} defi - DeFi interface (optional, for future extensibility)
+   */
   constructor(blockchain, defi) {
     super();
     this.blockchain = blockchain;
@@ -27,6 +36,11 @@ class RealTimeMonitoringSystem extends EventEmitter {
 
   /**
    * Start real-time monitoring
+   */
+  /**
+   * Start a new real-time monitoring session.
+   * @param {Object} config - Monitoring configuration
+   * @returns {Promise<Object>} Monitoring session info
    */
   async startMonitoring(config = {}) {
     const monitoringId = `MONITOR_${crypto.randomBytes(8).toString('hex')}`;
@@ -61,6 +75,11 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Start metric collection
    */
+  /**
+   * Start periodic metric collection for a monitoring session.
+   * @param {string} monitoringId
+   * @param {Object} config
+   */
   startMetricCollection(monitoringId, config) {
     const interval = setInterval(async () => {
       try {
@@ -85,7 +104,13 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Collect real-time metrics
    */
+  /**
+   * Collect all real-time metrics for a session.
+   * @param {string} monitoringId
+   * @param {Object} config
+   */
   async collectMetrics(monitoringId, config) {
+    if (!monitoringId || typeof monitoringId !== 'string') throw new Error('Invalid monitoringId');
     const metrics = {};
 
     // Collect blockchain metrics
@@ -124,7 +149,13 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Collect chain-specific metrics
    */
+  /**
+   * Collect metrics for a specific blockchain.
+   * @param {string} chain
+   * @returns {Promise<Object>} Chain metrics
+   */
   async collectChainMetrics(chain) {
+    if (!chain || typeof chain !== 'string') throw new Error('Invalid chain');
     // Simulate real-time data collection
     const baseMetrics = {
       tps: Math.random() * 20 + 5, // 5-25 TPS
@@ -156,6 +187,10 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Collect DeFi metrics
    */
+  /**
+   * Collect DeFi metrics.
+   * @returns {Promise<Object>} DeFi metrics
+   */
   async collectDeFiMetrics() {
     return {
       totalValueLocked: Math.random() * 50000000000 + 10000000000, // $10-60B
@@ -176,6 +211,10 @@ class RealTimeMonitoringSystem extends EventEmitter {
 
   /**
    * Collect user metrics
+   */
+  /**
+   * Collect user metrics.
+   * @returns {Promise<Object>} User metrics
    */
   async collectUserMetrics() {
     return {
@@ -200,6 +239,10 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Collect system metrics
    */
+  /**
+   * Collect system metrics.
+   * @returns {Promise<Object>} System metrics
+   */
   async collectSystemMetrics() {
     return {
       cpuUsage: Math.random() * 40 + 20, // 20-60%
@@ -214,6 +257,11 @@ class RealTimeMonitoringSystem extends EventEmitter {
 
   /**
    * Check alerts and trigger if needed
+   */
+  /**
+   * Check for alert conditions and trigger alerts if needed.
+   * @param {string} monitoringId
+   * @param {Object} config
    */
   async checkAlerts(monitoringId, config) {
     const latestMetrics = this.getLatestMetrics(monitoringId);
@@ -268,6 +316,11 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Trigger alert
    */
+  /**
+   * Trigger and store an alert for a monitoring session.
+   * @param {string} monitoringId
+   * @param {Object} alert
+   */
   triggerAlert(monitoringId, alert) {
     const alertId = `ALERT_${crypto.randomBytes(8).toString('hex')}`;
 
@@ -295,6 +348,9 @@ class RealTimeMonitoringSystem extends EventEmitter {
 
   /**
    * Update system health
+   */
+  /**
+   * Update the overall and component system health status.
    */
   async updateSystemHealth() {
     const allMetrics = Array.from(this.metrics.values()).flat();
@@ -356,6 +412,11 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Get latest metrics
    */
+  /**
+   * Get the latest metrics for a monitoring session.
+   * @param {string} monitoringId
+   * @returns {Object|null}
+   */
   getLatestMetrics(monitoringId) {
     const metrics = this.metrics.get(monitoringId);
     return metrics && metrics.length > 0 ? metrics[metrics.length - 1] : null;
@@ -363,6 +424,12 @@ class RealTimeMonitoringSystem extends EventEmitter {
 
   /**
    * Get metrics history
+   */
+  /**
+   * Get metrics history for a session within the last N hours.
+   * @param {string} monitoringId
+   * @param {number} hours
+   * @returns {Array}
    */
   getMetricsHistory(monitoringId, hours = 24) {
     const metrics = this.metrics.get(monitoringId) || [];
@@ -374,6 +441,11 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Get active alerts
    */
+  /**
+   * Get all active alerts for a monitoring session.
+   * @param {string} monitoringId
+   * @returns {Array}
+   */
   getActiveAlerts(monitoringId) {
     const alerts = this.alerts.get(monitoringId) || [];
     return alerts.filter(a => a.status === 'active');
@@ -381,6 +453,10 @@ class RealTimeMonitoringSystem extends EventEmitter {
 
   /**
    * Stop monitoring
+   */
+  /**
+   * Stop a monitoring session and clear its interval.
+   * @param {string} monitoringId
    */
   stopMonitoring(monitoringId) {
     const monitoring = this.monitoringIntervals.get(monitoringId);
@@ -396,6 +472,10 @@ class RealTimeMonitoringSystem extends EventEmitter {
   /**
    * Get system health
    */
+  /**
+   * Get the current system health status.
+   * @returns {Object}
+   */
   getSystemHealth() {
     return this.systemHealth;
   }
@@ -403,8 +483,13 @@ class RealTimeMonitoringSystem extends EventEmitter {
 
 /**
  * Cross-Chain Metrics System
+ * Provides analytics and metrics across multiple blockchains and bridges.
+ * @class
  */
 class CrossChainMetricsSystem extends EventEmitter {
+  /**
+   * @param {Object} blockchain - Blockchain interface (optional)
+   */
   constructor(blockchain) {
     super();
     this.blockchain = blockchain;
@@ -416,6 +501,10 @@ class CrossChainMetricsSystem extends EventEmitter {
 
   /**
    * Collect cross-chain metrics
+   */
+  /**
+   * Collect metrics across all supported chains and bridges.
+   * @returns {Promise<Object>} Cross-chain metrics
    */
   async collectCrossChainMetrics() {
     const metrics = {
@@ -458,7 +547,13 @@ class CrossChainMetricsSystem extends EventEmitter {
   /**
    * Collect chain-specific metrics
    */
+  /**
+   * Collect metrics for a specific chain.
+   * @param {string} chain
+   * @returns {Promise<Object>} Chain metrics
+   */
   async collectChainMetrics(chain) {
+    if (!chain || typeof chain !== 'string') throw new Error('Invalid chain');
     return {
       tvl: Math.random() * 1000000000 + 100000000, // $100M - $1.1B
       activeUsers: Math.floor(Math.random() * 50000) + 10000,
@@ -472,6 +567,10 @@ class CrossChainMetricsSystem extends EventEmitter {
 
   /**
    * Collect bridge metrics
+   */
+  /**
+   * Collect metrics for all supported bridges.
+   * @returns {Promise<Object>} Bridge metrics
    */
   async collectBridgeMetrics() {
     const bridges = ['polygon-bridge', 'arbitrum-bridge', 'optimism-bridge', 'avalanche-bridge'];
@@ -494,6 +593,10 @@ class CrossChainMetricsSystem extends EventEmitter {
 
   /**
    * Calculate aggregate transfer metrics
+   */
+  /**
+   * Calculate aggregate transfer metrics for recent cross-chain transfers.
+   * @returns {Object}
    */
   calculateAggregateTransferMetrics() {
     const recentTransfers = Array.from(this.crossChainTransfers.values())
@@ -523,7 +626,13 @@ class CrossChainMetricsSystem extends EventEmitter {
   /**
    * Record cross-chain transfer
    */
+  /**
+   * Record a new cross-chain transfer and simulate completion.
+   * @param {Object} transferData
+   * @returns {Promise<Object>} Transfer record
+   */
   async recordCrossChainTransfer(transferData) {
+    if (!transferData || typeof transferData !== 'object') throw new Error('Invalid transferData');
     const transferId = `XFER_${crypto.randomBytes(8).toString('hex')}`;
 
     const transfer = {
@@ -557,6 +666,10 @@ class CrossChainMetricsSystem extends EventEmitter {
   /**
    * Complete cross-chain transfer
    */
+  /**
+   * Complete a cross-chain transfer (simulated).
+   * @param {string} transferId
+   */
   async completeCrossChainTransfer(transferId) {
     const transfer = this.crossChainTransfers.get(transferId);
     if (!transfer) return;
@@ -570,6 +683,11 @@ class CrossChainMetricsSystem extends EventEmitter {
 
   /**
    * Get cross-chain analytics
+   */
+  /**
+   * Get cross-chain analytics and trends for a given timeframe (hours).
+   * @param {number} timeframe
+   * @returns {Object}
    */
   getCrossChainAnalytics(timeframe = 24) {
     const cutoff = Date.now() - (timeframe * 60 * 60 * 1000);
@@ -610,6 +728,10 @@ class CrossChainMetricsSystem extends EventEmitter {
   /**
    * Get bridge performance
    */
+  /**
+   * Get performance scores for all bridges.
+   * @returns {Object}
+   */
   getBridgePerformance() {
     const recentMetrics = Array.from(this.chainMetrics.values()).slice(-10); // Last 10 data points
 
@@ -639,6 +761,11 @@ class CrossChainMetricsSystem extends EventEmitter {
 
   /**
    * Get transfer statistics
+   */
+  /**
+   * Get transfer statistics for a given timeframe (hours).
+   * @param {number} timeframe
+   * @returns {Object}
    */
   getTransferStatistics(timeframe = 24) {
     const cutoff = Date.now() - (timeframe * 60 * 60 * 1000);
@@ -674,8 +801,13 @@ class CrossChainMetricsSystem extends EventEmitter {
 
 /**
  * User Behavior Analytics System
+ * Tracks user events, sessions, and analyzes behavior patterns and segmentation.
+ * @class
  */
 class UserBehaviorAnalyticsSystem extends EventEmitter {
+  /**
+   * @constructor
+   */
   constructor() {
     super();
     this.userSessions = new Map();
@@ -688,7 +820,15 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
   /**
    * Track user event
    */
+  /**
+   * Track a user event and update analytics.
+   * @param {string} userId
+   * @param {Object} event
+   * @returns {Promise<Object>} Event record
+   */
   async trackUserEvent(userId, event) {
+    if (!userId || typeof userId !== 'string') throw new Error('Invalid userId');
+    if (!event || typeof event !== 'object') throw new Error('Invalid event');
     const eventEntry = {
       id: `EVENT_${crypto.randomBytes(8).toString('hex')}`,
       userId,
@@ -729,7 +869,14 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
   /**
    * Start user session
    */
+  /**
+   * Start a new user session.
+   * @param {string} userId
+   * @param {Object} sessionData
+   * @returns {Promise<Object>} Session record
+   */
   async startUserSession(userId, sessionData) {
+    if (!userId || typeof userId !== 'string') throw new Error('Invalid userId');
     const sessionId = `SESSION_${crypto.randomBytes(8).toString('hex')}`;
 
     const session = {
@@ -758,6 +905,11 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
   /**
    * End user session
    */
+  /**
+   * End a user session.
+   * @param {string} sessionId
+   * @returns {Promise<Object|undefined>} Session record
+   */
   async endUserSession(sessionId) {
     const session = this.userSessions.get(sessionId);
     if (!session || !session.isActive) return;
@@ -784,6 +936,11 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
   /**
    * Update user session
    */
+  /**
+   * Update a user session with a new event.
+   * @param {string} sessionId
+   * @param {Object} event
+   */
   updateUserSession(sessionId, event) {
     const session = this.userSessions.get(sessionId);
     if (!session || !session.isActive) return;
@@ -802,6 +959,11 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
 
   /**
    * Analyze user behavior
+   */
+  /**
+   * Analyze user behavior and update segmentation.
+   * @param {string} userId
+   * @param {Object} event
    */
   analyzeUserBehavior(userId, event) {
     const userEvents = this.userEvents.get(userId) || [];
@@ -829,6 +991,11 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
 
   /**
    * Detect behavior patterns
+   */
+  /**
+   * Detect behavior patterns from a list of events.
+   * @param {Array} events
+   * @returns {Array<string>} Patterns
    */
   detectBehaviorPatterns(events) {
     const patterns = [];
@@ -876,6 +1043,12 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
   /**
    * Calculate user segment
    */
+  /**
+   * Calculate user segment based on activity and engagement.
+   * @param {string} userId
+   * @param {Array} events
+   * @returns {string} Segment
+   */
   calculateUserSegment(userId, events) {
     let score = 0;
 
@@ -905,6 +1078,12 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
 
   /**
    * Analyze conversion funnel
+   */
+  /**
+   * Analyze a conversion funnel for a set of steps.
+   * @param {Array} steps
+   * @param {number} timeframe
+   * @returns {Object} Funnel data
    */
   analyzeConversionFunnel(steps, timeframe = 30) {
     const cutoff = Date.now() - (timeframe * 24 * 60 * 60 * 1000);
@@ -946,6 +1125,12 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
   /**
    * Get user analytics
    */
+  /**
+   * Get analytics summary for a user.
+   * @param {string} userId
+   * @param {number} timeframe
+   * @returns {Object}
+   */
   getUserAnalytics(userId, timeframe = 30) {
     const cutoff = Date.now() - (timeframe * 24 * 60 * 60 * 1000);
     const userEvents = (this.userEvents.get(userId) || [])
@@ -976,6 +1161,11 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
   /**
    * Get top actions
    */
+  /**
+   * Get the top actions from a list of events.
+   * @param {Array} events
+   * @returns {Array<{action: string, count: number}>}
+   */
   getTopActions(events) {
     const actionCounts = {};
     events.forEach(e => {
@@ -990,6 +1180,11 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
 
   /**
    * Calculate engagement score
+   */
+  /**
+   * Calculate an engagement score from a list of events.
+   * @param {Array} events
+   * @returns {number}
    */
   calculateEngagementScore(events) {
     if (events.length === 0) return 0;
@@ -1014,6 +1209,10 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
 
   /**
    * Get user segmentation data
+   */
+  /**
+   * Get segmentation data for all users.
+   * @returns {Object}
    */
   getUserSegmentation() {
     const segments = {
@@ -1040,8 +1239,13 @@ class UserBehaviorAnalyticsSystem extends EventEmitter {
 
 /**
  * Predictive Maintenance System
+ * Monitors system components, predicts failures, and manages maintenance schedules.
+ * @class
  */
 class PredictiveMaintenanceSystem extends EventEmitter {
+  /**
+   * @constructor
+   */
   constructor() {
     super();
     this.systemMetrics = new Map();
@@ -1054,7 +1258,14 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Monitor system component
    */
+  /**
+   * Monitor a system component and update metrics.
+   * @param {string} componentId
+   * @param {Object} metrics
+   * @returns {Promise<void>}
+   */
   async monitorComponent(componentId, metrics) {
+    if (!componentId || typeof componentId !== 'string') throw new Error('Invalid componentId');
     const componentMetrics = this.systemMetrics.get(componentId) || [];
     const metricEntry = {
       timestamp: Date.now(),
@@ -1078,6 +1289,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
 
   /**
    * Run predictive analysis
+   */
+  /**
+   * Run predictive analysis for a component.
+   * @param {string} componentId
+   * @returns {Promise<void>}
    */
   async runPredictiveAnalysis(componentId) {
     const metrics = this.systemMetrics.get(componentId);
@@ -1118,6 +1334,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Predict failure probability
    */
+  /**
+   * Predict failure probability from metrics.
+   * @param {Array} metrics
+   * @returns {number}
+   */
   predictFailure(metrics) {
     // Simple prediction based on recent trends
     const recent = metrics.slice(-10);
@@ -1142,6 +1363,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Predict maintenance need
    */
+  /**
+   * Predict if maintenance is needed from metrics.
+   * @param {Array} metrics
+   * @returns {boolean}
+   */
   predictMaintenanceNeed(metrics) {
     const recent = metrics.slice(-20);
     const avgResponseTime = recent.reduce((sum, m) => sum + (m.responseTime || 0), 0) / recent.length;
@@ -1152,6 +1378,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
 
   /**
    * Predict performance degradation
+   */
+  /**
+   * Predict performance degradation from metrics.
+   * @param {Array} metrics
+   * @returns {number}
    */
   predictPerformanceDegradation(metrics) {
     const recent = metrics.slice(-30);
@@ -1165,6 +1396,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
 
   /**
    * Predict remaining lifespan
+   */
+  /**
+   * Predict remaining lifespan from metrics.
+   * @param {Array} metrics
+   * @returns {number}
    */
   predictRemainingLifespan(metrics) {
     // Estimate based on degradation rate
@@ -1181,6 +1417,12 @@ class PredictiveMaintenanceSystem extends EventEmitter {
 
   /**
    * Calculate trend
+   */
+  /**
+   * Calculate the trend (slope) for a metric.
+   * @param {Array} metrics
+   * @param {string} metricName
+   * @returns {number}
    */
   calculateTrend(metrics, metricName) {
     const values = metrics.map(m => m[metricName]).filter(v => v !== undefined);
@@ -1200,6 +1442,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Calculate prediction confidence
    */
+  /**
+   * Calculate confidence in predictions based on data quantity/quality.
+   * @param {Array} metrics
+   * @returns {number}
+   */
   calculatePredictionConfidence(metrics) {
     const dataPoints = metrics.length;
     const timeSpan = metrics[metrics.length - 1].timestamp - metrics[0].timestamp;
@@ -1215,7 +1462,15 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Schedule maintenance
    */
+  /**
+   * Schedule maintenance for a component.
+   * @param {string} componentId
+   * @param {string} maintenanceType
+   * @param {string} [priority]
+   * @returns {Promise<Object>} Maintenance schedule
+   */
   async scheduleMaintenance(componentId, maintenanceType, priority = 'normal') {
+    if (!componentId || typeof componentId !== 'string') throw new Error('Invalid componentId');
     const scheduleId = `MAINT_${crypto.randomBytes(8).toString('hex')}`;
 
     const schedule = {
@@ -1241,6 +1496,12 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Calculate optimal maintenance date
    */
+  /**
+   * Calculate the optimal date for maintenance.
+   * @param {string} componentId
+   * @param {string} priority
+   * @returns {number} Timestamp
+   */
   calculateOptimalMaintenanceDate(componentId, priority) {
     const predictions = this.failurePredictions.get(componentId);
     const baseDate = Date.now();
@@ -1259,6 +1520,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Estimate maintenance duration
    */
+  /**
+   * Estimate the duration for a maintenance type.
+   * @param {string} maintenanceType
+   * @returns {number} Duration in ms
+   */
   estimateMaintenanceDuration(maintenanceType) {
     const durations = {
       'software_update': 2 * 60 * 60 * 1000, // 2 hours
@@ -1273,6 +1539,12 @@ class PredictiveMaintenanceSystem extends EventEmitter {
 
   /**
    * Record maintenance completion
+   */
+  /**
+   * Record completion of a maintenance schedule.
+   * @param {string} scheduleId
+   * @param {Object} results
+   * @returns {Promise<void>}
    */
   async recordMaintenanceCompletion(scheduleId, results) {
     // Find and update schedule
@@ -1298,6 +1570,10 @@ class PredictiveMaintenanceSystem extends EventEmitter {
   /**
    * Get maintenance recommendations
    */
+  /**
+   * Get maintenance recommendations for all components.
+   * @returns {Array}
+   */
   getMaintenanceRecommendations() {
     const recommendations = [];
 
@@ -1318,6 +1594,11 @@ class PredictiveMaintenanceSystem extends EventEmitter {
 
   /**
    * Get component health status
+   */
+  /**
+   * Get health status for a component.
+   * @param {string} componentId
+   * @returns {Object}
    */
   getComponentHealthStatus(componentId) {
     const metrics = this.systemMetrics.get(componentId);

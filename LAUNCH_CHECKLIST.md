@@ -1,7 +1,7 @@
 # 🚀 Aetheron Platform Launch Checklist - Final Steps
 
 ## ✅ **COMPLETED:**
-- ✅ **Deployment**: Live on Netlify (https://gregarious-strudel-850a21.netlify.app)
+- ✅ **Deployment**: Live on Netlify (https://aetheron.online)
 - ✅ **SSL Certificate**: Automatically configured via Netlify (free)
 - ✅ **Database**: PostgreSQL instance set up via Netlify (free tier)
 
@@ -64,7 +64,7 @@ The future of DeFi gaming has arrived!
 • AI-powered fraud detection
 • RWA tokenization platform
 
-🔗 Live Demo: https://gregarious-strudel-850a21.netlify.app
+🔗 Live Demo: https://aetheron.online
 📊 Admin Dashboard: /admin-dashboard
 🎯 Game Interface: /demo
 

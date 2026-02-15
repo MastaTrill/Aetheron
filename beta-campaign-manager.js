@@ -548,7 +548,7 @@ Aetheron is a modular blockchain ecosystem combining DeFi yield farming with gam
 
 Media Contact:
 [Contact Information]
-beta@aether.io
+beta@aetheron.online
 
 ###
 `;

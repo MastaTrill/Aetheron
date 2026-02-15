@@ -57,69 +57,100 @@ const Analytics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Mock data for charts
-  const userGrowthData = [
-    { name: 'Jan', users: 1200, active: 800 },
-    { name: 'Feb', users: 1400, active: 950 },
-    { name: 'Mar', users: 1600, active: 1100 },
-    { name: 'Apr', users: 1800, active: 1300 },
-    { name: 'May', users: 2000, active: 1450 },
-    { name: 'Jun', users: 2400, active: 1700 }
-  ];
 
-  const revenueDataMock = [
-    { name: 'Jan', revenue: 25000, transactions: 1200 },
-    { name: 'Feb', revenue: 28000, transactions: 1350 },
-    { name: 'Mar', revenue: 32000, transactions: 1500 },
-    { name: 'Apr', revenue: 35000, transactions: 1650 },
-    { name: 'May', revenue: 38000, transactions: 1800 },
-    { name: 'Jun', revenue: 42000, transactions: 2000 }
-  ];
+  // Real analytics state
+  const [realtimeMetrics, setRealtimeMetrics] = useState(null);
+  const [realtimeAlerts, setRealtimeAlerts] = useState([]);
+  const [crossChainMetrics, setCrossChainMetrics] = useState(null);
+  const [crossChainTrends, setCrossChainTrends] = useState(null);
+  const [userSegmentation, setUserSegmentation] = useState(null);
+  const [maintenanceRecommendations, setMaintenanceRecommendations] = useState([]);
 
-  const deviceData = [
-    { name: 'Desktop', value: 45, color: '#00eaff' },
-    { name: 'Mobile', value: 35, color: '#4ecdc4' },
-    { name: 'Tablet', value: 20, color: '#ffd93d' }
-  ];
+  // Device data for pie chart (from real metrics if available)
+  const deviceData = realtimeMetrics?.data?.users?.geographicDistribution
+    ? Object.entries(realtimeMetrics.data.users.geographicDistribution).map(([name, value], i) => ({
+        name,
+        value: Math.round(value),
+        color: ['#00eaff', '#4ecdc4', '#ffd93d', '#ff6b6b'][i % 4]
+      }))
+    : [
+        { name: 'Desktop', value: 45, color: '#00eaff' },
+        { name: 'Mobile', value: 35, color: '#4ecdc4' },
+        { name: 'Tablet', value: 20, color: '#ffd93d' }
+      ];
 
-  const topPages = [
-    { page: '/dashboard', views: 15420, bounce: 25 },
-    { page: '/blockchain', views: 12350, bounce: 30 },
-    { page: '/defi', views: 9870, bounce: 35 },
-    { page: '/analytics', views: 8760, bounce: 28 },
-    { page: '/security', views: 6540, bounce: 22 }
-  ];
+  // Top pages (placeholder, could be replaced with real user analytics)
+  const topPages = [];
 
+
+  // Fetch all analytics data from backend
   useEffect(() => {
-    loadAnalyticsData();
-
-    // Subscribe to real-time analytics updates
-    const handleMetricsUpdate = (data) => {
-      setAnalyticsData((prev) => ({ ...prev, ...data }));
-    };
-
-    subscribe('analytics-metrics', handleMetricsUpdate);
-
-    return () => {
-      unsubscribe('analytics-metrics', handleMetricsUpdate);
-    };
+    setLoading(true);
+    setError(null);
+    Promise.all([
+      api.get('/api/analytics/realtime/metrics'),
+      api.get('/api/analytics/realtime/alerts'),
+      api.get('/api/analytics/crosschain/metrics'),
+      api.get('/api/analytics/crosschain/analytics?timeframe=24'),
+      api.get('/api/analytics/user/segmentation'),
+      api.get('/api/analytics/maintenance/recommendations')
+    ])
+      .then(([
+        realtimeMetricsRes,
+        realtimeAlertsRes,
+        crossChainMetricsRes,
+        crossChainTrendsRes,
+        userSegmentationRes,
+        maintenanceRecommendationsRes
+      ]) => {
+        setRealtimeMetrics(realtimeMetricsRes.data);
+        setRealtimeAlerts(realtimeAlertsRes.data);
+        setCrossChainMetrics(crossChainMetricsRes.data);
+        setCrossChainTrends(crossChainTrendsRes.data);
+        setUserSegmentation(userSegmentationRes.data);
+        setMaintenanceRecommendations(maintenanceRecommendationsRes.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError('Failed to load analytics data');
+        setLoading(false);
+        console.error('Analytics data error:', err);
+      });
   }, [timeRange]);
 
-  const loadAnalyticsData = async () => {
-    try {
-      setLoading(true);
-      const [overviewResponse] = await Promise.all([
-        api.get(`/api/analytics/overview?range=${timeRange}`)
-      ]);
-
-      setAnalyticsData(overviewResponse.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load analytics data');
-      console.error('Analytics data error:', err);
-    } finally {
-      setLoading(false);
-    }
+  const handleRefresh = () => {
+    // Re-run the effect by updating timeRange (or use a forceRefresh state)
+    setLoading(true);
+    setError(null);
+    Promise.all([
+      api.get('/api/analytics/realtime/metrics'),
+      api.get('/api/analytics/realtime/alerts'),
+      api.get('/api/analytics/crosschain/metrics'),
+      api.get('/api/analytics/crosschain/analytics?timeframe=24'),
+      api.get('/api/analytics/user/segmentation'),
+      api.get('/api/analytics/maintenance/recommendations')
+    ])
+      .then(([
+        realtimeMetricsRes,
+        realtimeAlertsRes,
+        crossChainMetricsRes,
+        crossChainTrendsRes,
+        userSegmentationRes,
+        maintenanceRecommendationsRes
+      ]) => {
+        setRealtimeMetrics(realtimeMetricsRes.data);
+        setRealtimeAlerts(realtimeAlertsRes.data);
+        setCrossChainMetrics(crossChainMetricsRes.data);
+        setCrossChainTrends(crossChainTrendsRes.data);
+        setUserSegmentation(userSegmentationRes.data);
+        setMaintenanceRecommendations(maintenanceRecommendationsRes.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError('Failed to refresh analytics data');
+        setLoading(false);
+        console.error('Analytics data error:', err);
+      });
   };
 
   const handleRefresh = () => {
@@ -275,12 +306,13 @@ const Analytics = () => {
         </Box>
       </Box>
 
-      {/* Analytics Stats */}
+
+      {/* Analytics Stats (from real-time and cross-chain metrics) */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Total Users"
-            value={formatNumber(analyticsData?.totalUsers || 1247)}
+            title="Active Users"
+            value={formatNumber(realtimeMetrics?.data?.users?.activeUsers || 0)}
             change={12.5}
             icon={PeopleIcon}
             color="#00eaff"
@@ -289,7 +321,7 @@ const Analytics = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Active Sessions"
-            value={formatNumber(analyticsData?.activeSessions || 342)}
+            value={formatNumber(realtimeMetrics?.data?.users?.newUsers || 0)}
             change={8.2}
             icon={AnalyticsIcon}
             color="#4ecdc4"
@@ -297,8 +329,8 @@ const Analytics = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Revenue"
-            value={`$${formatNumber(analyticsData?.revenue || 42000)}`}
+            title="TVL (DeFi)"
+            value={`$${formatNumber(realtimeMetrics?.data?.defi?.totalValueLocked || 0)}`}
             change={15.3}
             icon={RevenueIcon}
             color="#ffd93d"
@@ -306,8 +338,8 @@ const Analytics = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Conversion Rate"
-            value={`${analyticsData?.conversionRate || '3.2'}%`}
+            title="System Health"
+            value={realtimeMetrics?.data?.system?.cpuUsage ? `${realtimeMetrics.data.system.cpuUsage.toFixed(1)}% CPU` : 'N/A'}
             change={-2.1}
             icon={TrendingUpIcon}
             color="#ff6b6b"
@@ -315,7 +347,8 @@ const Analytics = () => {
         </Grid>
       </Grid>
 
-      {/* Charts */}
+
+      {/* Charts (replace with real data as available) */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={8}>
           <Card
@@ -328,10 +361,10 @@ const Analytics = () => {
           >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, color: '#ffffff' }}>
-                User Growth & Activity
+                Cross-Chain TVL (last 24h)
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={userGrowthData}>
+                <AreaChart data={crossChainMetrics?.chains ? Object.entries(crossChainMetrics.chains).map(([name, d]) => ({ name, tvl: d.tvl })) : []}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2d3a" />
                   <XAxis dataKey="name" stroke="#b2ebf2" />
                   <YAxis stroke="#b2ebf2" />
@@ -344,18 +377,9 @@ const Analytics = () => {
                   />
                   <Area
                     type="monotone"
-                    dataKey="users"
-                    stackId="1"
+                    dataKey="tvl"
                     stroke="#00eaff"
                     fill="#00eaff"
-                    fillOpacity={0.6}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="active"
-                    stackId="2"
-                    stroke="#4ecdc4"
-                    fill="#4ecdc4"
                     fillOpacity={0.6}
                   />
                 </AreaChart>

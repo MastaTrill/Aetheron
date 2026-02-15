@@ -89,7 +89,7 @@ Object.entries(announcements).forEach(([key, platform]) => {
 });
 
 console.log('🎯 Launch Sequence:');
-console.log('1. ✅ Website live at https://aether.io');
+console.log('1. ✅ Website live at https://aetheron.online');
 console.log('2. ⏳ Create social media accounts (Twitter, Discord, Telegram)');
 console.log('3. 📝 Post launch announcements on all platforms');
 console.log('4. 🔗 Update all social links in documentation');

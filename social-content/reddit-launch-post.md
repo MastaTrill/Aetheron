@@ -22,7 +22,7 @@ Aetheron combines traditional DeFi yield farming with engaging gaming mechanics,
 
 ## 🎮 Try It Now
 
-**Live Demo:** https://aether.io
+**Live Demo:** https://aetheron.online
 
 Experience the platform firsthand:
 - Test TVL growth mechanics

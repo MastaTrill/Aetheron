@@ -9,7 +9,7 @@ import https from 'https';
 import dns from 'dns';
 import { promises as dnsPromises } from 'dns';
 
-const DOMAIN = 'aether.io'; // Change this to your domain
+const DOMAIN = 'aetheron.online'; // Change this to your domain
 const NETLIFY_URL = 'gregarious-strudel-850a21.netlify.app';
 
 async function checkDNS() {
