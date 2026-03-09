@@ -91,6 +91,30 @@
       margin-top: 10px;
       text-align: center;
     }
+
+    #demo-banner {
+      display: none;
+      background: linear-gradient(90deg, #ff9800, #ff5722);
+      color: #fff;
+      text-align: center;
+      padding: 8px 16px;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-size: 0.85em;
+      letter-spacing: 1px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1100;
+    }
+
+    body.demo-mode .main-header {
+      margin-top: 36px;
+    }
+
+    body.demo-mode #login-modal {
+      display: none !important;
+    }
       /* Sidebar styles */
     #sidebar {
       position: fixed;
@@ -315,6 +339,7 @@
   </style>
 </head>
 <body>    <canvas id="space-bg"></canvas>
+  <div id="demo-banner">DEMO MODE — No backend connected. Showing sample data.</div>
   <header class="main-header">
     <h1>Aetheron Admin Dashboard</h1>
     <p>Decentralized Control Center</p>
@@ -1275,7 +1300,32 @@
         options: { plugins: { legend: { display: false } } }
       });
     }
-    loadChart();    // Login modal logic
+    loadChart();    // Demo mode mock data
+    let demoMode = false;
+    const demoStats = {
+      totalUsers: 1284, totalTransactions: 58320, totalVolume: '12.4M AETH',
+      networkStatus: 'Healthy', websocketConnections: 42,
+      txCount: 58320, blockCount: 9841, userCount: 1284, proposals: 37, liquidity: 2450000,
+      timestamp: new Date().toISOString()
+    };
+    const demoResponses = {
+      '/stats': demoStats,
+      '/users': [{ address: '0xDemo...1234', role: 'admin', kyc: true }, { address: '0xDemo...5678', role: 'user', kyc: false }],
+      '/reputation/': { address: '0xDemo', score: 850, level: 'Gold' },
+      '/education/': { address: '0xDemo', certificates: ['Blockchain 101', 'DeFi Fundamentals'] }
+    };
+
+    function enableDemoMode() {
+      demoMode = true;
+      document.body.classList.add('demo-mode');
+      document.getElementById('demo-banner').style.display = 'block';
+      document.getElementById('login-modal').style.display = 'none';
+      document.getElementById('ws-status').innerHTML = '🟡 Demo Mode';
+      loadStats();
+      loadChart();
+    }
+
+    // Login modal logic
     let authHeader = '';
     document.getElementById('login-form').onsubmit = async function(e) {
       e.preventDefault();
@@ -1297,13 +1347,29 @@
           Logger.warn('Login failed', { username: user, status: res.status });
         }
       } catch (error) {
-        document.getElementById('login-error').textContent = 'Connection error.';
-        Logger.error('Login connection error', { username: user, error: error.message });
+        // Backend unreachable — offer demo mode
+        document.getElementById('login-error').innerHTML =
+          'Backend not available. <a href="#" id="enter-demo" style="color:#00eaff;text-decoration:underline;">Enter Demo Mode</a>';
+        document.getElementById('enter-demo').onclick = function(ev) {
+          ev.preventDefault();
+          enableDemoMode();
+        };
+        Logger.warn('Backend unreachable, demo mode available', { error: error.message });
       }
     };
-    // Attach auth to all fetches
+    // Attach auth to all fetches — with demo mode interceptor
     const origFetch = window.fetch;
     window.fetch = function(url, opts={}) {
+      if (demoMode) {
+        const path = typeof url === 'string' ? url : url.toString();
+        for (const [key, val] of Object.entries(demoResponses)) {
+          if (path === key || path.startsWith(key)) {
+            return Promise.resolve(new Response(JSON.stringify(val), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+          }
+        }
+        // Default demo response for any other API call
+        return Promise.resolve(new Response(JSON.stringify({ demo: true, message: 'Demo mode — no backend connected' }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+      }
       opts.headers = opts.headers || {};
       if (authHeader) opts.headers['Authorization'] = authHeader;
       return origFetch(url, opts);
