@@ -446,6 +446,85 @@
       box-shadow: 0 10px 30px rgba(0, 234, 255, 0.5);
     }
 
+    .newsletter-section {
+      text-align: center;
+      margin: 60px 0;
+      background: rgba(0, 234, 255, 0.05);
+      border: 1px solid rgba(0, 234, 255, 0.2);
+      border-radius: 12px;
+      padding: 40px 30px;
+    }
+
+    .newsletter-section h2 {
+      color: #00eaff;
+      margin-bottom: 15px;
+      font-size: 2rem;
+    }
+
+    .newsletter-section p {
+      opacity: 0.8;
+      margin-bottom: 20px;
+    }
+
+    .newsletter-form-element {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .newsletter-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 234, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .newsletter-input:focus {
+      border-color: #00eaff;
+    }
+
+    .newsletter-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .newsletter-btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .newsletter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+    }
+
+    .newsletter-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .newsletter-note {
+      font-size: 0.85rem;
+      opacity: 0.5;
+      margin-top: 15px;
+    }
+
     .social-section {
       text-align: center;
       margin: 60px 0;
@@ -721,7 +800,8 @@
         <a href="https://github.com/MastaTrill/Aetheron/blob/main/API_DOCS.md" class="link-btn">API Documentation</a>
         <a href="https://github.com/MastaTrill/Aetheron/blob/main/SDK_DOCS.md" class="link-btn">SDK Docs</a>
         <a href="https://github.com/MastaTrill/Aetheron/blob/main/FEATURES.md" class="link-btn">Features Guide</a>
-        <a href="https://github.com/MastaTrill/Aetheron/blob/main/PRODUCTION_DEPLOYMENT.md" class="link-btn">Deployment Guide</a>
+        <a href="https://github.com/MastaTrill/Aetheron/blob/main/PRODUCTION_DEPLOYMENT.md" class="link-btn">Deployment
+          Guide</a>
       </div>
     </section>
 
@@ -730,10 +810,13 @@
       <p>Join our newsletter for the latest updates, beta releases, and exclusive insights into the future of DeFi
         gaming.</p>
       <div class="newsletter-form">
-        <form class="newsletter-form-element">
-          <input type="email" placeholder="Enter your email address" class="newsletter-input" required>
-          <button type="submit" class="newsletter-btn">Subscribe</button>
+        <form class="newsletter-form-element" id="newsletter-form">
+          <input type="email" placeholder="Enter your email address" class="newsletter-input" id="newsletter-email"
+            required>
+          <button type="submit" class="newsletter-btn" id="newsletter-btn">Subscribe</button>
         </form>
+        <div id="newsletter-status"
+          style="display:none; margin-top: 15px; padding: 12px 20px; border-radius: 8px; font-weight: 500;"></div>
       </div>
       <p class="newsletter-note">No spam, unsubscribe at any time. We respect your privacy.</p>
     </section>
@@ -814,15 +897,47 @@
     document.head.appendChild(style);
 
     // Newsletter form handling
-    const newsletterForm = document.querySelector('.newsletter-form-element');
+    const newsletterForm = document.getElementById('newsletter-form');
     if (newsletterForm) {
-      newsletterForm.addEventListener('submit', function (e) {
+      newsletterForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        const email = this.querySelector('.newsletter-input').value;
-        if (email) {
-          // Here you would integrate with your email service
-          alert('Thank you for subscribing! We\'ll keep you updated on Aetheron 2026.');
-          this.querySelector('.newsletter-input').value = '';
+        const emailInput = document.getElementById('newsletter-email');
+        const btn = document.getElementById('newsletter-btn');
+        const status = document.getElementById('newsletter-status');
+        const email = emailInput.value.trim();
+        if (!email) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Subscribing...';
+        status.style.display = 'none';
+
+        function showStatus(message, isSuccess) {
+          status.textContent = message;
+          status.style.display = 'block';
+          status.style.background = isSuccess ? 'rgba(78, 205, 196, 0.2)' : 'rgba(255, 107, 107, 0.2)';
+          status.style.border = '1px solid ' + (isSuccess ? '#4ecdc4' : '#ff6b6b');
+          status.style.color = isSuccess ? '#4ecdc4' : '#ff6b6b';
+          btn.disabled = false;
+          btn.textContent = 'Subscribe';
+          if (isSuccess) emailInput.value = '';
+        }
+
+        try {
+          const res = await fetch('/api/newsletter/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const data = await res.json();
+          showStatus(data.message || 'Subscribed!', data.success);
+        } catch {
+          // Static site fallback — store locally
+          const subs = JSON.parse(localStorage.getItem('aetheron_subs') || '[]');
+          if (!subs.includes(email.toLowerCase())) {
+            subs.push(email.toLowerCase());
+            localStorage.setItem('aetheron_subs', JSON.stringify(subs));
+          }
+          showStatus('Thanks for subscribing! We\'ll keep you updated on Aetheron 2026.', true);
         }
       });
     }

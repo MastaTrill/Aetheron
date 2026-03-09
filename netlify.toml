@@ -64,3 +64,14 @@
   from = "/wallet"
   to = "/browser-extension/popup.html"
   status = 200
+
+[[redirects]]
+  from = "/beta/apply"
+  to = "/beta-apply.html"
+  status = 200
+
+# Custom 404 page
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

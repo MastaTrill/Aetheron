@@ -404,6 +404,26 @@ app.get('/health', (req, res) => {
   });
 });
 
+// ===== Newsletter Subscription Endpoint =====
+const subscribers = new Set();
+
+app.post('/api/newsletter/subscribe', (req, res) => {
+  const { email } = req.body;
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ success: false, error: 'Email is required' });
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ success: false, error: 'Invalid email format' });
+  }
+  if (subscribers.has(email.toLowerCase())) {
+    return res.json({ success: true, message: 'Already subscribed!' });
+  }
+  subscribers.add(email.toLowerCase());
+  console.log(`📧 New newsletter subscriber: ${email}`);
+  res.json({ success: true, message: 'Successfully subscribed!' });
+});
+
 // ===== Account Abstraction Endpoints =====
 app.post('/api/aa/create-account', jwtAuth, async (req, res) => {
   const { provider, profile } = req.body;
