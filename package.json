@@ -86,8 +86,7 @@
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
     "stripe": "^14.25.0",
-    "table": "^6.9.0",
-    "ws": "^8.18.0"
+    "table": "^6.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
@@ -129,7 +128,8 @@
     "typescript": "^5.9.3",
     "webpack": "^5.104.1",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2"
+    "webpack-dev-server": "^5.2.2",
+    "ws": "^8.19.0"
   },
   "keywords": [
     "aetheron",

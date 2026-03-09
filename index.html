@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aetheron - Multi-Chain Blockchain Platform</title>
-  <meta name="description" content="Aetheron is a modular, full-featured blockchain platform with DeFi, NFT, DAO, Gaming, and more">
-  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+  <meta name="description"
+    content="Aetheron is a modular, full-featured blockchain platform with DeFi, NFT, DAO, Gaming, and more">
+  <link rel="icon" type="image/x-icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="//code.tidio.co/abcdefghijklmnop1234567890.js" async></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -45,18 +48,6 @@
       z-index: 0;
     }
 
-    .video-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
-      opacity: 0.3;
-      filter: blur(1px) brightness(0.4);
-    }
-
     .star {
       position: absolute;
       width: 2px;
@@ -67,8 +58,15 @@
     }
 
     @keyframes twinkle {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
+
+      0%,
+      100% {
+        opacity: 0.3;
+      }
+
+      50% {
+        opacity: 1;
+      }
     }
 
     .container {
@@ -106,8 +104,15 @@
     }
 
     @keyframes rocketFloat {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
     }
 
     .brand-tagline {
@@ -148,8 +153,13 @@
     }
 
     @keyframes logoGlow {
-      0% { text-shadow: 0 0 40px rgba(255, 107, 107, 0.5); }
-      100% { text-shadow: 0 0 60px rgba(255, 107, 107, 0.8), 0 0 80px rgba(78, 205, 196, 0.4); }
+      0% {
+        text-shadow: 0 0 40px rgba(255, 107, 107, 0.5);
+      }
+
+      100% {
+        text-shadow: 0 0 60px rgba(255, 107, 107, 0.8), 0 0 80px rgba(78, 205, 196, 0.4);
+      }
     }
 
     .tagline {
@@ -550,16 +560,12 @@
     }
   </style>
 </head>
+
 <body>
   <div class="stars" id="stars"></div>
   <div class="particles" id="particles"></div>
-  
-  <!-- Video Background -->
-  <video autoplay muted loop class="video-background" id="video-bg">
-    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-    <!-- Fallback for browsers that don't support video -->
-    Your browser does not support the video tag.
-  </video>
+
+
 
   <div class="container">
     <header>
@@ -575,12 +581,12 @@
       </div>
       <p class="tagline">Revolutionary DeFi Gaming Platform</p>
       <p class="description">
-        Experience the future of blockchain gaming with real-time TVL simulation, 
-        multi-chain DeFi integration, and account abstraction. Join thousands of users 
+        Experience the future of blockchain gaming with real-time TVL simulation,
+        multi-chain DeFi integration, and account abstraction. Join thousands of users
         already exploring the next generation of decentralized finance and gaming.
       </p>
       <div class="cta-buttons">
-        <a href="beta/apply" class="cta-btn primary">🚀 Join Beta Testing</a>
+        <a href="beta-apply.html" class="cta-btn primary">🚀 Join Beta Testing</a>
         <a href="#features" class="cta-btn secondary">Explore Features</a>
       </div>
     </header>
@@ -618,6 +624,8 @@
         <h3>🛡️ ZK Privacy</h3>
         <p>Zero-knowledge proofs & private txs</p>
       </div>
+    </div>
+
     <section class="stats-section">
       <h2>📈 Platform Statistics</h2>
       <div class="stats-grid">
@@ -639,35 +647,42 @@
         </div>
       </div>
     </section>
+
+    <section class="pages-section">
       <h2>Explore Aetheron</h2>
       <div class="pages-grid">
         <a href="admin-dashboard.html" class="page-card">
           <h3>🎛️ Admin Dashboard</h3>
-          <p>Full-featured administration panel with 3D AI hologram assistant, blockchain controls, user management, and real-time system monitoring.</p>
+          <p>Full-featured administration panel with 3D AI hologram assistant, blockchain controls, user management, and
+            real-time system monitoring.</p>
           <span class="view-btn">Open Dashboard →</span>
         </a>
 
         <a href="analytics-dashboard.html" class="page-card">
           <h3>📊 Analytics Dashboard</h3>
-          <p>Real-time metrics visualization with Chart.js and D3.js. Track transactions, user growth, revenue, funnels, and cohort analysis.</p>
+          <p>Real-time metrics visualization with Chart.js and D3.js. Track transactions, user growth, revenue, funnels,
+            and cohort analysis.</p>
           <span class="view-btn">View Analytics →</span>
         </a>
 
         <a href="explorer.html" class="page-card">
           <h3>🔍 Block Explorer</h3>
-          <p>Browse blockchain blocks and transactions in real-time. View transaction details, hashes, and complete chain history.</p>
+          <p>Browse blockchain blocks and transactions in real-time. View transaction details, hashes, and complete
+            chain history.</p>
           <span class="view-btn">Explore Blocks →</span>
         </a>
 
         <a href="DEMO.html" class="page-card">
           <h3>✨ Features Demo</h3>
-          <p>Interactive showcase of all platform capabilities including DeFi, NFT, DAO, gaming, social features, and more with live examples.</p>
+          <p>Interactive showcase of all platform capabilities including DeFi, NFT, DAO, gaming, social features, and
+            more with live examples.</p>
           <span class="view-btn">Try Demo →</span>
         </a>
 
         <a href="browser-extension/popup.html" class="page-card">
           <h3>💼 Browser Wallet</h3>
-          <p>Chrome/Firefox wallet extension interface. Send, receive, and manage tokens across multiple networks with built-in security.</p>
+          <p>Chrome/Firefox wallet extension interface. Send, receive, and manage tokens across multiple networks with
+            built-in security.</p>
           <span class="view-btn">View Wallet →</span>
         </a>
       </div>
@@ -676,7 +691,7 @@
     <div class="token-info">
       <h2>🪙 Token Information</h2>
       <p style="margin-bottom: 20px;">Aetheron Token (AETH) is deployed across multiple blockchain networks:</p>
-      
+
       <div class="token-grid">
         <div class="token-item">
           <strong>Ethereum Mainnet</strong>
@@ -703,16 +718,17 @@
       <h2>📚 Documentation & Resources</h2>
       <div class="link-buttons">
         <a href="https://github.com/MastaTrill/Aetheron" class="link-btn">GitHub Repository</a>
-        <a href="API_DOCS.md" class="link-btn">API Documentation</a>
-        <a href="SDK_DOCS.md" class="link-btn">SDK Docs</a>
-        <a href="FEATURES.md" class="link-btn">Features Guide</a>
-        <a href="PRODUCTION_DEPLOYMENT.md" class="link-btn">Deployment Guide</a>
+        <a href="https://github.com/MastaTrill/Aetheron/blob/main/API_DOCS.md" class="link-btn">API Documentation</a>
+        <a href="https://github.com/MastaTrill/Aetheron/blob/main/SDK_DOCS.md" class="link-btn">SDK Docs</a>
+        <a href="https://github.com/MastaTrill/Aetheron/blob/main/FEATURES.md" class="link-btn">Features Guide</a>
+        <a href="https://github.com/MastaTrill/Aetheron/blob/main/PRODUCTION_DEPLOYMENT.md" class="link-btn">Deployment Guide</a>
       </div>
     </section>
 
     <section class="newsletter-section">
       <h2>📧 Stay Updated</h2>
-      <p>Join our newsletter for the latest updates, beta releases, and exclusive insights into the future of DeFi gaming.</p>
+      <p>Join our newsletter for the latest updates, beta releases, and exclusive insights into the future of DeFi
+        gaming.</p>
       <div class="newsletter-form">
         <form class="newsletter-form-element">
           <input type="email" placeholder="Enter your email address" class="newsletter-input" required>
@@ -746,7 +762,7 @@
 
     <footer>
       <p>&copy; 2026 Aetheron Platform. Multi-Chain Blockchain Ecosystem.</p>
-      <p>Built with ❤️ for the decentralized future | <a href="beta/apply">Join Beta Testing</a></p>
+      <p>Built with ❤️ for the decentralized future | <a href="beta-apply.html">Join Beta Testing</a></p>
     </footer>
   </div>
 
@@ -760,12 +776,12 @@
       star.style.top = Math.random() * 100 + '%';
       star.style.animationDelay = Math.random() * 4 + 's';
       star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-      
+
       // Add some stars with different sizes
       if (Math.random() > 0.7) {
         star.style.width = star.style.height = (Math.random() * 2 + 2) + 'px';
       }
-      
+
       starsContainer.appendChild(star);
     }
 
@@ -797,26 +813,10 @@
     `;
     document.head.appendChild(style);
 
-    // Video background controls
-    const video = document.getElementById('video-bg');
-    if (video) {
-      // Pause video on mobile for performance
-      if (window.innerWidth < 768) {
-        video.pause();
-        video.style.display = 'none';
-      }
-
-      // Handle video loading errors
-      video.addEventListener('error', function() {
-        console.log('Video failed to load, using fallback background');
-        video.style.display = 'none';
-      });
-    }
-
     // Newsletter form handling
     const newsletterForm = document.querySelector('.newsletter-form-element');
     if (newsletterForm) {
-      newsletterForm.addEventListener('submit', function(e) {
+      newsletterForm.addEventListener('submit', function (e) {
         e.preventDefault();
         const email = this.querySelector('.newsletter-input').value;
         if (email) {
@@ -828,4 +828,5 @@
     }
   </script>
 </body>
+
 </html>
