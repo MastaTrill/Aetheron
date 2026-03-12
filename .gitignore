@@ -407,5 +407,9 @@ FodyWeavers.xsd
 
 # Environment variables
 .env
+.env.production
 .vercel
 .env*.local
+
+# Jest / Node coverage output
+coverage/

@@ -28,5 +28,7 @@ module.exports = {
   },
   verbose: true,
   testTimeout: 30000,
+  detectOpenHandles: true,
+  forceExit: true,
   testPathIgnorePatterns: ['<rootDir>/tests/e2e/']
 };

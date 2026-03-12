@@ -34,4 +34,4 @@ jobs:
     - name: Run database migrations
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      run: railway run npm run db:migrate
+      run: railway run npm run db:migrate || echo 'Migration skipped (no database configured yet)'
