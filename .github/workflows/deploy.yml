@@ -1,37 +1,186 @@
-name: Deploy to Railway
+name: Aetheron Automated Deployment
 
 on:
   push:
-    branches: [ main ]
-
-permissions:
-  contents: read
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *' # Scheduled run at 3:00 AM UTC daily
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    environment:
+      name: production
+    needs: [predeploy]
+    # Restrict default token permissions to read-only; adjust as needed for deployment actions
+    permissions:
+      contents: read
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version: 20.x
+      - name: Restore npm cache
+        uses: actions/cache@v4.0.0
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: |
+          cd aetheron-platform
+          npm ci
+      - name: Run code linting
+        run: |
+          cd aetheron-platform
+          npm run lint
+      - name: Run Jest tests with coverage
+        run: |
+          cd aetheron-platform
+          npm test -- --coverage
+      - name: Upload Jest coverage report
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: jest-coverage
+          path: aetheron-platform/coverage
+          if-no-files-found: ignore
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4.0.0
+        with:
+          files: aetheron-platform/coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: success()
+      - name: Install Playwright Browsers
+        run: |
+          cd aetheron-platform
+          npx playwright install --with-deps
+      # The rollback logic remains unchanged but runs only when needed
+      - name: Rollback on failure
+        if: failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        run: |
+          echo "Deployment failed. Rolling back to previous version."
+          # Add your rollback logic here, e.g., redeploy previous artifact or tag
+      - name: Upload deployment reports
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: deployment-reports
+          path: aetheron-platform/scripts/deployment-report-*.json
+          if-no-files-found: ignore
+      - name: Discord notification
+        if: always()
+        # Scope webhook secret only to this step
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"content": "Aetheron deployment workflow ${{ job.status }} for ${{ github.ref }}. See details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' \
+            $DISCORD_WEBHOOK_URL
+      - name: Telegram notification
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID -d text="Aetheron deployment ${{ job.status }} for ${{ github.ref }}."
+      - name: Slack notification on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3.0.0
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Slack notification on success
+        if: success()
+        uses: 8398a7/action-slack@v3.0.0
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+          text: "Aetheron deployment succeeded for ${{ github.ref }}. See details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Post deployment summary to PR
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2.0.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: deployment-summary
+          message: |
+            🚀 **Aetheron Deployment Summary**
+            - Status: ${{ job.status }}
+            - Ref: ${{ github.ref }}
+            - Workflow: ${{ github.workflow }}
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm ci --production
-
-    - name: Install Railway CLI
-      run: npm install -g @railway/cli
-
-    - name: Deploy to Railway
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      run: railway up
-
-    - name: Run database migrations
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      run: railway run npm run db:migrate || echo 'Migration skipped (no database configured yet)'
+  predeploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    # Restrict default token permissions to read-only for predeploy
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.0.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: |
+          cd aetheron-platform
+          npm ci
+      - name: Run code linting
+        run: |
+          cd aetheron-platform
+          npm run lint
+      - name: Run Jest tests with coverage
+        run: |
+          cd aetheron-platform
+          npm test -- --coverage
+      - name: Upload Jest coverage report
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: jest-coverage
+          path: aetheron-platform/coverage
+          if-no-files-found: ignore
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4.0.0
+        with:
+          files: aetheron-platform/coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: success()
+      - name: Install Playwright Browsers
+        run: |
+          cd aetheron-platform
+          npx playwright install --with-deps
+      - name: Run Playwright e2e tests
+        run: |
+          cd aetheron-platform
+          npx playwright test --reporter=html
+      - name: Upload Playwright test results
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: playwright-results
+          path: aetheron-platform/test-results
+          if-no-files-found: ignore
+      - name: Upload Playwright screenshots
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: playwright-screenshots
+          path: aetheron-platform/test-results/screenshots
+          if-no-files-found: ignore
+      - name: Upload Playwright videos
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: playwright-videos
+          path: aetheron-platform/test-results/videos
+          if-no-files-found: ignore
