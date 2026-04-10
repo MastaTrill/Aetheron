@@ -689,7 +689,7 @@ class AdvancedQueryParser {
   }
 }
 
-module.exports = {
+export {
   AIAssistant,
   IntentClassifier,
   ResponseGenerator,

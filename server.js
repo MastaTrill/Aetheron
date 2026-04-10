@@ -14,10 +14,9 @@ import 'dotenv/config';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Database and Auth
-import { sequelize, User, Log, Transaction } from './database/models.js';
-import authRoutes from './auth/routes.js';
-import { basicAuth, jwtAuth, requireRole, optionalAuth } from './auth/middleware.js';
+// Database and Auth - initialized later for optional database
+let dbAvailable = false;
+let User, Log, Transaction;
 
 // Import new feature modules
 
@@ -28,13 +27,16 @@ const {
   CrossChainMetricsSystem,
   UserBehaviorAnalyticsSystem,
   PredictiveMaintenanceSystem
-} = requireCJS('./advanced-analytics.js');
+} = requireCJS('./advanced-analytics.cjs');
 
 import { AccountAbstraction } from './account-abstraction.js';
 import FiatOnRamp from './fiat-onramp.js';
 import { LimitOrderManager } from './limit-orders.js';
 import { RWATokenization } from './rwa-tokenization.js';
 import L2Integration from './l2-integration.js';
+
+import authRoutes from './auth/routes.js';
+import { basicAuth, jwtAuth, requireRole, optionalAuth } from './auth/middleware.js';
 
 import crypto from 'crypto';
 
@@ -71,11 +73,13 @@ const analyticsCrossChain = new CrossChainMetricsSystem({});
 const analyticsUser = new UserBehaviorAnalyticsSystem();
 const analyticsMaintenance = new PredictiveMaintenanceSystem();
 
-// Start a default monitoring session for real-time analytics
+// Start a default monitoring session (optional)
 let defaultMonitoringId;
-analyticsRealtime.startMonitoring().then((monitoring) => {
-  defaultMonitoringId = monitoring.id;
-});
+analyticsRealtime.startMonitoring()
+  .then((monitoring) => {
+    defaultMonitoringId = monitoring?.id;
+  })
+  .catch((e) => console.warn('[Analytics] Monitoring not started:', e.message));
 
 // === Analytics API Endpoints ===
 // Real-time monitoring metrics
@@ -252,13 +256,51 @@ const rateLimiter = (req, res, next) => {
 
 app.use(rateLimiter);
 
-// Test database connection on startup (skip in test environment)
-if (process.env.NODE_ENV !== 'test') {
-  sequelize
-    .authenticate()
-    .then(() => console.log('✅ Database connected successfully'))
-    .catch((err) => console.error('❌ Database connection failed:', err.message));
+// Initialize database (optional)
+async function initDatabase() {
+  try {
+    const { Sequelize } = await import('sequelize');
+    const isProduction = process.env.NODE_ENV === 'production';
+    const usePostgres = process.env.USE_POSTGRES === 'true';
+
+    let sequelize;
+    if (usePostgres || isProduction) {
+      sequelize = new Sequelize({
+        dialect: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT) || 5432,
+        database: process.env.DB_NAME || 'aetheron',
+        username: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD,
+        logging: false,
+        pool: { max: 10, min: 2, acquire: 30000, idle: 10000 }
+      });
+    } else {
+      const path = await import('path');
+      const { fileURLToPath } = await import('url');
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
+      sequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: path.join(__dirname, 'data', 'aetheron.db'),
+        logging: false
+      });
+    }
+
+    await sequelize.authenticate();
+    const models = await import('./database/models.js');
+    User = models.User;
+    Log = models.Log;
+    Transaction = models.Transaction;
+    dbAvailable = true;
+    console.log('✅ Database connected successfully');
+  } catch (e) {
+    console.warn('⚠️ Database not available:', e.message);
+  }
 }
+
+initDatabase();
+
+const hasDb = () => dbAvailable && User && Log && Transaction;
 
 // Authentication routes (public)
 app.use('/api/auth', authRoutes);
@@ -281,6 +323,7 @@ app.get('/', (req, res) => {
 
 // Admin endpoints (protected with Basic Auth for legacy compatibility)
 app.get('/users', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const users = await User.findAll({
       attributes: { exclude: ['passwordHash'] },
@@ -294,6 +337,7 @@ app.get('/users', basicAuth, async (req, res) => {
 });
 
 app.post('/users/add', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const { address, balance } = req.body;
     const user = await User.create({
@@ -309,6 +353,7 @@ app.post('/users/add', basicAuth, async (req, res) => {
 });
 
 app.post('/users/role', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const { address, role } = req.body;
     const user = await User.findOne({ where: { address } });
@@ -332,6 +377,7 @@ app.post('/users/role', basicAuth, async (req, res) => {
 });
 
 app.post('/users/kyc', jwtAuth, requireRole('admin', 'moderator'), async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const { address, kycStatus } = req.body;
     const user = await User.findOne({ where: { address } });
@@ -356,6 +402,7 @@ app.post('/users/kyc', jwtAuth, requireRole('admin', 'moderator'), async (req, r
 
 // Logs endpoints
 app.get('/logs', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const logs = await Log.findAll({
       order: [['createdAt', 'DESC']],
@@ -369,6 +416,7 @@ app.get('/logs', basicAuth, async (req, res) => {
 });
 
 app.post('/api/logs', optionalAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const logEntry = req.body;
     const log = await Log.create({
@@ -395,6 +443,17 @@ app.post('/api/logs', optionalAuth, async (req, res) => {
 
 // Stats endpoint
 app.get('/stats', basicAuth, async (req, res) => {
+  if (!hasDb()) {
+    return res.json({
+      totalUsers: 0,
+      totalTransactions: 0,
+      totalVolume: '0 AETH',
+      networkStatus: 'Healthy (no DB)',
+      websocketConnections: wsServer.getConnectionCount(),
+      aiStats: aiAssistant.getStats(),
+      timestamp: new Date().toISOString()
+    });
+  }
   try {
     const totalUsers = await User.count();
     const totalTransactions = await Transaction.count();

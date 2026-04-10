@@ -3,10 +3,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const usePostgres = process.env.USE_POSTGRES === 'true';
 
 const sequelize = new Sequelize({
-  dialect: isProduction ? 'postgres' : 'sqlite',
-  ...(isProduction ? {
+  dialect: usePostgres || isProduction ? 'postgres' : 'sqlite',
+  ...(usePostgres || isProduction ? {
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
     database: process.env.DB_NAME || 'aetheron',
