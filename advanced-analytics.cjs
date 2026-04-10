@@ -63,9 +63,8 @@ class RealTimeMonitoringSystem extends EventEmitter {
     };
 
     // Start monitoring intervals
-    this.startMetricCollection(monitoringId, monitoring.config);
-
     this.monitoringIntervals.set(monitoringId, monitoring);
+    this.startMetricCollection(monitoringId, monitoring.config);
 
     this.emit('monitoringStarted', { monitoringId });
 
