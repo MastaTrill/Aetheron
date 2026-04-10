@@ -1,9 +1,14 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const JWT_REFRESH_EXPIRES_IN = '30d';
+
+if (!JWT_SECRET) {
+  console.error('JWT_SECRET must be set in .env');
+  process.exit(1);
+}
 
 class AuthService {
   /**

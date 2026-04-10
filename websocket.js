@@ -1,5 +1,8 @@
 // Aetheron WebSocket Server for Real-Time Updates
 import { WebSocketServer } from 'ws';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 class AetheronWebSocket {
   constructor(server) {
@@ -8,15 +11,40 @@ class AetheronWebSocket {
     this.setupServer();
   }
 
+  verifyToken(token) {
+    if (!JWT_SECRET) {
+      console.error('[WebSocket] JWT_SECRET not set');
+      return null;
+    }
+    try {
+      return jwt.verify(token, JWT_SECRET);
+    } catch {
+      return null;
+    }
+  }
+
   setupServer() {
     this.wss.on('connection', (ws, req) => {
-      console.log('[WebSocket] New client connected from:', req.socket.remoteAddress);
+      const url = new URL(req.url, 'http://localhost');
+      const token = url.searchParams.get('token');
+      const user = this.verifyToken(token);
+      
+      if (token && !user) {
+        ws.close(4001, 'Invalid token');
+        return;
+      }
+
+      ws.user = user;
+      ws.isAuthenticated = !!user;
+      
+      console.log('[WebSocket] Client connected from:', req.socket.remoteAddress, 
+        user ? `(user: ${user.id})` : '(anonymous)');
       this.clients.add(ws);
 
-      // Send welcome message
       this.sendToClient(ws, {
         type: 'connected',
         message: 'Connected to Aetheron real-time updates',
+        authenticated: !!user,
         timestamp: new Date().toISOString()
       });
 
@@ -168,7 +196,29 @@ class AetheronWebSocket {
     );
   }
 
-  // Send stats update
+  notifyAIResponse(query, response, isStreaming = false) {
+    this.broadcast(
+      {
+        type: 'aiResponse',
+        query,
+        response,
+        isStreaming,
+        timestamp: new Date().toISOString()
+      },
+      'ai'
+    );
+  }
+
+  subscribeToAI(ws) {
+    ws.subscriptions = ws.subscriptions || new Set();
+    ws.subscriptions.add('ai');
+    this.sendToClient(ws, {
+      type: 'subscribed',
+      channel: 'ai',
+      message: 'Subscribed to AI responses'
+    });
+  }
+
   notifyStatsUpdate(stats) {
     this.broadcast(
       {

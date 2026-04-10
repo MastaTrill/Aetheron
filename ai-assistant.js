@@ -2,6 +2,14 @@
  * AI Assistant Module
  * Natural language processing for blockchain queries
  */
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+const GPT_MODEL = process.env.AI_MODEL || 'gpt-4-turbo-preview';
+const USE_GPT = process.env.OPENAI_API_KEY ? true : false;
 
 /**
  * Intent Classifier
@@ -10,13 +18,18 @@
 class IntentClassifier {
   constructor() {
     this.intents = {
-      balance: ['balance', 'how much', 'funds', 'wallet'],
-      transaction: ['send', 'transfer', 'pay', 'transaction'],
-      block: ['block', 'height', 'blockchain'],
-      price: ['price', 'value', 'worth', 'market'],
-      nft: ['nft', 'token', 'collectible', 'digital art'],
+      balance: ['balance', 'how much', 'funds', 'wallet', 'check'],
+      transaction: ['send', 'transfer', 'pay', 'transaction', 'move'],
+      block: ['block', 'height', 'blockchain', 'chain'],
+      price: ['price', 'value', 'worth', 'market', 'cost'],
+      nft: ['nft', 'token', 'collectible', 'digital art', 'mint'],
       dao: ['dao', 'proposal', 'vote', 'governance'],
-      help: ['help', 'how to', 'what is', 'explain']
+      swap: ['swap', 'exchange', 'trade', 'dex'],
+      stake: ['stake', 'staking', 'reward', 'yield'],
+      bridge: ['bridge', 'cross-chain', 'transfer between'],
+      help: ['help', 'how to', 'what is', 'explain', 'commands'],
+      admin: ['user', 'kyc', 'role', 'ban', 'unban', 'admin'],
+      stats: ['stats', 'statistics', 'metrics', 'tvl', 'volume']
     };
   }
 
@@ -41,29 +54,40 @@ class IntentClassifier {
   extractEntities(query) {
     const entities = {};
 
-    // Extract addresses (0x...)
     const addressMatch = query.match(/0x[a-fA-F0-9]{40}/);
     if (addressMatch) {
       entities.address = addressMatch[0];
     }
 
-    // Extract amounts
-    const amountMatch = query.match(/(\d+(?:\.\d+)?)\s*(AETH|aeth|eth)?/i);
+    const amountMatch = query.match(/(\d+(?:\.\d+)?)\s*(AETH|aeth|eth|usdt|usdc)?/i);
     if (amountMatch) {
       entities.amount = parseFloat(amountMatch[1]);
-      entities.currency = amountMatch[2] || 'AETH';
+      entities.currency = (amountMatch[2] || 'AETH').toUpperCase();
     }
 
-    // Extract block numbers
     const blockMatch = query.match(/block\s*#?(\d+)/i);
     if (blockMatch) {
       entities.blockNumber = parseInt(blockMatch[1]);
     }
 
-    // Extract transaction hashes
     const txMatch = query.match(/(?:tx|transaction|hash):\s*([a-fA-F0-9]{64})/i);
     if (txMatch) {
       entities.txHash = txMatch[1];
+    }
+
+    const tokenIdMatch = query.match(/(?:token|nft)[s]?\s*#?(\d+)/i);
+    if (tokenIdMatch) {
+      entities.tokenId = parseInt(tokenIdMatch[1]);
+    }
+
+    const proposalMatch = query.match(/proposal\s*#?(\d+)/i);
+    if (proposalMatch) {
+      entities.proposalId = parseInt(proposalMatch[1]);
+    }
+
+    const networkMatch = query.match(/(ethereum|polygon|base|arbitrum|optimism|avalanche|solana)/i);
+    if (networkMatch) {
+      entities.network = networkMatch[1].toLowerCase();
     }
 
     return entities;
@@ -143,12 +167,86 @@ class AIAssistant {
     this.responseGenerator = new ResponseGenerator();
     this.conversationHistory = [];
     this.context = {};
+    this.usageStats = { totalQueries: 0, gptQueries: 0, fallbackQueries: 0 };
+    this.systemPrompt = `You are Aetheron's AI Assistant, a helpful blockchain assistant for the Aetheron platform.
+
+You can help users with:
+- Checking wallet balances and transaction history
+- Creating and sending transactions
+- Viewing blockchain blocks and data
+- Checking token/NFT prices and ownership
+- DAO governance and voting
+- DEX swaps and exchanges
+- Staking and yield farming
+- Cross-chain bridging
+- Platform stats and metrics
+- Admin tasks (KYC, user management)
+
+Always be helpful, concise, and accurate. If you don't know something, say so.`;
   }
 
   /**
-   * Process natural language query
+   * Process natural language query with GPT-4
    */
   async query(userQuery) {
+    this.usageStats.totalQueries++;
+    const intent = this.classifier.classify(userQuery);
+    const entities = this.classifier.extractEntities(userQuery);
+
+    if (entities.address) this.context.lastAddress = entities.address;
+    if (entities.amount) this.context.lastAmount = entities.amount;
+
+    if (USE_GPT) {
+      return await this.queryGPT(userQuery, intent, entities);
+    }
+
+    return await this.handleIntent(intent, entities, userQuery);
+  }
+
+  async queryGPT(userQuery, intent, entities) {
+    this.usageStats.gptQueries++;
+    try {
+      const messages = [
+        { role: 'system', content: this.systemPrompt },
+        ...this.conversationHistory.slice(-10).map(h => ({
+          role: h.role,
+          content: h.content
+        })),
+        { role: 'user', content: userQuery }
+      ];
+
+      const completion = await openai.chat.completions.create({
+        model: GPT_MODEL,
+        messages,
+        temperature: 0.7,
+        max_tokens: 500
+      });
+
+      const response = completion.choices[0]?.message?.content || 
+        this.responseGenerator.generate('unknown', {});
+
+      this.conversationHistory.push(
+        { role: 'user', content: userQuery, timestamp: Date.now() },
+        { role: 'assistant', content: response, timestamp: Date.now() }
+      );
+
+      if (this.conversationHistory.length > 50) {
+        this.conversationHistory = this.conversationHistory.slice(-50);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('[AI] GPT query failed:', error.message);
+      this.usageStats.fallbackQueries++;
+      return await this.handleIntent(intent, entities, userQuery);
+    }
+  }
+
+  /**
+   * Process natural language query (fallback)
+   */
+  async queryLegacy(userQuery) {
+    this.usageStats.fallbackQueries++;
     // Add to conversation history
     this.conversationHistory.push({
       role: 'user',
@@ -217,7 +315,22 @@ class AIAssistant {
     case 'dao':
       return await this.handleDAO(entities);
 
-    case 'help':
+      case 'swap':
+        return this.handleSwap(entities);
+
+      case 'stake':
+        return this.handleStake(entities);
+
+      case 'bridge':
+        return this.handleBridge(entities);
+
+      case 'admin':
+        return this.handleAdmin(entities, query);
+
+      case 'stats':
+        return this.handleStats(entities);
+
+      case 'help':
       return this.handleHelp(query);
 
     default:
@@ -356,6 +469,68 @@ class AIAssistant {
   }
 
   /**
+   * Handle swap query
+   */
+  async handleSwap(entities) {
+    if (!entities.amount || !entities.currency) {
+      return 'To swap, please specify amount and token. Example: "Swap 100 USDC for ETH"';
+    }
+    return `To swap ${entities.amount} ${entities.currency}, I'll connect you to the DEX. Please confirm the transaction in your wallet.`;
+  }
+
+  /**
+   * Handle stake query
+   */
+  async handleStake(entities) {
+    if (!entities.amount) {
+      return 'To stake, please specify the amount. Example: "Stake 100 AETH"';
+    }
+    return `Staking ${entities.amount} AETH will earn approximately 5% APY. Would you like to proceed?`;
+  }
+
+  /**
+   * Handle bridge query
+   */
+  async handleBridge(entities) {
+    if (!entities.network) {
+      return 'I can help bridge tokens. Please specify source and destination networks. Example: "Bridge 100 AETH from Ethereum to Base"';
+    }
+    return `Cross-chain bridging to ${entities.network} network. This may take 10-30 minutes depending on network conditions.`;
+  }
+
+  /**
+   * Handle admin query
+   */
+  async handleAdmin(entities, query) {
+    const lowerQuery = query.toLowerCase();
+    
+    if (lowerQuery.includes('kyc')) {
+      return 'KYC management: I can approve or reject KYC applications. You need admin permissions to perform this action.';
+    }
+    if (lowerQuery.includes('ban')) {
+      return 'User ban management: I can ban or unban users. You need admin permissions to perform this action.';
+    }
+    if (lowerQuery.includes('role')) {
+      return 'Role management: Available roles are user, moderator, admin. You need admin permissions to change roles.';
+    }
+    return 'Admin commands: KYC, role changes, user bans. Requires admin permissions.';
+  }
+
+  /**
+   * Handle stats query
+   */
+  async handleStats(_entities) {
+    return `Aetheron Platform Stats:
+    
+• Total Value Locked (TVL): $1,234,567
+• 24h Trading Volume: $89,012
+• Total Users: 1,234
+• Active Validators: 21
+
+Would you like more details on any metric?`;
+  }
+
+  /**
    * Handle help query
    */
   handleHelp(query) {
@@ -365,7 +540,11 @@ class AIAssistant {
       block: 'Ask "Show me block #100" to view block details.',
       price: 'Ask "What is the price of AETH?" to get current prices.',
       nft: 'Ask "Who owns NFT #123?" to look up NFT ownership.',
-      dao: 'Ask "What is the status of proposal 5?" to check DAO proposals.'
+      dao: 'Ask "What is the status of proposal 5?" to check DAO proposals.',
+      swap: 'Ask "Swap 100 USDC for ETH" to exchange tokens.',
+      stake: 'Ask "Stake 100 AETH" to stake tokens.',
+      bridge: 'Ask "Bridge 100 AETH to Base" to cross-chain.',
+      stats: 'Ask "What are the platform stats?" to see metrics.'
     };
 
     const lowerQuery = query.toLowerCase();
@@ -378,12 +557,17 @@ class AIAssistant {
 
     return `I can help you with:
     
-• Check balances: "What is my balance?" or "Balance of 0x123..."
+• Check balances: "What is my balance?"
 • Send transactions: "Send 10 AETH to 0x456..."
-• View blocks: "Show me the latest block" or "Block #100"
+• View blocks: "Show me the latest block"
 • Check prices: "What is the AETH price?"
 • NFTs: "Who owns NFT #123?"
 • DAO: "Show me active proposals"
+• Swap tokens: "Swap 100 USDC for ETH"
+• Stake: "Stake 100 AETH"
+• Bridge: "Bridge to Base"
+• Stats: "Show platform stats"
+• Admin: "Help with user management"
 
 What would you like to know?`;
   }
@@ -441,6 +625,10 @@ What would you like to know?`;
     suggestions.push('View active DAO proposals');
 
     return suggestions;
+  }
+
+  getStats() {
+    return { ...this.usageStats };
   }
 }
 

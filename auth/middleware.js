@@ -1,19 +1,18 @@
 import authService from './jwt-service.js';
 import crypto from 'crypto';
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-// Warn if default credentials are used in production
-if (process.env.NODE_ENV === 'production' && process.env.ADMIN_PASSWORD === undefined) {
-  console.error('[SECURITY] ADMIN_PASSWORD not set — using insecure default. Set ADMIN_PASSWORD env var!');
+if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+  console.error('[SECURITY] ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env');
+  process.exit(1);
 }
 
 // Constant-time comparison to prevent timing attacks
 function safeCompare(a, b) {
-  if (a.length !== b.length) {
-    // Compare against self to burn same CPU time, then return false
-    crypto.timingSafeEqual(Buffer.from(a), Buffer.from(a));
+  if (!a || !b || a.length !== b.length) {
+    crypto.randomBytes(32);
     return false;
   }
   return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));

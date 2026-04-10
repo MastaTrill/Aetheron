@@ -1,4 +1,4 @@
-const { sequelize } = require('./models');
+import { sequelize } from './models.js';
 
 async function migrate() {
   try {

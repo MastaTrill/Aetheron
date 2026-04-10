@@ -2,8 +2,9 @@ import 'dotenv/config';
 import '@nomicfoundation/hardhat-toolbox';
 
 const getAccounts = () => {
-  if (process.env.DEPLOYER_PRIVATE_KEY && process.env.DEPLOYER_PRIVATE_KEY.length === 64) {
-    return [`0x${process.env.DEPLOYER_PRIVATE_KEY}`];
+  const privateKey = process.env.DEPLOYER_PRIVATE_KEY;
+  if (privateKey && /^[0-9a-fA-F]{64}$/.test(privateKey)) {
+    return [`0x${privateKey}`];
   }
   return [];
 };
@@ -79,10 +80,8 @@ export default {
       {
         network: 'monadTestnet',
         chainId: 10143,
-        urls: {
-          apiURL: 'https://api.etherscan.io/v2/api',
-          browserURL: 'https://testnet.monadscan.com'
-        }
+        apiURL: 'https://testnet.monadscan.com/api',
+        browserURL: 'https://testnet.monadscan.com'
       }
     ]
   }

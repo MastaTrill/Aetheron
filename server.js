@@ -1,10 +1,13 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import cors from 'cors';
 import http from 'http';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { AetheronWebSocket } from './websocket.js';
+import helmet from 'helmet';
+import sanitizeHtml from 'sanitize-html';
 import 'dotenv/config';
 
 // ES Module __dirname workaround
@@ -33,14 +36,22 @@ import { LimitOrderManager } from './limit-orders.js';
 import { RWATokenization } from './rwa-tokenization.js';
 import L2Integration from './l2-integration.js';
 
+import crypto from 'crypto';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
   : ['http://localhost:3001', 'http://localhost:3000', 'https://aetheron.online'];
+
+// Validate admin credentials on startup
+if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+  console.error('❌ ERROR: ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env');
+  process.exit(1);
+}
 
 const server = http.createServer(app);
 
@@ -150,26 +161,59 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(cors(corsOptions));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+const sanitizeInput = (req, res, next) => {
+  const sanitize = (obj) => {
+    if (!obj) return;
+    for (const key in obj) {
+      if (typeof obj[key] === 'string') {
+        obj[key] = sanitizeHtml(obj[key], {
+          allowedTags: [],
+          allowedAttributes: {},
+        });
+      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        sanitize(obj[key]);
+      }
+    }
+  };
+  if (req.body) sanitize(req.body);
+  if (req.query) sanitize(req.query);
+  next();
+};
+
+app.use(sanitizeInput);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 
-// Security headers
 app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
   if (NODE_ENV === 'production') {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
+  req.id = crypto.randomUUID();
+  res.setHeader('X-Request-ID', req.id);
+  console.log(`[${req.id}] ${req.method} ${req.path}`);
   next();
 });
 
 // Simple rate limiting (track requests per IP)
 const requestCounts = new Map();
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const userRequestCounts = new Map();
+const RATE_LIMIT_WINDOW = 60000;
+const USER_RATE_LIMIT_WINDOW = 60000;
 const MAX_REQUESTS = NODE_ENV === 'production' ? 100 : 1000;
+const MAX_USER_REQUESTS = NODE_ENV === 'production' ? 500 : 5000;
 
 const rateLimiter = (req, res, next) => {
   const ip = req.ip || req.connection.remoteAddress;
@@ -186,7 +230,21 @@ const rateLimiter = (req, res, next) => {
   requestCounts.set(ip, record);
 
   if (record.count > MAX_REQUESTS) {
-    return res.status(429).json({ error: 'Too many requests, please try again later' });
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
+  if (req.user?.id) {
+    const userRecord = userRequestCounts.get(req.user.id) || { count: 0, resetTime: now + USER_RATE_LIMIT_WINDOW };
+    if (now > userRecord.resetTime) {
+      userRecord.count = 1;
+      userRecord.resetTime = now + USER_RATE_LIMIT_WINDOW;
+    } else {
+      userRecord.count++;
+    }
+    userRequestCounts.set(req.user.id, userRecord);
+    if (userRecord.count > MAX_USER_REQUESTS) {
+      return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+    }
   }
 
   next();
@@ -341,6 +399,7 @@ app.get('/stats', basicAuth, async (req, res) => {
     const totalUsers = await User.count();
     const totalTransactions = await Transaction.count();
     const totalVolume = (await Transaction.sum('amount')) || 0;
+    const aiStats = aiAssistant.getStats();
 
     res.json({
       totalUsers,
@@ -348,6 +407,11 @@ app.get('/stats', basicAuth, async (req, res) => {
       totalVolume: `${(totalVolume / 1e18).toFixed(2)}M AETH`,
       networkStatus: 'Healthy',
       websocketConnections: wsServer.getConnectionCount(),
+      aiStats: {
+        totalQueries: aiStats.totalQueries,
+        gptQueries: aiStats.gptQueries,
+        fallbackQueries: aiStats.fallbackQueries
+      },
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -371,6 +435,125 @@ app.get('/api', (req, res) => {
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });
+});
+
+// AI Assistant endpoint
+import { AIAssistant } from './ai-assistant.js';
+import { Blockchain } from './blockchain.js';
+
+const blockchain = new Blockchain();
+const aiAssistant = new AIAssistant(blockchain, null);
+
+const aiRateLimit = new Map();
+const oracleRateLimit = new Map();
+const AI_RATE_LIMIT = 30;
+const ORACLE_RATE_LIMIT = 60;
+const RATE_WINDOW = 60 * 1000;
+
+function checkRateLimit(map, key, limit) {
+  const now = Date.now();
+  const record = map.get(key);
+  if (!record || now > record.resetTime) {
+    map.set(key, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+  if (record.count >= limit) return false;
+  record.count++;
+  return true;
+}
+
+app.post('/api/ai/query', optionalAuth, async (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(aiRateLimit, clientIp, AI_RATE_LIMIT)) {
+    return res.status(429).json({ success: false, error: 'Too many AI requests, try again later' });
+  }
+
+  try {
+    const { query } = req.body;
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ success: false, error: 'Query is required' });
+    }
+    if (query.length > 1000) {
+      return res.status(400).json({ success: false, error: 'Query too long (max 1000 chars)' });
+    }
+    const response = await aiAssistant.query(query);
+    res.json({ success: true, response });
+  } catch (error) {
+    console.error('[AI] Query error:', error);
+    res.status(500).json({ success: false, error: 'AI assistant error' });
+  }
+});
+
+app.get('/api/ai/history', optionalAuth, (req, res) => {
+  const history = aiAssistant.getHistory(20);
+  res.json({ success: true, history });
+});
+
+app.post('/api/ai/clear', optionalAuth, (req, res) => {
+  aiAssistant.clearHistory();
+  res.json({ success: true, message: 'History cleared' });
+});
+
+app.get('/api/ai/suggestions', optionalAuth, (req, res) => {
+  const suggestions = aiAssistant.suggestActions();
+  res.json({ success: true, suggestions });
+});
+
+app.get('/api/ai/stats', basicAuth, (req, res) => {
+  const stats = aiAssistant.getStats();
+  res.json({ success: true, stats });
+});
+
+// Oracle/Price Feed endpoints
+import { OracleService } from './oracle.js';
+const oracleService = new OracleService();
+
+app.get('/api/oracle/price/:symbol', async (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(oracleRateLimit, clientIp, ORACLE_RATE_LIMIT)) {
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
+  try {
+    const { symbol } = req.params;
+    const price = await oracleService.getTokenPrice(symbol.toUpperCase());
+    res.json({ success: true, symbol: symbol.toUpperCase(), price, currency: 'USD' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/oracle/prices', async (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(oracleRateLimit, clientIp, ORACLE_RATE_LIMIT)) {
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
+  try {
+    const symbols = (req.query.symbols || 'ETH,BTC,AETH').split(',');
+    const prices = await oracleService.getMultiplePrices(symbols.map(s => s.trim().toUpperCase()));
+    res.json({ success: true, prices });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/oracle/market/:symbol', async (req, res) => {
+  try {
+    const data = await oracleService.getMarketData(req.params.symbol);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/oracle/trending', async (req, res) => {
+  try {
+    const coins = await oracleService.getTrendingCoins();
+    res.json({ success: true, coins });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // Multichain endpoints
@@ -404,10 +587,54 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ===== Newsletter Subscription Endpoint =====
-const subscribers = new Set();
+// Newsletter subscribers (persistent)
+const SUBSCRIBERS_FILE = path.join(__dirname, 'data', 'subscribers.json');
+
+function loadSubscribers() {
+  try {
+    if (fs.existsSync(SUBSCRIBERS_FILE)) {
+      return new Set(JSON.parse(fs.readFileSync(SUBSCRIBERS_FILE, 'utf8')));
+    }
+  } catch (e) {
+    console.error('Failed to load subscribers:', e.message);
+  }
+  return new Set();
+}
+
+function saveSubscribers(subscribers) {
+  try {
+    const dir = path.dirname(SUBSCRIBERS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(SUBSCRIBERS_FILE, JSON.stringify([...subscribers]));
+  } catch (e) {
+    console.error('Failed to save subscribers:', e.message);
+  }
+}
+
+const subscribers = loadSubscribers();
+
+const newsletterRateLimit = new Map();
+const NEWSLETTER_RATE_LIMIT = 5;
+const NEWSLETTER_WINDOW = 60 * 60 * 1000;
+
+function checkNewsletterRateLimit(ip) {
+  const now = Date.now();
+  const record = newsletterRateLimit.get(ip);
+  if (!record || now > record.resetTime) {
+    newsletterRateLimit.set(ip, { count: 1, resetTime: now + NEWSLETTER_WINDOW });
+    return true;
+  }
+  if (record.count >= NEWSLETTER_RATE_LIMIT) return false;
+  record.count++;
+  return true;
+}
 
 app.post('/api/newsletter/subscribe', (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkNewsletterRateLimit(clientIp)) {
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
   const { email } = req.body;
   if (!email || typeof email !== 'string') {
     return res.status(400).json({ success: false, error: 'Email is required' });
@@ -416,11 +643,13 @@ app.post('/api/newsletter/subscribe', (req, res) => {
   if (!emailRegex.test(email)) {
     return res.status(400).json({ success: false, error: 'Invalid email format' });
   }
-  if (subscribers.has(email.toLowerCase())) {
+  const normalizedEmail = email.toLowerCase();
+  if (subscribers.has(normalizedEmail)) {
     return res.json({ success: true, message: 'Already subscribed!' });
   }
-  subscribers.add(email.toLowerCase());
-  console.log(`📧 New newsletter subscriber: ${email}`);
+  subscribers.add(normalizedEmail);
+  saveSubscribers(subscribers);
+  console.log(`📧 New newsletter subscriber: ${normalizedEmail}`);
   res.json({ success: true, message: 'Successfully subscribed!' });
 });
 
@@ -594,16 +823,53 @@ app.get('*', (req, res) => {
 });
 
 // Error handling
-app.use((err, req, res, _next) => {
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err.message);
   console.error(err.stack);
+  process.exit(1);
+});
 
-  // Handle JSON parsing errors
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+app.use((err, req, res, _next) => {
+  console.error('Error:', err.message);
+
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    return res.status(400).json({ error: 'Invalid JSON' });
+    return res.status(400).json({ success: false, error: 'Invalid JSON' });
   }
 
-  res.status(500).json({ error: 'Internal server error' });
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({ success: false, error: err.message });
+  }
+
+  res.status(500).json({ success: false, error: 'Internal server error' });
 });
+
+function cleanupRateLimitMaps() {
+  const now = Date.now();
+  for (const [key, record] of requestCounts) {
+    if (now > record.resetTime + RATE_LIMIT_WINDOW) requestCounts.delete(key);
+  }
+  for (const [key, record] of userRequestCounts) {
+    if (now > record.resetTime + USER_RATE_LIMIT_WINDOW) userRequestCounts.delete(key);
+  }
+  for (const [key] of newsletterRateLimit) {
+    if (now > (newsletterRateLimit.get(key)?.resetTime || 0) + NEWSLETTER_WINDOW) {
+      newsletterRateLimit.delete(key);
+    }
+  }
+  for (const [key, record] of aiRateLimit) {
+    if (now > record.resetTime + RATE_WINDOW) aiRateLimit.delete(key);
+  }
+  for (const [key, record] of oracleRateLimit) {
+    if (now > record.resetTime + RATE_WINDOW) oracleRateLimit.delete(key);
+  }
+  console.log('[Cleanup] Rate limit maps cleaned');
+}
+
+setInterval(cleanupRateLimitMaps, 60 * 60 * 1000);
 
 // Start server
 server.listen(PORT, () => {
@@ -630,12 +896,6 @@ server.listen(PORT, () => {
   console.log('   • Layer 2 Integration');
   console.log('='.repeat(60));
 
-  if (NODE_ENV === 'production' && ADMIN_PASSWORD === 'admin123') {
-    console.warn('⚠️  WARNING: Using default admin password in production!');
-    console.warn('⚠️  Set ADMIN_PASSWORD environment variable immediately!');
-  }
-
-  // Notify about server start
   wsServer.notifySystemAlert('success', 'Server started successfully', { port: PORT });
 });
 
