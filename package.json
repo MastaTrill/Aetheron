@@ -58,7 +58,7 @@
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "cors": "^2.8.5",
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "^0.45.2",
     "ethers": "^6.16.0",
     "express": "^4.21.2",
     "express-graphql": "^0.12.0",
