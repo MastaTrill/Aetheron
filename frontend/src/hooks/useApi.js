@@ -1,8 +1,60 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 
 const ApiContext = createContext();
+
+const API_BASE_URL =
+  process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
+
+const getToken = () => localStorage.getItem('aetheron_token');
+
+const redirectToLogin = () => {
+  localStorage.removeItem('aetheron_token');
+  window.location.href = '/login';
+};
+
+const getErrorMessage = (payload, fallback) => payload?.error || payload?.message || fallback;
+
+const request = async (path, { method = 'GET', body, timeout = 10000 } = {}) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    const token = getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal
+    });
+
+    const contentType = response.headers.get('content-type') || '';
+    const payload = contentType.includes('application/json')
+      ? await response.json()
+      : null;
+
+    if (response.status === 401) {
+      redirectToLogin();
+      throw new Error('Unauthorized');
+    }
+
+    if (!response.ok) {
+      throw new Error(getErrorMessage(payload, 'Request failed'));
+    }
+
+    return payload;
+  } finally {
+    clearTimeout(timer);
+  }
+};
 
 export const useApi = () => {
   const context = useContext(ApiContext);
@@ -16,50 +68,19 @@ export const ApiProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Create axios instance with base configuration
-  const api = axios.create({
-    baseURL: process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api',
-    timeout: 10000,
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-
-  // Request interceptor for auth
-  api.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem('aetheron_token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error)
-  );
-
-  // Response interceptor for error handling
-  api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        localStorage.removeItem('aetheron_token');
-        window.location.href = '/login';
-      }
-      return Promise.reject(error);
-    }
-  );
-
-  // API methods
   const login = useCallback(async (username, password) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('/api/auth/login', { username, password });
-      const { token } = response.data;
+      const response = await request('/auth/login', {
+        method: 'POST',
+        body: { username, password }
+      });
+      const { token } = response;
       localStorage.setItem('aetheron_token', token);
-      return response.data;
+      return response;
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.message || 'Login failed');
       throw err;
     } finally {
       setLoading(false);
@@ -70,65 +91,55 @@ export const ApiProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/stats');
-      return response.data;
+      return await request('/stats');
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch stats');
+      setError(err.message || 'Failed to fetch stats');
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [api]);
+  }, []);
 
   const getBlockchainData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/multichain/chains');
-      return response.data;
+      return await request('/multichain/chains');
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch blockchain data');
+      setError(err.message || 'Failed to fetch blockchain data');
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [api]);
+  }, []);
 
   const getUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/users');
-      return response.data;
+      return await request('/users');
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch users');
+      setError(err.message || 'Failed to fetch users');
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [api]);
-
-  const getLogs = useCallback(
-    async (limit = 100) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await api.get(`/logs?limit=${limit}`);
-        return response.data;
-      } catch (err) {
-        setError(err.response?.data?.error || 'Failed to fetch logs');
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [api]
-  );
-
-  const getHealth = useCallback(async () => {
-    const response = await axios.get('/health');
-    return response.data;
   }, []);
+
+  const getLogs = useCallback(async (limit = 100) => {
+    setLoading(true);
+    setError(null);
+    try {
+      return await request(`/logs?limit=${limit}`);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch logs');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getHealth = useCallback(async () => request('/health'), []);
 
   const value = {
     loading,
