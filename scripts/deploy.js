@@ -1,146 +1,179 @@
-import hre from 'hardhat';
+// SPDX-License-Identifier: MIT
+// Full deploy script for Aetheron / Sentinel / L3 — Base Mainnet
+// Deploy sequence:
+//   1. AetheronToken (ERC-20 governance token)
+//   2. AetheronGlyphs (ERC-721 NFT collection)
+//   3. KeeperRegistry (keeper management + staking)
+//   4. Treasury (protocol treasury with emission caps)
+//   5. EpochManager (epoch transitions + reward distribution)
+//   6. Sentinel (network health monitoring + anomaly detection)
+//   7. L3Relay (cross-chain message relay)
+//   8. AetherTimelock + AetherGovernor (governance stack)
+//
+// Post-deploy wiring:
+//   - Grant minter role on AetheronToken to EpochManager
+//   - Register initial keepers in KeeperRegistry
+//   - Set EpochManager as authorized caller on Treasury
+//   - Wire Sentinel address into L3Relay
+//   - Transfer ownership of all contracts to Timelock (via Governor)
+//   - Write deployed addresses to deployments/addresses.json
+
+const hre = require("hardhat");
+const fs = require("fs");
+const path = require("path");
+require("dotenv").config();
 
 async function main() {
-  const network = hre.network.name;
-  const chainId = hre.network.config.chainId;
-  console.log(`🚀 Deploying Aetheron contracts to network: ${network} (Chain ID: ${chainId})`);
+    const [deployer] = await hre.ethers.getSigners();
+    console.log("Deploying Aetheron contracts with account:", deployer.address);
+    console.log("Account balance:", (await hre.ethers.provider.getBalance(deployer.address)).toString());
 
-  // 🚨 MAINNET SAFETY CHECKS
-  const mainnetChains = [1, 137, 8453]; // Ethereum, Polygon, Base
-  const testnetChains = [11155111, 80002, 84532, 10143]; // Sepolia, Polygon Amoy, Base Sepolia, Monad Testnet
-  if (mainnetChains.includes(chainId)) {
-    console.log('\n⚠️  WARNING: You are deploying to MAINNET!');
-    console.log('💰 This will cost real money and cannot be undone!');
-    console.log('📋 Please confirm:');
-    console.log(`   - Network: ${network}`);
-    console.log(`   - Chain ID: ${chainId}`);
-    console.log('   - You have sufficient funds for gas');
-    console.log('   - You have backed up your private key');
-    console.log('   - You understand the risks\n');
+    const sovereignMultisig = process.env.SOVEREIGN_MULTISIG || deployer.address;
+    const guardianMultisig  = process.env.GUARDIAN_MULTISIG || deployer.address;
+    const initialSupply     = process.env.INITIAL_SUPPLY || "100000000000000000000000000"; // 100M AETH
+    const epochLength       = parseInt(process.env.EPOCH_LENGTH || "403200");
 
-    // In a real deployment, you'd want user confirmation here
-    // For now, we'll proceed with warnings
-  }
+    // ──────────────────────────────────────────────
+    // 1. Deploy AetheronToken
+    // ──────────────────────────────────────────────
+    console.log("\n[1/8] Deploying AetheronToken...");
+    const AetheronToken = await hre.ethers.getContractFactory("AetheronToken");
+    const aeth = await AetheronToken.deploy(initialSupply, sovereignMultisig);
+    await aeth.waitForDeployment();
+    const aethAddr = await aeth.getAddress();
+    console.log("  AetheronToken deployed to:", aethAddr);
 
+    // ──────────────────────────────────────────────
+    // 2. Deploy AetheronGlyphs
+    // ──────────────────────────────────────────────
+    console.log("\n[2/8] Deploying AetheronGlyphs...");
+    const AetheronGlyphs = await hre.ethers.getContractFactory("AetheronGlyphs");
+    const glyphs = await AetheronGlyphs.deploy(sovereignMultisig);
+    await glyphs.waitForDeployment();
+    console.log("  AetheronGlyphs deployed to:", await glyphs.getAddress());
 
-  const [deployer] = await hre.ethers.getSigners();
-  const deployerAddress = await deployer.getAddress();
-  const balance = await hre.ethers.provider.getBalance(deployerAddress);
-  console.log(`👤 Deployer: ${deployerAddress}`);
-  console.log(
-    `💰 Balance: ${hre.ethers.formatEther(balance)} ${
-      network === 'polygon' || network === 'polygonAmoy' ? 'MATIC' : 'ETH'
-    }`
-  );
+    // ──────────────────────────────────────────────
+    // 3. Deploy KeeperRegistry
+    // ──────────────────────────────────────────────
+    console.log("\n[3/8] Deploying KeeperRegistry...");
+    const KeeperRegistry = await hre.ethers.getContractFactory("KeeperRegistry");
+    const keeperRegistry = await KeeperRegistry.deploy(sovereignMultisig, guardianMultisig);
+    await keeperRegistry.waitForDeployment();
+    const keeperAddr = await keeperRegistry.getAddress();
+    console.log("  KeeperRegistry deployed to:", keeperAddr);
 
-  // Estimate deployment costs
-  console.log('\n📊 Estimating deployment costs...');
-  const gasPrice = await hre.ethers.provider.getFeeData();
-  console.log(
-    `⛽ Gas Price: ${hre.ethers.formatUnits(
-      gasPrice.gasPrice || gasPrice.maxFeePerGas || 0,
-      'gwei'
-    )} gwei`
-  );
+    // ──────────────────────────────────────────────
+    // 4. Deploy Treasury
+    // ──────────────────────────────────────────────
+    console.log("\n[4/8] Deploying Treasury...");
+    const treasuryCap = hre.ethers.parseEther("200000000"); // 200M AETH cap
+    const Treasury = await hre.ethers.getContractFactory("Treasury");
+    const treasury = await Treasury.deploy(sovereignMultisig, aethAddr, guardianMultisig, treasuryCap);
+    await treasury.waitForDeployment();
+    const treasuryAddr = await treasury.getAddress();
+    console.log("  Treasury deployed to:", treasuryAddr);
 
-  // 1. Deploy ERC20 Token
-  console.log('\n🏭 Deploying AetheronToken (ERC20)...');
-  const AetheronToken = await hre.ethers.getContractFactory('AetheronToken');
-  const initialSupply = hre.ethers.parseEther('1000000'); // 1,000,000 AETH
+    // ──────────────────────────────────────────────
+    // 5. Deploy EpochManager
+    // ──────────────────────────────────────────────
+    console.log("\n[5/8] Deploying EpochManager...");
+    const emissionPerEpoch = hre.ethers.parseEther("1923077");
+    const currentBlock = await hre.ethers.provider.getBlockNumber();
+    const EpochManager = await hre.ethers.getContractFactory("EpochManager");
+    const epochManager = await EpochManager.deploy(
+        sovereignMultisig, aethAddr, keeperAddr, treasuryAddr,
+        epochLength, emissionPerEpoch, currentBlock + 10
+    );
+    await epochManager.waitForDeployment();
+    const epochAddr = await epochManager.getAddress();
+    console.log("  EpochManager deployed to:", epochAddr);
 
-  const erc20 = await AetheronToken.deploy(initialSupply);
-  await erc20.waitForDeployment();
-  const tokenAddress = await erc20.getAddress();
-  console.log(`✅ AetheronToken deployed to: ${tokenAddress}`);
+    // ──────────────────────────────────────────────
+    // 6. Deploy Sentinel
+    // ──────────────────────────────────────────────
+    console.log("\n[6/8] Deploying Sentinel...");
+    const Sentinel = await hre.ethers.getContractFactory("Sentinel");
+    const sentinel = await Sentinel.deploy(sovereignMultisig, keeperAddr, guardianMultisig);
+    await sentinel.waitForDeployment();
+    const sentinelAddr = await sentinel.getAddress();
+    console.log("  Sentinel deployed to:", sentinelAddr);
 
-  // 2. Deploy ERC721 NFT
-  console.log('\n🎨 Deploying AetheronGlyphs (ERC721)...');
-  const AetheronGlyphs = await hre.ethers.getContractFactory('AetheronGlyphs');
+    // ──────────────────────────────────────────────
+    // 7. Deploy L3Relay
+    // ──────────────────────────────────────────────
+    console.log("\n[7/8] Deploying L3Relay...");
+    const rpcEndpoint = process.env.BASE_RPC_URL || "https://mainnet.base.org";
+    const L3Relay = await hre.ethers.getContractFactory("L3Relay");
+    const l3Relay = await L3Relay.deploy(
+        sovereignMultisig, keeperAddr, sentinelAddr, guardianMultisig, rpcEndpoint
+    );
+    await l3Relay.waitForDeployment();
+    const l3Addr = await l3Relay.getAddress();
+    console.log("  L3Relay deployed to:", l3Addr);
 
-  const erc721 = await AetheronGlyphs.deploy();
-  await erc721.waitForDeployment();
-  const nftAddress = await erc721.getAddress();
-  console.log(`✅ AetheronGlyphs deployed to: ${nftAddress}`);
+    // ──────────────────────────────────────────────
+    // 8. Deploy Governance (Timelock + Governor)
+    // ──────────────────────────────────────────────
+    console.log("\n[8/8] Deploying Governance stack...");
+    const timelockDelay = 172800; // 2 days
+    const AetherTimelock = await hre.ethers.getContractFactory("AetherTimelock");
+    const timelock = await AetherTimelock.deploy(
+        timelockDelay,
+        [sovereignMultisig], // proposers
+        [sovereignMultisig, hre.ethers.ZeroAddress], // executors (anyone can execute)
+        sovereignMultisig    // admin
+    );
+    await timelock.waitForDeployment();
+    const timelockAddr = await timelock.getAddress();
 
-  // Save deployment info
-  const deploymentInfo = {
-    network,
-    chainId,
-    tokenAddress,
-    nftAddress,
-    tokenSymbol: 'AETH',
-    nftSymbol: 'AGLYPH',
-    initialSupply: initialSupply.toString(),
-    deployer: deployerAddress,
-    timestamp: new Date().toISOString()
-  };
+    const AetherGovernor = await hre.ethers.getContractFactory("AetherGovernor");
+    const governor = await AetherGovernor.deploy(
+        aethAddr,      // IVotes token
+        timelockAddr,  // TimelockController
+        7200,          // votingDelay (~1 day in blocks)
+        50400,         // votingPeriod (~1 week in blocks)
+        hre.ethers.parseEther("100000"), // proposalThreshold (100K AETH)
+        4              // quorumNumerator (4%)
+    );
+    await governor.waitForDeployment();
+    const governorAddr = await governor.getAddress();
+    console.log("  AetherTimelock deployed to:", timelockAddr);
+    console.log("  AetherGovernor deployed to:", governorAddr);
 
-  console.log('\n📋 Deployment Summary:');
-  console.log(JSON.stringify(deploymentInfo, null, 2));
+    // ──────────────────────────────────────────────
+    // Write addresses.json
+    // ──────────────────────────────────────────────
+    const addresses = {
+        _meta: {
+            network: "Base Mainnet",
+            chainId: 8453,
+            deploymentDate: new Date().toISOString(),
+            deployer: deployer.address
+        },
+        aetherToken: aethAddr,
+        aetherGlyphs: await glyphs.getAddress(),
+        keeperRegistry: keeperAddr,
+        treasury: treasuryAddr,
+        epochManager: epochAddr,
+        sentinel: sentinelAddr,
+        l3Relay: l3Addr,
+        timelock: timelockAddr,
+        governor: governorAddr
+    };
 
-  // Save to file
-  const fs = await import('fs');
-  const deploymentPath = `./deployments/${network}.json`;
-  await fs.promises.mkdir('./deployments', { recursive: true });
-  await fs.promises.writeFile(deploymentPath, JSON.stringify(deploymentInfo, null, 2));
-  console.log(`💾 Deployment info saved to: ${deploymentPath}`);
-
-  // Update chain-config.json if it exists
-  const chainConfigPath = './chain-config.json';
-  try {
-    const chainConfig = JSON.parse(await fs.promises.readFile(chainConfigPath, 'utf8'));
-    if (!chainConfig[chainId]) {
-      chainConfig[chainId] = {};
-    }
-    chainConfig[chainId].tokenAddress = tokenAddress;
-    chainConfig[chainId].nftAddress = nftAddress;
-    chainConfig[chainId].network = network;
-    await fs.promises.writeFile(chainConfigPath, JSON.stringify(chainConfig, null, 2));
-    console.log(`🔄 Updated ${chainConfigPath} with deployed addresses`);
-  } catch (error) {
-    console.log(`⚠️  Could not update ${chainConfigPath}: ${error.message}`);
-  }
-
-  // Verification instructions
-  if (network !== 'hardhat' && network !== 'localhost') {
-    console.log('\n🔍 Contract Verification:');
-    console.log(`npx hardhat verify --network ${network} ${tokenAddress} "${initialSupply}"`);
-    console.log(`npx hardhat verify --network ${network} ${nftAddress}`);
-
-    // Auto-verify if on mainnet or supported testnet
-    if (mainnetChains.includes(chainId) || testnetChains.includes(chainId)) {
-      console.log('\n⏳ Auto-verifying contracts...');
-      try {
-        await hre.run('verify:verify', {
-          address: tokenAddress,
-          constructorArguments: [initialSupply],
-          network: network
-        });
-        console.log('✅ Token contract verified');
-
-        await hre.run('verify:verify', {
-          address: nftAddress,
-          constructorArguments: [],
-          network: network
-        });
-        console.log('✅ NFT contract verified');
-      } catch (error) {
-        console.log(`⚠️  Auto-verification failed: ${error.message}`);
-        console.log('Manual verification commands shown above');
-      }
-    }
-  }
-
-  console.log('\n🎉 Deployment completed successfully!');
-  console.log('📖 Next steps:');
-  console.log('1. Update your frontend with the new contract addresses');
-  console.log('2. Test the contracts on the deployed network');
-  console.log('3. Set up liquidity and trading pairs if needed');
-  console.log('4. Announce the deployment to your community');
+    const deploymentsDir = path.join(__dirname, "..", "deployments");
+    if (!fs.existsSync(deploymentsDir)) fs.mkdirSync(deploymentsDir, { recursive: true });
+    fs.writeFileSync(
+        path.join(deploymentsDir, "addresses.json"),
+        JSON.stringify(addresses, null, 2)
+    );
+    console.log("\n✅ All contracts deployed. Addresses written to deployments/addresses.json");
+    console.log("\n⚠️  Run post-deploy.js next to wire roles and transfer ownership.");
 }
 
-// Run script
-main().catch((error) => {
-  console.error('❌ Deployment failed:', error);
-  process.exitCode = 1;
-});
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error("Deployment failed:", error);
+        process.exit(1);
+    });
