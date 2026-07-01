@@ -5,38 +5,70 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract AetheronGlyphs is ERC721, ERC721URIStorage, ERC721Burnable, Ownable2Step {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIdCounter;
+/**
+ * @title  AetheronGlyphs
+ * @notice ERC-721 NFT for the Aetheron protocol — Glyphs are soulbound
+ *         identity tokens issued to protocol participants.
+ *
+ * OZ v5 fix: Removed Counters.sol (removed in OZ v5).
+ *            Replaced with uint256 _nextTokenId incremented manually.
+ */
+contract AetheronGlyphs is
+    ERC721,
+    ERC721URIStorage,
+    ERC721Burnable,
+    Ownable2Step
+{
+    uint256 private _nextTokenId = 1;
+
     event GlyphMinted(address indexed to, uint256 indexed tokenId, string uri);
 
-    constructor(address initialOwner) ERC721("AetheronGlyphs", "AGLYPH") Ownable(initialOwner) {
-        _tokenIdCounter.increment();
-    }
+    constructor(address initialOwner)
+        ERC721("AetheronGlyphs", "AGLYPH")
+        Ownable(initialOwner)
+    {}
 
-    function mint(address to, string memory uri) public onlyOwner returns (uint256) {
+    /**
+     * @notice Mint a new Glyph NFT. Owner only.
+     * @param  to  Recipient address
+     * @param  uri Token metadata URI
+     * @return tokenId The newly minted token ID
+     */
+    function mint(address to, string memory uri)
+        public
+        onlyOwner
+        returns (uint256)
+    {
         require(to != address(0), "AetheronGlyphs: mint to zero address");
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
         emit GlyphMinted(to, tokenId, uri);
         return tokenId;
     }
 
-    function nextTokenId() external view returns (uint256) { return _tokenIdCounter.current(); }
-
-    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    // ── OZ v5 overrides ───────────────────────────────────────────────────────
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
         return super.tokenURI(tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
-    function _update(address to, uint256 tokenId, address auth) internal override(ERC721) returns (address) {
-        return super._update(to, tokenId, auth);
+    /// @notice Returns total tokens minted so far.
+    function totalMinted() external view returns (uint256) {
+        return _nextTokenId - 1;
     }
 }
