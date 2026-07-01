@@ -8,11 +8,11 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 /**
  * @title  AetheronGlyphs
- * @notice ERC-721 NFT for the Aetheron protocol — Glyphs are soulbound
- *         identity tokens issued to protocol participants.
+ * @notice ERC-721 NFT for the Aetheron protocol. Glyphs are identity tokens
+ *         issued to protocol participants.
  *
- * OZ v5 fix: Removed Counters.sol (removed in OZ v5).
- *            Replaced with uint256 _nextTokenId incremented manually.
+ * OZ v5 compatible: Counters.sol was removed in OZ v5.
+ * Uses plain uint256 _nextTokenId instead.
  */
 contract AetheronGlyphs is
     ERC721,
@@ -20,14 +20,24 @@ contract AetheronGlyphs is
     ERC721Burnable,
     Ownable2Step
 {
+    // ── Token ID counter (starts at 1) ────────────────────────────────────────
     uint256 private _nextTokenId = 1;
 
+    // ── Events ────────────────────────────────────────────────────────────────
     event GlyphMinted(address indexed to, uint256 indexed tokenId, string uri);
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Constructor
+    // ─────────────────────────────────────────────────────────────────────────
 
     constructor(address initialOwner)
         ERC721("AetheronGlyphs", "AGLYPH")
         Ownable(initialOwner)
     {}
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Minting
+    // ─────────────────────────────────────────────────────────────────────────
 
     /**
      * @notice Mint a new Glyph NFT. Owner only.
@@ -41,14 +51,32 @@ contract AetheronGlyphs is
         returns (uint256)
     {
         require(to != address(0), "AetheronGlyphs: mint to zero address");
-        uint256 tokenId = _nextTokenId++;
+        uint256 tokenId = _nextTokenId;
+        _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
         emit GlyphMinted(to, tokenId, uri);
         return tokenId;
     }
 
-    // ── OZ v5 overrides ───────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    // View helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /// @notice Returns the next token ID that will be minted
+    function nextTokenId() external view returns (uint256) {
+        return _nextTokenId;
+    }
+
+    /// @notice Returns total number of tokens minted so far
+    function totalMinted() external view returns (uint256) {
+        return _nextTokenId - 1;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // OZ v5 overrides (required by compiler)
+    // ─────────────────────────────────────────────────────────────────────────
+
     function tokenURI(uint256 tokenId)
         public
         view
@@ -65,10 +93,5 @@ contract AetheronGlyphs is
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    /// @notice Returns total tokens minted so far.
-    function totalMinted() external view returns (uint256) {
-        return _nextTokenId - 1;
     }
 }
