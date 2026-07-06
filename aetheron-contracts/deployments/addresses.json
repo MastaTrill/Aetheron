@@ -1,0 +1,11 @@
+{
+  "_meta": { "network": "Base Mainnet", "chainId": 8453, "deploymentDate": "[DEPLOYMENT_DATE]" },
+  "aetherToken": "[AETHERTOKEN_ADDRESS]",
+  "keeperRegistry": "[KEEPER_REGISTRY_ADDRESS]",
+  "epochManager": "[EPOCH_MANAGER_ADDRESS]",
+  "treasury": "[TREASURY_ADDRESS]",
+  "sentinel": "[SENTINEL_ADDRESS]",
+  "l3Relay": "[L3_RELAY_ADDRESS]",
+  "timelock": "[TIMELOCK_ADDRESS]",
+  "governor": "[GOVERNOR_ADDRESS]"
+}

@@ -59,7 +59,7 @@ class IntentClassifier {
       entities.address = addressMatch[0];
     }
 
-    const amountMatch = query.match(/(\d+(?:\.\d+)?)\s*(AETH|aeth|eth|usdt|usdc)?/i);
+    const amountMatch = query.match(/(\d+(?:\.\d+)?)\s*(AETH|ETH|USDT|USDC|SOL|MATIC|BASE)/i);
     if (amountMatch) {
       entities.amount = parseFloat(amountMatch[1]);
       entities.currency = (amountMatch[2] || 'AETH').toUpperCase();
@@ -70,7 +70,7 @@ class IntentClassifier {
       entities.blockNumber = parseInt(blockMatch[1]);
     }
 
-    const txMatch = query.match(/(?:tx|transaction|hash):\s*([a-fA-F0-9]{64})/i);
+    const txMatch = query.match(/(?:tx|transaction|hash|id)[:\s]+(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})/i);
     if (txMatch) {
       entities.txHash = txMatch[1];
     }
@@ -520,14 +520,16 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    * Handle stats query
    */
   async handleStats(_entities) {
-    return `Aetheron Platform Stats:
-    
-• Total Value Locked (TVL): $1,234,567
-• 24h Trading Volume: $89,012
-• Total Users: 1,234
-• Active Validators: 21
+    return `### 📊 Aetheron Platform Stats
 
-Would you like more details on any metric?`;
+| Metric | Value |
+| :--- | :--- |
+| **TVL** | $1,234,567 |
+| **24h Volume** | $89,012 |
+| **Total Users** | 1,234 |
+| **Validators** | 21 |
+
+*Would you like more details on any metric?*`;
   }
 
   /**
