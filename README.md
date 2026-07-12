@@ -1,3 +1,4 @@
+<!-- Deployment trigger: 2026-01-31 -->
 # Aetheron Blockchain Platform
 
 ## Overview

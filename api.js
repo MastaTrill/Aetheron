@@ -12,6 +12,7 @@ const { GamePlatform } = require('./game');
 const { Crowdfunding } = require('./crowdfunding');
 const { MultiChainIntegration } = require('./multichain');
 const { SolanaIntegration } = require('./solana');
+const { AnalyticsEngine } = require('./analytics');
 
 const app = express();
 app.use(express.json());
@@ -29,6 +30,7 @@ const edu = new Education();
 const defi = new DeFiLending();
 const game = new GamePlatform();
 const crowd = new Crowdfunding();
+const analyticsEngine = new AnalyticsEngine();
 
 // Export for testing
 if (process.env.NODE_ENV === 'test') {
@@ -373,6 +375,19 @@ app.get('/multichain/config/:chain', (req, res) => {
   } catch (error) {
     res.status(404).json({ error: 'Chain not found' });
   }
+});
+
+app.get('/health', (_req, res) => {
+  const health = analyticsEngine.calculateNetworkHealth();
+  res.json(health);
+});
+
+app.get('/engagement', (_req, res) => {
+  res.json({
+    activeAddresses: Array.from(analyticsEngine.metrics.activeAddresses),
+    transactionVolume: analyticsEngine.metrics.transactionVolume,
+    blockTimes: analyticsEngine.metrics.blockTimes
+  });
 });
 
 process.on('exit', () => {

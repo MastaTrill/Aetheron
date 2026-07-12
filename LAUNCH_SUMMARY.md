@@ -6,7 +6,7 @@
 **Launch Date:** January 11, 2026  
 **Test Results:** 165/165 tests passing  
 **Deployment:** Live on Netlify  
-**URL:** https://gregarious-strudel-850a21.netlify.app
+**URL:** https://aetheron.online
 
 ---
 

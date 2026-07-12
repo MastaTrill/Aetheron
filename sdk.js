@@ -1,5 +1,4 @@
 // Developer SDK for Aetheron Platform
-const axios = require('axios');
 const WebSocket = require('ws');
 
 class AetheronSDK {
@@ -295,29 +294,32 @@ class AetheronSDK {
 
   // HTTP Request Helper
   async request(method, path, data = null) {
-    const config = {
-      method,
-      url: `${this.apiUrl}${path}`,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-SDK-Version': this.version
-      }
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-SDK-Version': this.version
     };
 
     if (this.apiKey) {
-      config.headers['X-API-Key'] = this.apiKey;
+      headers['X-API-Key'] = this.apiKey;
     }
 
-    if (data) {
-      config.data = data;
+    const response = await fetch(`${this.apiUrl}${path}`, {
+      method,
+      headers,
+      body: data ? JSON.stringify(data) : undefined
+    });
+
+    const contentType = response.headers.get('content-type') || '';
+    const payload = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text();
+
+    if (!response.ok) {
+      const message = payload?.message || payload?.error || response.statusText || 'Request failed';
+      throw new Error(message);
     }
 
-    try {
-      const response = await axios(config);
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || error.message);
-    }
+    return payload;
   }
 
   // Utility Methods

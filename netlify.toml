@@ -9,9 +9,12 @@
   NODE_VERSION = "20"
 
 # Redirect rules
+# API proxy to Railway backend
+# Update this URL after Railway deployment (see DEPLOYMENT.md)
+# To find your URL: railway status, or check the Railway dashboard
 [[redirects]]
   from = "/api/*"
-  to = "https://your-backend-url.com/api/:splat"
+  to = "https://aetheron-production.up.railway.app/api/:splat"
   status = 200
   force = false
   
@@ -64,3 +67,14 @@
   from = "/wallet"
   to = "/browser-extension/popup.html"
   status = 200
+
+[[redirects]]
+  from = "/beta/apply"
+  to = "/beta-apply.html"
+  status = 200
+
+# Custom 404 page
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

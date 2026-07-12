@@ -23,7 +23,7 @@ Aetheron is a modular, full-featured blockchain ecosystem featuring:
 
 ## 🎯 **Live Demo - Try It Now!**
 
-**🌐 Visit:** https://gregarious-strudel-850a21.netlify.app
+**🌐 Visit:** https://aetheron.online
 
 **🎮 Game Interface:** Experience the TVL growth mechanics firsthand
 **📊 Admin Dashboard:** Full platform management interface

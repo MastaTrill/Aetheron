@@ -1,36 +1,59 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import cors from 'cors';
 import http from 'http';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { AetheronWebSocket } from './websocket.js';
+import helmet from 'helmet';
+import sanitizeHtml from 'sanitize-html';
 import 'dotenv/config';
 
 // ES Module __dirname workaround
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Database and Auth
-import { sequelize, User, Log, Transaction } from './database/models.js';
-import authRoutes from './auth/routes.js';
-import { basicAuth, jwtAuth, requireRole, optionalAuth } from './auth/middleware.js';
+// Database and Auth - initialized later for optional database
+let dbAvailable = false;
+let User, Log, Transaction;
 
 // Import new feature modules
+
+import { createRequire } from 'module';
+const requireCJS = createRequire(import.meta.url);
+const {
+  RealTimeMonitoringSystem,
+  CrossChainMetricsSystem,
+  UserBehaviorAnalyticsSystem,
+  PredictiveMaintenanceSystem
+} = requireCJS('./advanced-analytics.cjs');
+
 import { AccountAbstraction } from './account-abstraction.js';
 import FiatOnRamp from './fiat-onramp.js';
 import { LimitOrderManager } from './limit-orders.js';
 import { RWATokenization } from './rwa-tokenization.js';
 import L2Integration from './l2-integration.js';
 
+import authRoutes from './auth/routes.js';
+import { basicAuth, jwtAuth, requireRole, optionalAuth } from './auth/middleware.js';
+
+import crypto from 'crypto';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:3001', 'http://localhost:3000'];
+  : ['http://localhost:3001', 'http://localhost:3000', 'https://aetheron.online'];
+
+// Validate admin credentials on startup
+if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+  console.error('❌ ERROR: ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env');
+  process.exit(1);
+}
 
 const server = http.createServer(app);
 
@@ -43,6 +66,86 @@ const fiatOnRamp = new FiatOnRamp();
 const limitOrders = new LimitOrderManager();
 const rwaTokenization = new RWATokenization();
 const l2Integration = new L2Integration();
+
+// === Advanced Analytics Modules ===
+const analyticsRealtime = new RealTimeMonitoringSystem({}, {});
+const analyticsCrossChain = new CrossChainMetricsSystem({});
+const analyticsUser = new UserBehaviorAnalyticsSystem();
+const analyticsMaintenance = new PredictiveMaintenanceSystem();
+
+// Start a default monitoring session (optional)
+let defaultMonitoringId;
+analyticsRealtime.startMonitoring()
+  .then((monitoring) => {
+    defaultMonitoringId = monitoring?.id;
+  })
+  .catch((e) => console.warn('[Analytics] Monitoring not started:', e.message));
+
+// === Analytics API Endpoints ===
+// Real-time monitoring metrics
+app.get('/api/analytics/realtime/metrics', basicAuth, (req, res) => {
+  if (!defaultMonitoringId) return res.status(503).json({ error: 'Monitoring not started' });
+  const metrics = analyticsRealtime.getLatestMetrics(defaultMonitoringId);
+  res.json(metrics ? metrics : { error: 'No metrics available' });
+});
+
+// Real-time monitoring alerts
+app.get('/api/analytics/realtime/alerts', basicAuth, (req, res) => {
+  if (!defaultMonitoringId) return res.status(503).json({ error: 'Monitoring not started' });
+  const alerts = analyticsRealtime.getActiveAlerts(defaultMonitoringId);
+  res.json(alerts);
+});
+
+// Real-time system health
+app.get('/api/analytics/realtime/health', basicAuth, (req, res) => {
+  res.json(analyticsRealtime.getSystemHealth());
+});
+
+// Cross-chain metrics
+app.get('/api/analytics/crosschain/metrics', basicAuth, async (req, res) => {
+  const metrics = await analyticsCrossChain.collectCrossChainMetrics();
+  res.json(metrics);
+});
+
+// Cross-chain analytics trends
+app.get('/api/analytics/crosschain/analytics', basicAuth, (req, res) => {
+  const { timeframe } = req.query;
+  const result = analyticsCrossChain.getCrossChainAnalytics(Number(timeframe) || 24);
+  res.json(result);
+});
+
+// Cross-chain bridge performance
+app.get('/api/analytics/crosschain/bridges', basicAuth, (req, res) => {
+  res.json(analyticsCrossChain.getBridgePerformance());
+});
+
+// Cross-chain transfer stats
+app.get('/api/analytics/crosschain/transfers', basicAuth, (req, res) => {
+  const { timeframe } = req.query;
+  res.json(analyticsCrossChain.getTransferStatistics(Number(timeframe) || 24));
+});
+
+// User analytics (summary for a user)
+app.get('/api/analytics/user/:userId', basicAuth, (req, res) => {
+  const { userId } = req.params;
+  res.json(analyticsUser.getUserAnalytics(userId));
+});
+
+// User segmentation
+app.get('/api/analytics/user/segmentation', basicAuth, (req, res) => {
+  res.json(analyticsUser.getUserSegmentation());
+});
+
+// Predictive maintenance recommendations
+app.get('/api/analytics/maintenance/recommendations', basicAuth, (req, res) => {
+  res.json(analyticsMaintenance.getMaintenanceRecommendations());
+});
+
+// Predictive maintenance component health
+app.get('/api/analytics/maintenance/component/:componentId', basicAuth, (req, res) => {
+  const { componentId } = req.params;
+  res.json(analyticsMaintenance.getComponentHealthStatus(componentId));
+});
 
 // Middleware
 // CORS configuration
@@ -62,26 +165,59 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(cors(corsOptions));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+const sanitizeInput = (req, res, next) => {
+  const sanitize = (obj) => {
+    if (!obj) return;
+    for (const key in obj) {
+      if (typeof obj[key] === 'string') {
+        obj[key] = sanitizeHtml(obj[key], {
+          allowedTags: [],
+          allowedAttributes: {},
+        });
+      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        sanitize(obj[key]);
+      }
+    }
+  };
+  if (req.body) sanitize(req.body);
+  if (req.query) sanitize(req.query);
+  next();
+};
+
+app.use(sanitizeInput);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 
-// Security headers
 app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
   if (NODE_ENV === 'production') {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
+  req.id = crypto.randomUUID();
+  res.setHeader('X-Request-ID', req.id);
+  console.log(`[${req.id}] ${req.method} ${req.path}`);
   next();
 });
 
 // Simple rate limiting (track requests per IP)
 const requestCounts = new Map();
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const userRequestCounts = new Map();
+const RATE_LIMIT_WINDOW = 60000;
+const USER_RATE_LIMIT_WINDOW = 60000;
 const MAX_REQUESTS = NODE_ENV === 'production' ? 100 : 1000;
+const MAX_USER_REQUESTS = NODE_ENV === 'production' ? 500 : 5000;
 
 const rateLimiter = (req, res, next) => {
   const ip = req.ip || req.connection.remoteAddress;
@@ -98,7 +234,21 @@ const rateLimiter = (req, res, next) => {
   requestCounts.set(ip, record);
 
   if (record.count > MAX_REQUESTS) {
-    return res.status(429).json({ error: 'Too many requests, please try again later' });
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
+  if (req.user?.id) {
+    const userRecord = userRequestCounts.get(req.user.id) || { count: 0, resetTime: now + USER_RATE_LIMIT_WINDOW };
+    if (now > userRecord.resetTime) {
+      userRecord.count = 1;
+      userRecord.resetTime = now + USER_RATE_LIMIT_WINDOW;
+    } else {
+      userRecord.count++;
+    }
+    userRequestCounts.set(req.user.id, userRecord);
+    if (userRecord.count > MAX_USER_REQUESTS) {
+      return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+    }
   }
 
   next();
@@ -106,13 +256,51 @@ const rateLimiter = (req, res, next) => {
 
 app.use(rateLimiter);
 
-// Test database connection on startup (skip in test environment)
-if (process.env.NODE_ENV !== 'test') {
-  sequelize
-    .authenticate()
-    .then(() => console.log('✅ Database connected successfully'))
-    .catch((err) => console.error('❌ Database connection failed:', err.message));
+// Initialize database (optional)
+async function initDatabase() {
+  try {
+    const { Sequelize } = await import('sequelize');
+    const isProduction = process.env.NODE_ENV === 'production';
+    const usePostgres = process.env.USE_POSTGRES === 'true';
+
+    let sequelize;
+    if (usePostgres || isProduction) {
+      sequelize = new Sequelize({
+        dialect: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT) || 5432,
+        database: process.env.DB_NAME || 'aetheron',
+        username: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD,
+        logging: false,
+        pool: { max: 10, min: 2, acquire: 30000, idle: 10000 }
+      });
+    } else {
+      const path = await import('path');
+      const { fileURLToPath } = await import('url');
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
+      sequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: path.join(__dirname, 'data', 'aetheron.db'),
+        logging: false
+      });
+    }
+
+    await sequelize.authenticate();
+    const models = await import('./database/models.js');
+    User = models.User;
+    Log = models.Log;
+    Transaction = models.Transaction;
+    dbAvailable = true;
+    console.log('✅ Database connected successfully');
+  } catch (e) {
+    console.warn('⚠️ Database not available:', e.message);
+  }
 }
+
+initDatabase();
+
+const hasDb = () => dbAvailable && User && Log && Transaction;
 
 // Authentication routes (public)
 app.use('/api/auth', authRoutes);
@@ -135,6 +323,7 @@ app.get('/', (req, res) => {
 
 // Admin endpoints (protected with Basic Auth for legacy compatibility)
 app.get('/users', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const users = await User.findAll({
       attributes: { exclude: ['passwordHash'] },
@@ -148,6 +337,7 @@ app.get('/users', basicAuth, async (req, res) => {
 });
 
 app.post('/users/add', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const { address, balance } = req.body;
     const user = await User.create({
@@ -163,6 +353,7 @@ app.post('/users/add', basicAuth, async (req, res) => {
 });
 
 app.post('/users/role', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const { address, role } = req.body;
     const user = await User.findOne({ where: { address } });
@@ -186,6 +377,7 @@ app.post('/users/role', basicAuth, async (req, res) => {
 });
 
 app.post('/users/kyc', jwtAuth, requireRole('admin', 'moderator'), async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const { address, kycStatus } = req.body;
     const user = await User.findOne({ where: { address } });
@@ -210,6 +402,7 @@ app.post('/users/kyc', jwtAuth, requireRole('admin', 'moderator'), async (req, r
 
 // Logs endpoints
 app.get('/logs', basicAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const logs = await Log.findAll({
       order: [['createdAt', 'DESC']],
@@ -223,6 +416,7 @@ app.get('/logs', basicAuth, async (req, res) => {
 });
 
 app.post('/api/logs', optionalAuth, async (req, res) => {
+  if (!hasDb()) return res.status(503).json({ error: 'Database not available' });
   try {
     const logEntry = req.body;
     const log = await Log.create({
@@ -249,10 +443,22 @@ app.post('/api/logs', optionalAuth, async (req, res) => {
 
 // Stats endpoint
 app.get('/stats', basicAuth, async (req, res) => {
+  if (!hasDb()) {
+    return res.json({
+      totalUsers: 0,
+      totalTransactions: 0,
+      totalVolume: '0 AETH',
+      networkStatus: 'Healthy (no DB)',
+      websocketConnections: wsServer.getConnectionCount(),
+      aiStats: aiAssistant.getStats(),
+      timestamp: new Date().toISOString()
+    });
+  }
   try {
     const totalUsers = await User.count();
     const totalTransactions = await Transaction.count();
     const totalVolume = (await Transaction.sum('amount')) || 0;
+    const aiStats = aiAssistant.getStats();
 
     res.json({
       totalUsers,
@@ -260,6 +466,11 @@ app.get('/stats', basicAuth, async (req, res) => {
       totalVolume: `${(totalVolume / 1e18).toFixed(2)}M AETH`,
       networkStatus: 'Healthy',
       websocketConnections: wsServer.getConnectionCount(),
+      aiStats: {
+        totalQueries: aiStats.totalQueries,
+        gptQueries: aiStats.gptQueries,
+        fallbackQueries: aiStats.fallbackQueries
+      },
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -283,6 +494,125 @@ app.get('/api', (req, res) => {
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });
+});
+
+// AI Assistant endpoint
+import { AIAssistant } from './ai-assistant.js';
+import { Blockchain } from './blockchain.js';
+
+const blockchain = new Blockchain();
+const aiAssistant = new AIAssistant(blockchain, null);
+
+const aiRateLimit = new Map();
+const oracleRateLimit = new Map();
+const AI_RATE_LIMIT = 30;
+const ORACLE_RATE_LIMIT = 60;
+const RATE_WINDOW = 60 * 1000;
+
+function checkRateLimit(map, key, limit) {
+  const now = Date.now();
+  const record = map.get(key);
+  if (!record || now > record.resetTime) {
+    map.set(key, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+  if (record.count >= limit) return false;
+  record.count++;
+  return true;
+}
+
+app.post('/api/ai/query', optionalAuth, async (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(aiRateLimit, clientIp, AI_RATE_LIMIT)) {
+    return res.status(429).json({ success: false, error: 'Too many AI requests, try again later' });
+  }
+
+  try {
+    const { query } = req.body;
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ success: false, error: 'Query is required' });
+    }
+    if (query.length > 1000) {
+      return res.status(400).json({ success: false, error: 'Query too long (max 1000 chars)' });
+    }
+    const response = await aiAssistant.query(query);
+    res.json({ success: true, response });
+  } catch (error) {
+    console.error('[AI] Query error:', error);
+    res.status(500).json({ success: false, error: 'AI assistant error' });
+  }
+});
+
+app.get('/api/ai/history', optionalAuth, (req, res) => {
+  const history = aiAssistant.getHistory(20);
+  res.json({ success: true, history });
+});
+
+app.post('/api/ai/clear', optionalAuth, (req, res) => {
+  aiAssistant.clearHistory();
+  res.json({ success: true, message: 'History cleared' });
+});
+
+app.get('/api/ai/suggestions', optionalAuth, (req, res) => {
+  const suggestions = aiAssistant.suggestActions();
+  res.json({ success: true, suggestions });
+});
+
+app.get('/api/ai/stats', basicAuth, (req, res) => {
+  const stats = aiAssistant.getStats();
+  res.json({ success: true, stats });
+});
+
+// Oracle/Price Feed endpoints
+import { OracleService } from './oracle.js';
+const oracleService = new OracleService();
+
+app.get('/api/oracle/price/:symbol', async (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(oracleRateLimit, clientIp, ORACLE_RATE_LIMIT)) {
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
+  try {
+    const { symbol } = req.params;
+    const price = await oracleService.getTokenPrice(symbol.toUpperCase());
+    res.json({ success: true, symbol: symbol.toUpperCase(), price, currency: 'USD' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/oracle/prices', async (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(oracleRateLimit, clientIp, ORACLE_RATE_LIMIT)) {
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
+  try {
+    const symbols = (req.query.symbols || 'ETH,BTC,AETH').split(',');
+    const prices = await oracleService.getMultiplePrices(symbols.map(s => s.trim().toUpperCase()));
+    res.json({ success: true, prices });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/oracle/market/:symbol', async (req, res) => {
+  try {
+    const data = await oracleService.getMarketData(req.params.symbol);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/oracle/trending', async (req, res) => {
+  try {
+    const coins = await oracleService.getTrendingCoins();
+    res.json({ success: true, coins });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // Multichain endpoints
@@ -314,6 +644,72 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: NODE_ENV
   });
+});
+
+// Newsletter subscribers (persistent)
+const SUBSCRIBERS_FILE = path.join(__dirname, 'data', 'subscribers.json');
+
+function loadSubscribers() {
+  try {
+    if (fs.existsSync(SUBSCRIBERS_FILE)) {
+      return new Set(JSON.parse(fs.readFileSync(SUBSCRIBERS_FILE, 'utf8')));
+    }
+  } catch (e) {
+    console.error('Failed to load subscribers:', e.message);
+  }
+  return new Set();
+}
+
+function saveSubscribers(subscribers) {
+  try {
+    const dir = path.dirname(SUBSCRIBERS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(SUBSCRIBERS_FILE, JSON.stringify([...subscribers]));
+  } catch (e) {
+    console.error('Failed to save subscribers:', e.message);
+  }
+}
+
+const subscribers = loadSubscribers();
+
+const newsletterRateLimit = new Map();
+const NEWSLETTER_RATE_LIMIT = 5;
+const NEWSLETTER_WINDOW = 60 * 60 * 1000;
+
+function checkNewsletterRateLimit(ip) {
+  const now = Date.now();
+  const record = newsletterRateLimit.get(ip);
+  if (!record || now > record.resetTime) {
+    newsletterRateLimit.set(ip, { count: 1, resetTime: now + NEWSLETTER_WINDOW });
+    return true;
+  }
+  if (record.count >= NEWSLETTER_RATE_LIMIT) return false;
+  record.count++;
+  return true;
+}
+
+app.post('/api/newsletter/subscribe', (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkNewsletterRateLimit(clientIp)) {
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+
+  const { email } = req.body;
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ success: false, error: 'Email is required' });
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ success: false, error: 'Invalid email format' });
+  }
+  const normalizedEmail = email.toLowerCase();
+  if (subscribers.has(normalizedEmail)) {
+    return res.json({ success: true, message: 'Already subscribed!' });
+  }
+  subscribers.add(normalizedEmail);
+  saveSubscribers(subscribers);
+  console.log(`📧 New newsletter subscriber: ${normalizedEmail}`);
+  res.json({ success: true, message: 'Successfully subscribed!' });
 });
 
 // ===== Account Abstraction Endpoints =====
@@ -486,16 +882,53 @@ app.get('*', (req, res) => {
 });
 
 // Error handling
-app.use((err, req, res, _next) => {
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err.message);
   console.error(err.stack);
+  process.exit(1);
+});
 
-  // Handle JSON parsing errors
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+app.use((err, req, res, _next) => {
+  console.error('Error:', err.message);
+
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    return res.status(400).json({ error: 'Invalid JSON' });
+    return res.status(400).json({ success: false, error: 'Invalid JSON' });
   }
 
-  res.status(500).json({ error: 'Internal server error' });
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({ success: false, error: err.message });
+  }
+
+  res.status(500).json({ success: false, error: 'Internal server error' });
 });
+
+function cleanupRateLimitMaps() {
+  const now = Date.now();
+  for (const [key, record] of requestCounts) {
+    if (now > record.resetTime + RATE_LIMIT_WINDOW) requestCounts.delete(key);
+  }
+  for (const [key, record] of userRequestCounts) {
+    if (now > record.resetTime + USER_RATE_LIMIT_WINDOW) userRequestCounts.delete(key);
+  }
+  for (const [key] of newsletterRateLimit) {
+    if (now > (newsletterRateLimit.get(key)?.resetTime || 0) + NEWSLETTER_WINDOW) {
+      newsletterRateLimit.delete(key);
+    }
+  }
+  for (const [key, record] of aiRateLimit) {
+    if (now > record.resetTime + RATE_WINDOW) aiRateLimit.delete(key);
+  }
+  for (const [key, record] of oracleRateLimit) {
+    if (now > record.resetTime + RATE_WINDOW) oracleRateLimit.delete(key);
+  }
+  console.log('[Cleanup] Rate limit maps cleaned');
+}
+
+setInterval(cleanupRateLimitMaps, 60 * 60 * 1000);
 
 // Start server
 server.listen(PORT, () => {
@@ -522,12 +955,6 @@ server.listen(PORT, () => {
   console.log('   • Layer 2 Integration');
   console.log('='.repeat(60));
 
-  if (NODE_ENV === 'production' && ADMIN_PASSWORD === 'admin123') {
-    console.warn('⚠️  WARNING: Using default admin password in production!');
-    console.warn('⚠️  Set ADMIN_PASSWORD environment variable immediately!');
-  }
-
-  // Notify about server start
   wsServer.notifySystemAlert('success', 'Server started successfully', { port: PORT });
 });
 

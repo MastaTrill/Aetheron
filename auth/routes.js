@@ -1,8 +1,56 @@
 import express from 'express';
+import { Op } from 'sequelize';
 import authService from './jwt-service.js';
 import { User, Log } from '../database/models.js';
 
 const router = express.Router();
+
+const rateLimit = new Map();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000;
+const MAX_ATTEMPTS = 5;
+
+function checkRateLimit(key) {
+  const now = Date.now();
+  const record = rateLimit.get(key) || { count: 0, firstAttempt: now };
+  
+  if (now - record.firstAttempt > RATE_LIMIT_WINDOW) {
+    rateLimit.set(key, { count: 1, firstAttempt: now });
+    return true;
+  }
+  
+  if (record.count >= MAX_ATTEMPTS) {
+    return false;
+  }
+  
+  record.count++;
+  rateLimit.set(key, record);
+  return true;
+}
+
+function getRateLimitKey(req, identifier) {
+  return `${identifier}:${req.ip}`;
+}
+
+function validateAddress(address) {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
+function validateEmail(email) {
+  if (!email) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validatePassword(password) {
+  return password && password.length >= 8;
+}
+
+async function safeLog(type, details, userId = null) {
+  try {
+    await Log.create({ type, details, userId });
+  } catch (e) {
+    console.error('Logging failed:', e.message);
+  }
+}
 
 /**
  * POST /api/auth/register
@@ -10,9 +58,16 @@ const router = express.Router();
  */
 router.post('/register', async (req, res) => {
   try {
+    const rateKey = getRateLimitKey(req, 'register');
+    if (!checkRateLimit(rateKey)) {
+      return res.status(429).json({
+        success: false,
+        error: 'Too many requests, try again later'
+      });
+    }
+
     const { address, email, username, password } = req.body;
 
-    // Validate input
     if (!address || !username || !password) {
       return res.status(400).json({
         success: false,
@@ -20,10 +75,34 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Check if user exists
+    if (!validateAddress(address)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Ethereum address format'
+      });
+    }
+
+    if (email && !validateEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid email format'
+      });
+    }
+
+    if (!validatePassword(password)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 8 characters'
+      });
+    }
+
     const existing = await User.findOne({
       where: {
-        $or: [{ address }, { email: email || null }, { username }]
+        [Op.or]: [
+          { address },
+          ...(email ? [{ email }] : []),
+          { username }
+        ]
       }
     });
 
@@ -34,10 +113,8 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Hash password
     const passwordHash = await authService.hashPassword(password);
 
-    // Create user
     const user = await User.create({
       address,
       email,
@@ -48,18 +125,12 @@ router.post('/register', async (req, res) => {
       isActive: true
     });
 
-    // Log registration
-    await Log.create({
-      type: 'SUCCESS',
-      details: {
-        action: 'user_registered',
-        username,
-        address
-      },
-      userId: user.id
-    });
+    await safeLog('SUCCESS', {
+      action: 'user_registered',
+      username,
+      address
+    }, user.id);
 
-    // Generate tokens
     const token = authService.generateToken({
       id: user.id,
       address: user.address,
@@ -100,6 +171,14 @@ router.post('/register', async (req, res) => {
  */
 router.post('/login', async (req, res) => {
   try {
+    const rateKey = getRateLimitKey(req, 'login');
+    if (!checkRateLimit(rateKey)) {
+      return res.status(429).json({
+        success: false,
+        error: 'Too many requests, try again later'
+      });
+    }
+
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -129,18 +208,12 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Update last login
     await user.update({ lastLogin: new Date() });
 
-    // Log login
-    await Log.create({
-      type: 'INFO',
-      details: {
-        action: 'user_login',
-        username
-      },
-      userId: user.id
-    });
+    await safeLog('INFO', {
+      action: 'user_login',
+      username
+    }, user.id);
 
     // Generate tokens
     const token = authService.generateToken({

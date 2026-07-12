@@ -24,13 +24,13 @@ try {
     'server.js',
     'package.json',
     'gaming-sdk.js',
-    'ai-defi.js',
+    'ai-defi.cjs',
     'layer3-scaling.js',
     'privacy-compliance.js',
     'rwa-tokenization.js',
     'social-defi.js',
     'mobile-enhancements.js',
-    'advanced-analytics.js',
+    'advanced-analytics.cjs',
     'developer-experience.js'
   ];
 
@@ -111,13 +111,13 @@ try {
     'server.js',
     'package.json',
     'gaming-sdk.js',
-    'ai-defi.js',
+    'ai-defi.cjs',
     'layer3-scaling.js',
     'privacy-compliance.js',
     'rwa-tokenization.js',
     'social-defi.js',
     'mobile-enhancements.js',
-    'advanced-analytics.js',
+    'advanced-analytics.cjs',
     'developer-experience.js'
   ];
 

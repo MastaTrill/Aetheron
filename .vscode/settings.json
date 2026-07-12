@@ -1,4 +1,13 @@
 {
   "circleci.filters.branchFilter": "allBranches",
-  "circleci.persistedProjectSelection": []
+  "circleci.persistedProjectSelection": [],
+  "circleci.filters.statusFilter": {
+    "canceled": true,
+    "failed": true,
+    "failing": true,
+    "not_run": true,
+    "on_hold": true,
+    "success": true
+  },
+  "circleci.filters.myPipelinesOnly": false
 }

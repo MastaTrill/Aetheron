@@ -1,6 +1,25 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: aetheron-db
+    environment:
+      POSTGRES_DB: aetheron
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: aetheron123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aetheron-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   aetheron-app:
     build: .
     container_name: aetheron-dashboard
@@ -9,11 +28,19 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
+      - USE_POSTGRES=true
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=aetheron
+      - DB_USER=postgres
+      - DB_PASSWORD=aetheron123
     volumes:
       - ./data:/app/data
     restart: unless-stopped
     networks:
       - aetheron-network
+    depends_on:
+      - postgres
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/api"]
       interval: 30s
@@ -54,4 +81,5 @@ networks:
     driver: bridge
 
 volumes:
+  postgres_data:
   redis-data:

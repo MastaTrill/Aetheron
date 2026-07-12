@@ -6,13 +6,13 @@
  */
 
 const { GameAssetManager, PlayToEarnSystem, GameFiIntegration } = require('./gaming-sdk.js');
-const { PortfolioManager, RiskAssessmentEngine } = require('./ai-defi.js');
+const { PortfolioManager, RiskAssessmentEngine } = require('./ai-defi.cjs');
 const { MetaTransactionSystem, IntentBasedSystem } = require('./layer3-scaling.js');
 const { EnhancedZKPrivacy, RegulatoryComplianceEngine } = require('./privacy-compliance.js');
 const { FractionalOwnershipSystem, RevenueSharingSystem } = require('./rwa-tokenization.js');
 const { SocialTradingSystem, ReputationBasedLendingSystem } = require('./social-defi.js');
 const { WalletConnectSystem, BiometricAuthSystem } = require('./mobile-enhancements.js');
-const { RealTimeMonitoringSystem, PredictiveMaintenanceSystem } = require('./advanced-analytics.js');
+const { RealTimeMonitoringSystem, PredictiveMaintenanceSystem } = require('./advanced-analytics.cjs');
 const { PluginMarketplaceSystem, MultiLanguageSDKSystem } = require('./developer-experience.js');
 
 console.log('🚀 Aetheron 2026 - Advanced Blockchain Platform Demo\n');

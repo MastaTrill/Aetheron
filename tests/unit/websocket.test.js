@@ -4,15 +4,21 @@ const http = require('http');
 const WebSocket = require('ws');
 
 describe('WebSocket Server', () => {
-  // let server; // removed unused variable
   let httpServer;
   let wsServer;
-  let testPort = 3002;
+  let testPort;
 
   beforeAll((done) => {
-    httpServer = http.createServer();
-    wsServer = new AetheronWebSocket(httpServer);
-    httpServer.listen(testPort, done);
+    const net = require('net');
+    const tempServer = net.createServer();
+    tempServer.listen(0, () => {
+      testPort = tempServer.address().port;
+      tempServer.close(() => {
+        httpServer = http.createServer();
+        wsServer = new AetheronWebSocket(httpServer);
+        httpServer.listen(testPort, done);
+      });
+    });
   });
 
   afterAll((done) => {

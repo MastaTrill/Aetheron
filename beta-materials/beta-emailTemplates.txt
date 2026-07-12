@@ -1,0 +1,60 @@
+Subject: 🚀 Welcome to Aetheron Beta Testing!
+
+Dear [Name],
+
+Congratulations! You've been accepted into the Aetheron Beta Testing Program!
+
+🎯 Your Beta Tester ID: [ID]
+🏆 Your Starting Points: 0
+📊 Dashboard Access: https://gregarious-strudel-850a21.netlify.app/beta/dashboard
+
+What happens next:
+1. Join our Discord: https://discord.gg/aetheron
+2. Access the beta platform: https://gregarious-strudel-850a21.netlify.app
+3. Start testing and earning points!
+4. Submit feedback daily to climb the leaderboards
+
+Your first task: Test the TVL growth simulation and share your experience!
+
+Questions? Reach out to @Beta-Moderator on Discord.
+
+Welcome to the revolution! 🌟
+
+The Aetheron Team
+
+---
+Aetheron Beta Testing Program
+January 14 - February 11, 2026
+https://gregarious-strudel-850a21.netlify.app
+
+---
+
+Subject: 🎯 Aetheron Beta Testing - Weekly Update (Week [X])
+
+Hello [Name],
+
+Here's your weekly beta testing update!
+
+📊 Your Stats This Week:
+• Points Earned: [X]
+• Feedback Submitted: [X]
+• Bugs Reported: [X]
+• Current Rank: #[X]
+
+🏆 Leaderboard Position: [Position]
+🎯 Next Milestone: [Next reward tier]
+
+This Week's Focus: [Current phase description]
+
+Daily Tasks:
+• [Task 1]
+• [Task 2]
+• [Task 3]
+• [Task 4]
+• [Task 5]
+
+Remember to submit your weekly survey for bonus points!
+
+Keep testing and earning those rewards! 🚀
+
+The Aetheron Team

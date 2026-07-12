@@ -1,7 +1,22 @@
 import authService from './jwt-service.js';
+import crypto from 'crypto';
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+  console.error('[SECURITY] ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env');
+  process.exit(1);
+}
+
+// Constant-time comparison to prevent timing attacks
+function safeCompare(a, b) {
+  if (!a || !b || a.length !== b.length) {
+    crypto.randomBytes(32);
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 /**
  * Basic Authentication Middleware (for admin endpoints)
@@ -20,7 +35,7 @@ function basicAuth(req, res, next) {
   try {
     const [user, pass] = Buffer.from(auth.split(' ')[1], 'base64').toString().split(':');
 
-    if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+    if (safeCompare(user, ADMIN_USERNAME) && safeCompare(pass, ADMIN_PASSWORD)) {
       req.user = { username: user, role: 'admin' };
       return next();
     }

@@ -2,57 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.js",
-      "use": "@vercel/static"
+      "src": "server.js",
+      "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/admin",
-      "destination": "/admin-dashboard.html"
-    },
-    {
-      "source": "/analytics",
-      "destination": "/analytics-dashboard.html"
-    },
-    {
-      "source": "/explorer",
-      "destination": "/explorer.html"
-    },
-    {
-      "source": "/demo",
-      "destination": "/DEMO.html"
-    },
-    {
-      "source": "/wallet",
-      "destination": "/browser-extension/popup.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "server.js"
     }
   ]
 }

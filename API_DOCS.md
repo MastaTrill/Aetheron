@@ -426,3 +426,65 @@ Common error codes:
 - `404` - Not Found
 - `429` - Too Many Requests
 - `500` - Internal Server Error
+
+## AI Assistant Endpoints
+
+### POST /api/ai/query
+
+Ask the AI assistant a question. Optional authentication.
+
+```bash
+curl -X POST http://localhost:3001/api/ai/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What is the price of ETH?"}'
+```
+
+Response:
+```json
+{
+  "success": true,
+  "response": "The current price of ETH is $2,450.00 USD."
+}
+```
+
+### GET /api/ai/history
+
+Get conversation history. Optional authentication.
+
+```bash
+curl http://localhost:3001/api/ai/history
+```
+
+### POST /api/ai/clear
+
+Clear conversation history. Optional authentication.
+
+```bash
+curl -X POST http://localhost:3001/api/ai/clear
+```
+
+## Oracle / Price Feed Endpoints
+
+### GET /api/oracle/price/:symbol
+
+Get price for a token symbol (ETH, BTC, AETH, USDC, etc.)
+
+```bash
+curl http://localhost:3001/api/oracle/price/ETH
+```
+
+### GET /api/oracle/prices
+
+Get multiple token prices.
+
+```bash
+curl "http://localhost:3001/api/oracle/prices?symbols=ETH,BTC,AETH"
+```
+
+### GET /api/oracle/market/:symbol
+
+Get detailed market data.
+
+### GET /api/oracle/trending
+
+Get trending cryptocurrencies.
