@@ -9,8 +9,8 @@ function questionAsync(query) {
 
 (async () => {
   try {
-    const abc123AetheronIsM3 = await questionAsync('Set new admin password: ');
-    await setAdminPassword(abc123AetheronIsM3);
+    const nextPassword = await questionAsync('Set new admin password: ');
+    await setAdminPassword(nextPassword);
 
     console.log('Admin password set successfully.');
   } catch (error) {
