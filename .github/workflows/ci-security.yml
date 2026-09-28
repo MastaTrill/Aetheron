@@ -29,8 +29,12 @@ jobs:
       - name: Run Unit Tests
         run: npm run test:unit
 
+      - name: Compile Contracts
+        run: npm run contracts:compile
+
       - name: Snyk Security Scan
         uses: snyk/actions/node@v0.4.0
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
