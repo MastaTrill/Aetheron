@@ -5,7 +5,43 @@ All notable changes to the Aetheron project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2025-12-19
+## [1.1.0] - 2026-07-12
+
+### Security
+- Applied Snyk security upgrades across three dependency trees (Jun 2026)
+- - Removed `eval()` from smart contract layer  eliminates critical code injection vector
+  - - Removed axios in favour of native fetch to reduce supply-chain attack surface
+    - - Hardened block explorer interface against injection and XSS
+      - - Applied Snyk Expo upgrade to mobile dependencies (Feb 2026)
+        - - Smart contract: added zero-address validation, immutable owner, unchecked blocks
+          - - Smart contract: added `burn()`, `increaseAllowance()`, `decreaseAllowance()`, full NatSpec docs
+            -
+            - ### Added
+            - - AI Assistant integration  conversational AI layer wired into Aetheron platform
+              - - Oracle support  on-chain data feed integration for price and external data
+                - - Analytics engine  frontend analytics pipeline with PostgreSQL and SQLite backends
+                  - - Drizzle ORM  replaced legacy DB layer with type-safe Drizzle ORM
+                    - - Docker support  Dockerfile added for containerised deployment
+                      - - Website launch preparation  full pre-launch content, metadata, and SEO pass
+                        -
+                        - ### Fixed
+                        - - Fixed PostgreSQL connection handling in analytics module
+                          - - Fixed SQLite fallback path for local development
+                            - - Resolved build errors caused by CommonJS/ESM `.cjs` import conflicts
+                              - - Fixed GitHub Pages 404 routing for client-side navigation
+                                -
+                                - ### Infrastructure
+                                - - GitHub Pages deployment pipeline fixed; custom 404 page added
+                                  - - Netlify `_redirects` configured for SPA routing
+                                    - - Vercel `vercel.json` routing rules updated
+                                      - - Automated workflow deployment trigger added
+                                        - - CI/CD pipeline refinements across branches
+                                          -
+                                          - ### Changed
+                                          - - Removed duplicate config files from repository root
+                                            - - Package dependency audits and lockfile syncs throughout 2026
+                                              -
+                                              - ## [1.0.0] - 2025-12-19
 
 ### Added
 

@@ -1,6 +1,5 @@
 // Webhook Management System
 const crypto = require('crypto');
-const axios = require('axios');
 
 class WebhookManager {
   constructor() {
@@ -54,15 +53,20 @@ class WebhookManager {
     const signature = this.generateSignature(payload, webhook.secret);
 
     try {
-      const response = await axios.post(webhook.url, payload, {
+      const response = await fetch(webhook.url, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Aetheron-Event': event,
           'X-Aetheron-Signature': signature,
           'X-Aetheron-Delivery': deliveryId
         },
-        timeout: 10000
+        body: JSON.stringify(payload)
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
 
       webhook.lastDelivery = timestamp;
       webhook.deliveryCount++;
@@ -83,7 +87,7 @@ class WebhookManager {
         return this.deliver(webhook, event, data, attempt + 1);
       }
 
-      this.recordDelivery(deliveryId, webhook.id, event, 'failed', error.response?.status);
+      this.recordDelivery(deliveryId, webhook.id, event, 'failed', undefined);
 
       return {
         success: false,

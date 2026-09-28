@@ -1,13 +1,16 @@
-// Simple smart contract support (scripted conditions)
+// Simple smart contract support (safe callable conditions only)
 class SmartContract {
   constructor(code) {
-    this.code = code; // code as a JS function string
+    this.code = code;
   }
 
   execute(context) {
     // context: { sender, receiver, amount, blockchain }
-    // WARNING: eval is dangerous! In real blockchains, use a VM/sandbox.
-    return eval(`(${this.code})`)(context);
+    if (typeof this.code !== 'function') {
+      throw new Error('String-based smart contract execution is disabled. Provide a callable function instead.');
+    }
+
+    return this.code(context);
   }
 }
 
