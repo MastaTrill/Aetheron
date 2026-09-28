@@ -137,7 +137,10 @@ contract EpochManager is Ownable2Step, Pausable, ReentrancyGuard {
         info.distributed = true;
 
         aeth.mint(treasury, treasuryAmt);
-        aeth.mint(address(keeperRegistry), keeperAmt);
+        // Keeper rewards are minted to governance (owner/timelock) rather than to the
+        // KeeperRegistry contract, which has no built-in withdrawal path and would otherwise
+        // lock the funds. A dedicated reward distributor can be wired in later.
+        aeth.mint(owner(), keeperAmt);
         aeth.mint(owner(), communityAmt);
 
         emit EpochRewardsDistributed(epochNumber, treasuryAmt, keeperAmt, communityAmt);

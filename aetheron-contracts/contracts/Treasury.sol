@@ -84,10 +84,11 @@ contract Treasury is Ownable2Step, Pausable, ReentrancyGuard {
         emit KeeperRewardsFunded(epochManager, amount);
     }
 
-    function receiveEmission(uint256 amount, uint256 epoch) external whenNotPaused {
+    function receiveEmission(uint256 amount, uint256 epoch) external onlyOwner whenNotPaused nonReentrant {
         if (amount == 0) revert ZeroAmount();
         if (totalReceived + amount > treasuryCap) revert TreasuryCapExceeded();
         totalReceived += amount;
+        aeth.safeTransferFrom(msg.sender, address(this), amount);
         emit EmissionReceived(amount, epoch);
     }
 

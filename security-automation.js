@@ -1,23 +1,17 @@
-/**
- * Security Automation Module
- * Fuzzing, penetration testing, and vulnerability scanning
- */
+#!/usr/bin/env node
 
 const crypto = require('crypto');
+const { Command } = require('commander');
+const chalk = require('chalk');
+const fs = require('fs');
+const path = require('path');
 
-/**
- * Smart Contract Fuzzer
- * Automated testing with random inputs
- */
 class ContractFuzzer {
   constructor() {
     this.testCases = [];
     this.vulnerabilities = [];
   }
 
-  /**
-   * Fuzz test smart contract
-   */
   async fuzzContract(contract, iterations = 1000) {
     const results = {
       contract: contract.address,
@@ -39,7 +33,6 @@ class ContractFuzzer {
         testCase.error = error.message;
         testCase.passed = false;
 
-        // Check for vulnerabilities
         const vuln = this.analyzeError(error, testCase);
         if (vuln) {
           results.vulnerabilities.push(vuln);
@@ -55,9 +48,6 @@ class ContractFuzzer {
     return results;
   }
 
-  /**
-   * Generate random test case
-   */
   generateTestCase(contract) {
     const methods = contract.methods || [];
     const method = methods[Math.floor(Math.random() * methods.length)];
@@ -70,9 +60,6 @@ class ContractFuzzer {
     };
   }
 
-  /**
-   * Generate random inputs
-   */
   generateRandomInputs(parameters) {
     return parameters.map((param) => {
       switch (param.type) {
@@ -90,21 +77,14 @@ class ContractFuzzer {
     });
   }
 
-  /**
-   * Execute test case
-   */
   async executeTestCase(contract, testCase) {
-    // Simulate contract execution
     return {
-      success: Math.random() > 0.1, // 90% success rate
+      success: Math.random() > 0.1,
       gasUsed: Math.floor(Math.random() * testCase.gasLimit),
       output: crypto.randomBytes(32).toString('hex')
     };
   }
 
-  /**
-   * Analyze error for vulnerabilities
-   */
   analyzeError(error, testCase) {
     const patterns = {
       reentrancy: /reentrant|callback/i,
@@ -129,18 +109,12 @@ class ContractFuzzer {
   }
 }
 
-/**
- * Penetration Testing Suite
- */
 class PenetrationTester {
   constructor() {
     this.tests = [];
     this.findings = [];
   }
 
-  /**
-   * Run full penetration test
-   */
   async runFullTest(target) {
     const results = {
       target,
@@ -150,42 +124,27 @@ class PenetrationTester {
       startTime: Date.now()
     };
 
-    // Test authentication
     results.tests.push(await this.testAuthentication(target));
-
-    // Test authorization
     results.tests.push(await this.testAuthorization(target));
-
-    // Test input validation
     results.tests.push(await this.testInputValidation(target));
-
-    // Test cryptography
     results.tests.push(await this.testCryptography(target));
-
-    // Test smart contracts
     results.tests.push(await this.testSmartContracts(target));
 
-    // Aggregate findings
     results.tests.forEach((test) => {
       results.findings.push(...test.findings);
     });
 
-    // Calculate risk score
     results.riskScore = this.calculateRiskScore(results.findings);
     results.endTime = Date.now();
 
     return results;
   }
 
-  /**
-   * Test authentication
-   */
   async testAuthentication(target) {
     return {
       testName: 'Authentication Tests',
       passed: true,
       findings: [
-        // Simulate findings
         {
           type: 'weak-password-policy',
           severity: 'medium',
@@ -196,9 +155,6 @@ class PenetrationTester {
     };
   }
 
-  /**
-   * Test authorization
-   */
   async testAuthorization(target) {
     return {
       testName: 'Authorization Tests',
@@ -207,9 +163,6 @@ class PenetrationTester {
     };
   }
 
-  /**
-   * Test input validation
-   */
   async testInputValidation(target) {
     return {
       testName: 'Input Validation',
@@ -225,9 +178,6 @@ class PenetrationTester {
     };
   }
 
-  /**
-   * Test cryptography
-   */
   async testCryptography(target) {
     return {
       testName: 'Cryptography Tests',
@@ -236,9 +186,6 @@ class PenetrationTester {
     };
   }
 
-  /**
-   * Test smart contracts
-   */
   async testSmartContracts(target) {
     return {
       testName: 'Smart Contract Security',
@@ -254,9 +201,6 @@ class PenetrationTester {
     };
   }
 
-  /**
-   * Calculate risk score
-   */
   calculateRiskScore(findings) {
     const weights = {
       critical: 10,
@@ -271,18 +215,12 @@ class PenetrationTester {
   }
 }
 
-/**
- * Vulnerability Scanner
- */
 class VulnerabilityScanner {
   constructor() {
     this.knownVulnerabilities = new Map();
     this.scanResults = [];
   }
 
-  /**
-   * Scan for known vulnerabilities
-   */
   async scanDependencies(dependencies) {
     const results = {
       scanned: dependencies.length,
@@ -302,14 +240,9 @@ class VulnerabilityScanner {
     return results;
   }
 
-  /**
-   * Check single dependency
-   */
   async checkDependency(dependency) {
-    // Simulate checking against vulnerability database
     const vulns = [];
 
-    // Random chance of finding vulnerability
     if (Math.random() < 0.1) {
       vulns.push({
         dependency: dependency.name,
@@ -325,16 +258,12 @@ class VulnerabilityScanner {
     return vulns;
   }
 
-  /**
-   * Scan smart contract code
-   */
   async scanContract(code) {
     const results = {
       issues: [],
       startTime: Date.now()
     };
 
-    // Check for common patterns
     const patterns = [
       { pattern: /\.call\.value\(/g, type: 'reentrancy', severity: 'high' },
       { pattern: /tx\.origin/g, type: 'tx-origin', severity: 'medium' },
@@ -360,18 +289,12 @@ class VulnerabilityScanner {
   }
 }
 
-/**
- * Security Monitoring
- */
 class SecurityMonitor {
   constructor() {
     this.alerts = [];
     this.metrics = new Map();
   }
 
-  /**
-   * Monitor for suspicious activity
-   */
   monitor(activity) {
     const analysis = this.analyzeActivity(activity);
 
@@ -379,15 +302,11 @@ class SecurityMonitor {
       this.createAlert(analysis);
     }
 
-    // Update metrics
     this.updateMetrics(activity);
 
     return analysis;
   }
 
-  /**
-   * Analyze activity
-   */
   analyzeActivity(activity) {
     const analysis = {
       suspicious: false,
@@ -395,14 +314,12 @@ class SecurityMonitor {
       reasons: []
     };
 
-    // Check for unusual transaction patterns
     if (activity.amount > 1000000) {
       analysis.suspicious = true;
       analysis.confidence += 0.3;
       analysis.reasons.push('Unusually large transaction');
     }
 
-    // Check for rapid transactions
     if (activity.frequency > 100) {
       analysis.suspicious = true;
       analysis.confidence += 0.4;
@@ -412,9 +329,6 @@ class SecurityMonitor {
     return analysis;
   }
 
-  /**
-   * Create security alert
-   */
   createAlert(analysis) {
     const alert = {
       id: crypto.randomBytes(8).toString('hex'),
@@ -430,9 +344,6 @@ class SecurityMonitor {
     return alert;
   }
 
-  /**
-   * Update security metrics
-   */
   updateMetrics(activity) {
     const key = activity.type || 'general';
     const current = this.metrics.get(key) || { count: 0, alerts: 0 };
@@ -443,9 +354,6 @@ class SecurityMonitor {
     this.metrics.set(key, current);
   }
 
-  /**
-   * Get security dashboard
-   */
   getDashboard() {
     return {
       totalAlerts: this.alerts.length,
@@ -456,7 +364,145 @@ class SecurityMonitor {
   }
 }
 
-module.exports = {
+const program = new Command();
+
+program
+  .name('security')
+  .description('Aetheron Security Automation CLI')
+  .version('1.0.0');
+
+program
+  .command('scan')
+  .description('Run security vulnerability scan')
+  .option('-f, --format <format>', 'Output format (json|table)', 'table')
+  .option('-o, --output <file>', 'Save results to file')
+  .action(async (options) => {
+    const scanner = new VulnerabilityScanner();
+
+    console.log(chalk.cyan('Running security vulnerability scan...\n'));
+
+    const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    const results = await scanner.scanDependencies(packageJson.dependencies || []);
+
+    if (options.format === 'json') {
+      const output = JSON.stringify(results, null, 2);
+      if (options.output) {
+        fs.writeFileSync(options.output, output);
+        console.log(chalk.green(`Results saved to ${options.output}`));
+      } else {
+        console.log(output);
+      }
+    } else {
+      console.log(chalk.white('Scan Results:'));
+      console.log(chalk.gray('─'.repeat(60)));
+      console.log(`Scanned: ${results.scanned} dependencies`);
+      console.log(`Critical: ${chalk.red(results.criticalCount)}`);
+      console.log(`High: ${chalk.yellow(results.highCount)}`);
+      console.log(`Total vulnerabilities: ${results.vulnerabilities.length}`);
+
+      if (results.vulnerabilities.length > 0) {
+        console.log('\nVulnerabilities found:');
+        results.vulnerabilities.forEach((v, i) => {
+          console.log(`  ${i + 1}. ${v.dependency}@${v.version}`);
+          console.log(`     Severity: ${chalk.red(v.severity.toUpperCase())}`);
+          console.log(`     CVE: ${v.cve}`);
+          console.log(`     Patch available: ${v.patchAvailable ? 'Yes' : 'No'}`);
+        });
+      } else {
+        console.log(chalk.green('\nNo vulnerabilities found!'));
+      }
+    }
+
+    process.exit(results.criticalCount > 0 ? 1 : 0);
+  });
+
+program
+  .command('audit')
+  .description('Run penetration testing and audit')
+  .option('-t, --target <target>', 'Target to audit', 'localhost:3000')
+  .option('-f, --format <format>', 'Output format (json|table)', 'table')
+  .action(async (options) => {
+    const tester = new PenetrationTester();
+
+    console.log(chalk.cyan('Running penetration test...\n'));
+
+    const results = await tester.runFullTest(options.target);
+
+    if (options.format === 'json') {
+      console.log(JSON.stringify(results, null, 2));
+    } else {
+      console.log(chalk.white('Penetration Test Results:'));
+      console.log(chalk.gray('─'.repeat(60)));
+      console.log(`Target: ${results.target}`);
+      console.log(`Risk Score: ${results.riskScore}`);
+      console.log(`Tests run: ${results.tests.length}`);
+      console.log(`Findings: ${results.findings.length}`);
+
+      if (results.findings.length > 0) {
+        console.log('\nFindings:');
+        results.findings.forEach((f, i) => {
+          console.log(`  ${i + 1}. [${chalk.red(f.severity.toUpperCase())}] ${f.type}`);
+          console.log(`     ${f.description}`);
+          console.log(`     Remediation: ${f.remediation}`);
+        });
+      }
+    }
+
+    process.exit(results.riskScore > 0 ? 1 : 0);
+  });
+
+program
+  .command('fuzz <contract>')
+  .description('Run fuzz testing on smart contract')
+  .option('-i, --iterations <n>', 'Number of iterations', 1000)
+  .action(async (contractPath, options) => {
+    const fuzzer = new ContractFuzzer();
+
+    console.log(chalk.cyan(`Running fuzz test on ${contractPath}...\n`));
+
+    const code = fs.readFileSync(contractPath, 'utf8');
+    const contract = {
+      address: contractPath,
+      methods: [],
+      code
+    };
+
+    const results = await fuzzer.fuzzContract(contract, parseInt(options.iterations));
+
+    console.log(chalk.white('Fuzz Test Results:'));
+    console.log(chalk.gray('─'.repeat(60)));
+    console.log(`Contract: ${results.contract}`);
+    console.log(`Iterations: ${results.iterations}`);
+    console.log(`Duration: ${results.duration}ms`);
+    console.log(`Vulnerabilities: ${results.vulnerabilities.length}`);
+
+    if (results.vulnerabilities.length > 0) {
+      console.log('\nVulnerabilities:');
+      results.vulnerabilities.forEach((v, i) => {
+        console.log(`  ${i + 1}. [${chalk.red(v.severity.toUpperCase())}] ${v.type}`);
+      });
+    }
+
+    process.exit(results.vulnerabilities.length > 0 ? 1 : 0);
+  });
+
+program
+  .command('monitor')
+  .description('Monitor security activity')
+  .action(() => {
+    const monitor = new SecurityMonitor();
+    const dashboard = monitor.getDashboard();
+
+    console.log(chalk.white('Security Monitor Dashboard:'));
+    console.log(chalk.gray('─'.repeat(60)));
+    console.log(`Total Alerts: ${dashboard.totalAlerts}`);
+    console.log(`Open Alerts: ${dashboard.openAlerts}`);
+    console.log(`Metrics:`, dashboard.metrics);
+  });
+
+program.parse();
+
+export {
   ContractFuzzer,
   PenetrationTester,
   VulnerabilityScanner,

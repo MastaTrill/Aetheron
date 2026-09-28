@@ -413,3 +413,6 @@ FodyWeavers.xsd
 
 # Jest / Node coverage output
 coverage/
+
+# Kilo CLI / local cache
+.kilo/

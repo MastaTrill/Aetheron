@@ -421,17 +421,10 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    * Handle price query
    */
   async handlePrice(_entities) {
-    // Simulate price data (in production, fetch from API)
+    // NOTE: placeholder data — no live price feed is wired up yet.
     const price = 1.23;
     const change = 5.67;
-
-    return this.responseGenerator.format(
-      {
-        price: price.toFixed(2),
-        change: change > 0 ? `+${change.toFixed(2)}` : change.toFixed(2)
-      },
-      'price'
-    );
+    return `[SIMULATED] AETH price is $${price.toFixed(2)} USD (${change > 0 ? '+' : ''}${change.toFixed(2)}% 24h). Live pricing is not yet connected.`;
   }
 
   /**
@@ -445,27 +438,14 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
       return 'Please specify an NFT token ID to look up.';
     }
 
-    return this.responseGenerator.format(
-      {
-        tokenId: tokenIdMatch,
-        owner: '0x123...abc'
-      },
-      'nft'
-    );
+    return `[SIMULATED] NFT #${tokenIdMatch} ownership data is not yet connected to a live indexer.`;
   }
 
   /**
    * Handle DAO query
    */
   async handleDAO(_entities) {
-    return this.responseGenerator.format(
-      {
-        title: 'Example Proposal',
-        votesFor: 150,
-        votesAgainst: 50
-      },
-      'dao'
-    );
+    return `[SIMULATED] DAO proposal data is not yet connected to the governance contract.`;
   }
 
   /**
@@ -520,7 +500,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    * Handle stats query
    */
   async handleStats(_entities) {
-    return `### 📊 Aetheron Platform Stats
+    return `### 📊 Aetheron Platform Stats (SIMULATED — no live metrics connected)
 
 | Metric | Value |
 | :--- | :--- |
@@ -529,7 +509,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
 | **Total Users** | 1,234 |
 | **Validators** | 21 |
 
-*Would you like more details on any metric?*`;
+*These are placeholder values for demo purposes only.*`;
   }
 
   /**

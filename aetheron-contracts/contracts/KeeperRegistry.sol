@@ -4,8 +4,12 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract KeeperRegistry is Ownable2Step, Pausable, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
     struct KeeperRecord {
         bool      active;
         bytes32   permissionsHash;
@@ -22,6 +26,7 @@ contract KeeperRegistry is Ownable2Step, Pausable, ReentrancyGuard {
     mapping(address => KeeperRecord) public keepers;
     address[] public keeperList;
     address public guardian;
+    IERC20 public aeth;
     mapping(address => uint256) public slashCount;
     mapping(address => uint256) public lastSlashedAt;
 
@@ -31,6 +36,7 @@ contract KeeperRegistry is Ownable2Step, Pausable, ReentrancyGuard {
     event KeeperSlashed(address indexed keeper, uint256 amount, address indexed by);
     event KeeperExecuted(address indexed keeper, bytes4 selector);
     event KeeperPermissionsUpdated(address indexed keeper, bytes32 newHash);
+    event KeeperRewardsWithdrawn(address indexed to, uint256 amount);
     event GuardianUpdated(address indexed oldGuardian, address indexed newGuardian);
 
     error NotGuardianOrOwner();
@@ -39,6 +45,7 @@ contract KeeperRegistry is Ownable2Step, Pausable, ReentrancyGuard {
     error KeeperExpired();
     error KeeperNotExpired();
     error InsufficientStake();
+    error InsufficientBalance();
     error SlashCooldownActive();
     error ZeroAddress();
 
@@ -126,6 +133,19 @@ contract KeeperRegistry is Ownable2Step, Pausable, ReentrancyGuard {
         if (newGuardian == address(0)) revert ZeroAddress();
         emit GuardianUpdated(guardian, newGuardian);
         guardian = newGuardian;
+    }
+
+    function setAeth(address _aeth) external onlyOwner {
+        if (_aeth == address(0)) revert ZeroAddress();
+        aeth = IERC20(_aeth);
+    }
+
+    function withdrawAETH(address to, uint256 amount) external onlyGuardianOrOwner nonReentrant {
+        if (to == address(0)) revert ZeroAddress();
+        if (amount == 0) revert ZeroAmount();
+        if (aeth.balanceOf(address(this)) < amount) revert InsufficientBalance();
+        aeth.safeTransfer(to, amount);
+        emit KeeperRewardsWithdrawn(to, amount);
     }
 
     function pause() external onlyGuardianOrOwner { _pause(); }

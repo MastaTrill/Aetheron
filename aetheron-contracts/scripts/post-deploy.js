@@ -35,6 +35,12 @@ async function main() {
     const sentinel = await hre.ethers.getContractAt("Sentinel", addresses.sentinel);
     const l3Relay = await hre.ethers.getContractAt("L3Relay", addresses.l3Relay);
 
+    // Wire the AETH reference into KeeperRegistry so withdrawAETH can move any
+    // rewards/refunds that land there.
+    const setAethTx = await keeperRegistry.setAeth(addresses.aetherToken);
+    await setAethTx.wait();
+    console.log("  ✅ KeeperRegistry AETH reference set");
+
     // ──────────────────────────────────────────────
     // 1. Grant minter role to EpochManager
     // ──────────────────────────────────────────────

@@ -83,8 +83,8 @@ contract Sentinel is Ownable2Step, Pausable, ReentrancyGuard {
         guardian = _guardian;
     }
 
-    function activateSentinel(string calldata endpoint) external onlyOwner whenNotPaused {
-        address node = msg.sender;
+    function activateSentinel(address node, string calldata endpoint) external onlyOwner whenNotPaused {
+        if (node == address(0)) revert ZeroAddress();
         if (bytes(endpoint).length == 0) revert InvalidEndpoint();
         if (sentinels[node].status == SentinelStatus.ACTIVE) revert SentinelAlreadyActive();
         sentinels[node] = SentinelNode({
