@@ -30,7 +30,7 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
   // Ignore bots or messages without the prefix
   if (message.author.bot) return;
-  
+
   const prefix = '!aeth';
   if (!message.content.startsWith(prefix)) return;
 
@@ -42,7 +42,7 @@ client.on('messageCreate', async (message) => {
   try {
     // Show "Aetheron is typing..." status
     await message.channel.sendTyping();
-    
+
     const aiResponse = await aiAssistant.query(userQuery);
 
     const responseEmbed = new EmbedBuilder()
@@ -61,4 +61,8 @@ client.on('messageCreate', async (message) => {
   }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+if (!process.env.DISCORD_TOKEN) {
+  console.warn('⚠️ DISCORD_TOKEN is not set in environment or .env. Discord bot will not start.');
+} else {
+  client.login(process.env.DISCORD_TOKEN);
+}
