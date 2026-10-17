@@ -78,6 +78,11 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Compatibility health endpoint for integration clients.
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
+
 // Routes
 app.get('/', (req, res) => {
   // Serve the actual admin dashboard HTML for E2E tests
