@@ -30,7 +30,7 @@ jobs:
         run: npm run test:unit
 
       - name: Install isolated contract dependencies
-        run: npm ci --prefix aetheron-contracts --ignore-scripts --no-audit --no-fund
+        run: npm install --prefix aetheron-contracts --ignore-scripts --no-audit --no-fund
 
       - name: Compile Contracts
         run: npm run contracts:compile
