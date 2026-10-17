@@ -1,13 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { fileURLToPath } from 'url';
+
 import authRoutes from './auth/routes.js';
 import { basicAuth, jwtAuth, optionalAuth } from './auth/middleware.js';
 
 // ES Module __dirname workaround
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = process.cwd();
 
 // Import new feature modules
 import { AccountAbstraction } from './account-abstraction.js';
