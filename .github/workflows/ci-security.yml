@@ -32,10 +32,5 @@ jobs:
       - name: Compile Contracts
         run: npm run contracts:compile
 
-      - name: Snyk Security Scan
-        uses: snyk/actions/node@v0.4.0
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
+      - name: Dependency security audit (high and critical)
+        run: npm audit --audit-level=high
