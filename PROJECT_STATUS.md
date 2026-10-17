@@ -28,8 +28,8 @@
 
 - [x] Inventory unique mobile and SDK components.
 - [x] Move production-ready components into a clearly named `mobile/` or `sdk/` package.
-- [ ] Remove or archive duplicate smart contracts after comparing them with canonical repositories.
-- [ ] Replace duplicated deployment documentation with links to canonical registries.
+- [x] Remove or archive duplicate smart contracts after comparing them with canonical repositories (see `aetheron-contracts/README.md`).
+- [x] Replace duplicated deployment documentation with links to canonical registries.
 - [ ] Archive this repository after unique code is migrated, or rename it to reflect its final mobile/SDK role.
 
 ## Component Inventory
