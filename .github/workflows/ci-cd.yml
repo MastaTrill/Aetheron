@@ -76,6 +76,8 @@ jobs:
       - name: Run E2E tests
         env:
           NODE_ENV: test
+          ADMIN_USERNAME: aetheron-ci-admin
+          ADMIN_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}-ci-test-only
         run: npm run test:e2e
 
       - name: Upload test results
