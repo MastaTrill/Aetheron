@@ -112,41 +112,55 @@ async function main() {
         { name: "L3Relay", contract: l3Relay }
     ];
 
-    // Ownable2Step only proposes ownership. The timelock must separately
-    // execute acceptOwnership() as its own transaction (typically via governance).
-    // Never silently skip a failed handoff or announce ownership as complete.
+    // Explicit phases: propose, verify. Acceptance is performed separately
+    // by the timelock's authorized governance execution mechanism.
+    const phase = process.env.OWNERSHIP_PHASE || "verify";
+    if (!["propose", "verify"].includes(phase)) {
+        throw new Error("OWNERSHIP_PHASE must be propose or verify");
+    }
     if (!addresses.timelock || !hre.ethers.isAddress(addresses.timelock) ||
-        addresses.timelock === hre.ethers.ZeroAddress) {
+        addresses.timelock.toLowerCase() === hre.ethers.ZeroAddress.toLowerCase()) {
         throw new Error("A valid timelock address is required");
     }
     const pending = [];
     for (const { name, contract } of contracts) {
         const currentOwner = await contract.owner();
         if (currentOwner.toLowerCase() === addresses.timelock.toLowerCase()) {
-            console.log("  Already timelock-owned:", name);
+            console.log("  Verified timelock-owned:", name);
             continue;
         }
-        const tx = await contract.transferOwnership(addresses.timelock);
-        await tx.wait();
+        if (phase === "propose") {
+            // A one-step Ownable contract cannot be safely assumed to support
+            // timelock acceptance. Require the two-step interface before writing.
+            if (typeof contract.pendingOwner !== "function") {
+                throw new Error(name + " lacks pendingOwner(); manual governance review required");
+            }
+            const existingPending = await contract.pendingOwner();
+            if (existingPending.toLowerCase() !== addresses.timelock.toLowerCase()) {
+                const tx = await contract.transferOwnership(addresses.timelock);
+                await tx.wait();
+            }
+        }
         if (typeof contract.pendingOwner !== "function") {
-            throw new Error(name + " has no pendingOwner() verification interface");
+            throw new Error(name + " ownership is not timelock and no two-step interface exists");
         }
         const proposed = await contract.pendingOwner();
         if (proposed.toLowerCase() !== addresses.timelock.toLowerCase()) {
-            throw new Error(name + " ownership proposal was not recorded");
+            throw new Error(name + " pending owner is not the timelock");
         }
         pending.push(name);
-        console.log("  Pending timelock acceptance:", name);
+        console.log("  Awaiting timelock acceptOwnership():", name);
     }
-
     if (pending.length) {
-        throw new Error(
-            "Ownership handoff INCOMPLETE. Timelock must execute acceptOwnership() " +
-            "for: " + pending.join(", ") +
-            ". Re-run verification after acceptance. Do not certify deployment."
-        );
+        const instruction = "Timelock must execute acceptOwnership() for: " + pending.join(", ");
+        if (phase === "propose") {
+            console.log("  Proposal phase complete. " + instruction);
+            console.log("  This is NOT final governance certification.");
+            return;
+        }
+        throw new Error("Governance verification FAILED. " + instruction);
     }
-    console.log("All contract owners verified as timelock:", addresses.timelock);
+    console.log("Governance verified: all contract owners are timelock:", addresses.timelock);
 }
 
 main()
