@@ -61,23 +61,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Start server
-        run: npm start &
-
-      - name: Wait for server
-        run: sleep 10
-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Configure isolated E2E authentication
-        run: echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+        run: |
+          echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          echo "ADMIN_PASSWORD=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
 
       - name: Run E2E tests
         env:
           NODE_ENV: test
           ADMIN_USERNAME: aetheron-ci-admin
-          ADMIN_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}-ci-test-only
         run: npm run test:e2e
 
       - name: Upload test results
