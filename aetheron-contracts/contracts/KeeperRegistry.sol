@@ -48,6 +48,7 @@ contract KeeperRegistry is Ownable2Step, Pausable, ReentrancyGuard {
     error InsufficientBalance();
     error SlashCooldownActive();
     error ZeroAddress();
+    error ZeroAmount();
 
     modifier onlyGuardianOrOwner() {
         if (msg.sender != guardian && msg.sender != owner()) revert NotGuardianOrOwner();

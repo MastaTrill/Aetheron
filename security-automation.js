@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const crypto = require('crypto');
-const { Command } = require('commander');
-const chalk = require('chalk');
-const fs = require('fs');
-const path = require('path');
+import crypto from 'crypto';
+import { Command } from 'commander';
+import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
 
 class ContractFuzzer {
   constructor() {

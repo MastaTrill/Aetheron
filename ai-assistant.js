@@ -3,13 +3,13 @@
  * Natural language processing for blockchain queries
  */
 import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+import 'dotenv/config';
 
 const GPT_MODEL = process.env.AI_MODEL || 'gpt-4-turbo-preview';
-const USE_GPT = process.env.OPENAI_API_KEY ? true : false;
+const USE_GPT = Boolean(process.env.OPENAI_API_KEY);
+const openai = USE_GPT
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 /**
  * Intent Classifier
