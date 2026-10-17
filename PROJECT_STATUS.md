@@ -27,7 +27,7 @@
 ## Cleanup queue
 
 - [x] Inventory unique mobile and SDK components.
-- [ ] Move production-ready components into a clearly named `mobile/` or `sdk/` package.
+- [x] Move production-ready components into a clearly named `mobile/` or `sdk/` package.
 - [ ] Remove or archive duplicate smart contracts after comparing them with canonical repositories.
 - [ ] Replace duplicated deployment documentation with links to canonical registries.
 - [ ] Archive this repository after unique code is migrated, or rename it to reflect its final mobile/SDK role.

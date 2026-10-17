@@ -1,0 +1,30 @@
+{
+  "name": "@aetheron/sdk",
+  "version": "1.0.0",
+  "description": "Official JavaScript & TypeScript SDK for Aetheron Protocol",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "aetheron",
+    "sdk",
+    "blockchain",
+    "web3",
+    "l3",
+    "sentinel"
+  ],
+  "author": "Aetheron Team",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
