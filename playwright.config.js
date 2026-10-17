@@ -8,7 +8,7 @@ export default defineConfig({
     headless: true
   },
   webServer: {
-    command: 'node --input-type=module -e "import(\'./test-app.js\').then(({ app }) => app.listen(3001, \'127.0.0.1\'))"',
+    command: 'node scripts/start-playwright-server.js',
     port: 3001,
     reuseExistingServer: !process.env.CI
   },
