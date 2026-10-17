@@ -1,0 +1,29 @@
+name: Lockfile Repair Evidence
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/lockfile-repair-evidence.yml'
+      - 'package.json'
+      - 'package-lock.json'
+permissions:
+  contents: read
+jobs:
+  generate-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Regenerate root lockfile without installing or running scripts
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Validate clean install resolution
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Upload proposed lockfile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proposed-root-package-lock
+          path: package-lock.json
+          if-no-files-found: error
