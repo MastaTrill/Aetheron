@@ -1,5 +1,6 @@
 module.exports = {
   testEnvironment: 'node',
+  setupFiles: ['<rootDir>/tests/setup-ci-env.cjs'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
