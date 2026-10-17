@@ -112,21 +112,41 @@ async function main() {
         { name: "L3Relay", contract: l3Relay }
     ];
 
+    // Ownable2Step only proposes ownership. The timelock must separately
+    // execute acceptOwnership() as its own transaction (typically via governance).
+    // Never silently skip a failed handoff or announce ownership as complete.
+    if (!addresses.timelock || !hre.ethers.isAddress(addresses.timelock) ||
+        addresses.timelock === hre.ethers.ZeroAddress) {
+        throw new Error("A valid timelock address is required");
+    }
+    const pending = [];
     for (const { name, contract } of contracts) {
-        try {
-            const tx = await contract.transferOwnership(addresses.timelock);
-            await tx.wait();
-            console.log("  ✅", name, "ownership transferred to Timelock");
-        } catch (err) {
-            console.log("  ⚠️", name, "ownership transfer skipped:", err.message);
+        const currentOwner = await contract.owner();
+        if (currentOwner.toLowerCase() === addresses.timelock.toLowerCase()) {
+            console.log("  Already timelock-owned:", name);
+            continue;
         }
+        const tx = await contract.transferOwnership(addresses.timelock);
+        await tx.wait();
+        if (typeof contract.pendingOwner !== "function") {
+            throw new Error(name + " has no pendingOwner() verification interface");
+        }
+        const proposed = await contract.pendingOwner();
+        if (proposed.toLowerCase() !== addresses.timelock.toLowerCase()) {
+            throw new Error(name + " ownership proposal was not recorded");
+        }
+        pending.push(name);
+        console.log("  Pending timelock acceptance:", name);
     }
 
-    console.log("\n════════════════════════════════════════════");
-    console.log("  ✅ Post-deploy wiring complete!");
-    console.log("  All contracts are now governed by the Timelock.");
-    console.log("  Proposals can be created via AetherGovernor.");
-    console.log("════════════════════════════════════════════");
+    if (pending.length) {
+        throw new Error(
+            "Ownership handoff INCOMPLETE. Timelock must execute acceptOwnership() " +
+            "for: " + pending.join(", ") +
+            ". Re-run verification after acceptance. Do not certify deployment."
+        );
+    }
+    console.log("All contract owners verified as timelock:", addresses.timelock);
 }
 
 main()
