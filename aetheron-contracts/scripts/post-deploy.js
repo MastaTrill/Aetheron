@@ -131,7 +131,7 @@ async function verifyOwnership(hre, addresses, requestedPhase) {
 
     // Explicit phases: propose, verify. Acceptance is performed separately
     // by the timelock's authorized governance execution mechanism.
-    const phase = process.env.OWNERSHIP_PHASE || "verify";
+    // Phase is supplied by the caller; never silently override it from the environment.
     if (!["propose", "verify"].includes(phase)) {
         throw new Error("OWNERSHIP_PHASE must be propose or verify");
     }
