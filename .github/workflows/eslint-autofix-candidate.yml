@@ -31,7 +31,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -u -- '*.js' '*.jsx' '*.ts' '*.tsx'
+          git diff --name-only -z --diff-filter=M | xargs -0 -r git add --
           if ! git diff --cached --quiet; then
             git commit -m "style: apply ESLint automatic fixes"
             git push origin HEAD:fix/v2-governance-handoff-20261017
