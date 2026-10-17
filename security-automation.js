@@ -497,7 +497,7 @@ program
     console.log(chalk.gray('─'.repeat(60)));
     console.log(`Total Alerts: ${dashboard.totalAlerts}`);
     console.log(`Open Alerts: ${dashboard.openAlerts}`);
-    console.log(`Metrics:`, dashboard.metrics);
+    console.log('Metrics:', dashboard.metrics);
   });
 
 program.parse();

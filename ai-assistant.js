@@ -222,7 +222,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
         max_tokens: 500
       });
 
-      const response = completion.choices[0]?.message?.content || 
+      const response = completion.choices[0]?.message?.content ||
         this.responseGenerator.generate('unknown', {});
 
       this.conversationHistory.push(
@@ -315,22 +315,22 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
     case 'dao':
       return await this.handleDAO(entities);
 
-      case 'swap':
-        return this.handleSwap(entities);
+    case 'swap':
+      return this.handleSwap(entities);
 
-      case 'stake':
-        return this.handleStake(entities);
+    case 'stake':
+      return this.handleStake(entities);
 
-      case 'bridge':
-        return this.handleBridge(entities);
+    case 'bridge':
+      return this.handleBridge(entities);
 
-      case 'admin':
-        return this.handleAdmin(entities, query);
+    case 'admin':
+      return this.handleAdmin(entities, query);
 
-      case 'stats':
-        return this.handleStats(entities);
+    case 'stats':
+      return this.handleStats(entities);
 
-      case 'help':
+    case 'help':
       return this.handleHelp(query);
 
     default:
@@ -445,7 +445,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    * Handle DAO query
    */
   async handleDAO(_entities) {
-    return `[SIMULATED] DAO proposal data is not yet connected to the governance contract.`;
+    return '[SIMULATED] DAO proposal data is not yet connected to the governance contract.';
   }
 
   /**
@@ -483,7 +483,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    */
   async handleAdmin(entities, query) {
     const lowerQuery = query.toLowerCase();
-    
+
     if (lowerQuery.includes('kyc')) {
       return 'KYC management: I can approve or reject KYC applications. You need admin permissions to perform this action.';
     }

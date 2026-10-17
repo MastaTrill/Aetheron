@@ -28,7 +28,7 @@ class AetheronWebSocket {
       const url = new URL(req.url, 'http://localhost');
       const token = url.searchParams.get('token');
       const user = this.verifyToken(token);
-      
+
       if (token && !user) {
         ws.close(4001, 'Invalid token');
         return;
@@ -36,8 +36,8 @@ class AetheronWebSocket {
 
       ws.user = user;
       ws.isAuthenticated = !!user;
-      
-      console.log('[WebSocket] Client connected from:', req.socket.remoteAddress, 
+
+      console.log('[WebSocket] Client connected from:', req.socket.remoteAddress,
         user ? `(user: ${user.id})` : '(anonymous)');
       this.clients.add(ws);
 
