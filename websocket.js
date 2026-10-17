@@ -1,5 +1,5 @@
 // Aetheron WebSocket Server for Real-Time Updates
-import { WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
