@@ -35,6 +35,16 @@ async function main() {
     const sentinel = await hre.ethers.getContractAt("Sentinel", addresses.sentinel);
     const l3Relay = await hre.ethers.getContractAt("L3Relay", addresses.l3Relay);
 
+    // Governance verification must never perform setup writes or approvals.
+    // Use OWNERSHIP_PHASE=propose only for an explicitly authorized handoff.
+    if ((process.env.OWNERSHIP_PHASE || "verify") === "verify") {
+        await verifyOwnership(hre, addresses);
+        return;
+    }
+    if (process.env.OWNERSHIP_PHASE !== "propose") {
+        throw new Error("OWNERSHIP_PHASE must be verify or propose");
+    }
+
     // Wire the AETH reference into KeeperRegistry so withdrawAETH can move any
     // rewards/refunds that land there.
     const setAethTx = await keeperRegistry.setAeth(addresses.aetherToken);
@@ -99,10 +109,17 @@ async function main() {
     await approveTx.wait();
     console.log("  ✅ Treasury funding approved:", hre.ethers.formatEther(treasuryFunding), "AETH");
 
-    // ──────────────────────────────────────────────
-    // 6. Transfer ownership to Timelock
-    // ──────────────────────────────────────────────
-    console.log("\n[6/6] Transferring ownership to Timelock...");
+    await verifyOwnership(hre, addresses, "propose");
+}
+
+async function verifyOwnership(hre, addresses, requestedPhase) {
+    const phase = requestedPhase || "verify";
+    const aeth = await hre.ethers.getContractAt("AetheronToken", addresses.aetherToken);
+    const keeperRegistry = await hre.ethers.getContractAt("KeeperRegistry", addresses.keeperRegistry);
+    const treasury = await hre.ethers.getContractAt("Treasury", addresses.treasury);
+    const epochManager = await hre.ethers.getContractAt("EpochManager", addresses.epochManager);
+    const sentinel = await hre.ethers.getContractAt("Sentinel", addresses.sentinel);
+    const l3Relay = await hre.ethers.getContractAt("L3Relay", addresses.l3Relay);
     const contracts = [
         { name: "AetheronToken", contract: aeth },
         { name: "KeeperRegistry", contract: keeperRegistry },
@@ -161,11 +178,3 @@ async function main() {
         throw new Error("Governance verification FAILED. " + instruction);
     }
     console.log("Governance verified: all contract owners are timelock:", addresses.timelock);
-}
-
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error("Post-deploy wiring failed:", error);
-        process.exit(1);
-    });
