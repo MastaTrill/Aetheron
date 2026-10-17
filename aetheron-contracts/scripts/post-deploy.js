@@ -178,3 +178,11 @@ async function verifyOwnership(hre, addresses, requestedPhase) {
         throw new Error("Governance verification FAILED. " + instruction);
     }
     console.log("Governance verified: all contract owners are timelock:", addresses.timelock);
+}
+
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error("Post-deploy wiring failed:", error);
+        process.exit(1);
+    });
