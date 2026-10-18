@@ -67,4 +67,15 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+const authService = new AuthService();
+
+// Named exports (bound to the singleton) so CommonJS consumers and
+// `import { generateToken } from ...` work alongside the default export.
+export const generateToken = authService.generateToken.bind(authService);
+export const generateRefreshToken = authService.generateRefreshToken.bind(authService);
+export const verifyToken = authService.verifyToken.bind(authService);
+export const hashPassword = authService.hashPassword.bind(authService);
+export const comparePassword = authService.comparePassword.bind(authService);
+export const extractToken = authService.extractToken.bind(authService);
+
+export default authService;

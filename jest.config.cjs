@@ -7,6 +7,7 @@ module.exports = {
     '**/*.js',
     '!node_modules/**',
     '!coverage/**',
+    '!**/dist/**',
     '!tests/**',
     '!mobile/**',
     '!scripts/**',

@@ -1,6 +1,8 @@
-import app from '../test-app.js';
+import { httpServer } from '../test-app.js';
 
-const server = app.listen(3001, '127.0.0.1', () => {
+// Listen on the HTTP server that also carries the WebSocket server, so the
+// dashboard's real-time connection works during E2E runs.
+const server = httpServer.listen(3001, '127.0.0.1', () => {
   console.log('Playwright test server listening on http://127.0.0.1:3001');
 });
 
