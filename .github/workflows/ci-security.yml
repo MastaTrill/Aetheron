@@ -10,6 +10,8 @@ jobs:
   ci:
     name: Build, Lint, Test, and Scan
     runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -37,3 +39,15 @@ jobs:
 
       - name: Dependency security audit (high and critical)
         run: npm audit --audit-level=high
+
+      - name: Explain skipped Snyk scan
+        if: ${{ env.SNYK_TOKEN == '' }}
+        run: echo "Snyk scan not executed - SNYK_TOKEN secret is not configured; npm audit above is the enforced gate"
+
+      # snyk/actions has no v0.4.0 tag; the published tag for that release is 0.4.0.
+      - name: Snyk Security Scan
+        if: ${{ env.SNYK_TOKEN != '' }}
+        uses: snyk/actions/node@0.4.0
+        continue-on-error: true
+        with:
+          args: --severity-threshold=high
