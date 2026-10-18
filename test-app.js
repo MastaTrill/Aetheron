@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 
 import authRoutes from './auth/routes.js';
+import { OracleService } from './oracle.js';
 import { basicAuth, jwtAuth, optionalAuth } from './auth/middleware.js';
 
 // ES Module __dirname workaround
@@ -102,6 +103,44 @@ app.post('/api/ai/query', (req, res) => {
     return res.status(400).json({ success: false, error: 'Query is too long' });
   }
   return res.status(503).json({ success: false, error: 'AI provider unavailable' });
+});
+
+// Oracle routes use the existing CoinGecko-backed service; no synthetic prices.
+const oracleService = new OracleService();
+app.get('/api/oracle/price/:symbol', async (req, res) => {
+  const symbol = req.params.symbol.toUpperCase();
+  if (!/^[A-Z0-9]{2,12}$/.test(symbol)) return res.status(400).json({ success: false, error: 'Invalid symbol' });
+  try {
+    const price = await oracleService.getTokenPrice(symbol);
+    if (!Number.isFinite(price) || price <= 0) return res.status(503).json({ success: false, error: 'Price unavailable' });
+    return res.json({ success: true, symbol, price });
+  } catch (error) {
+    return res.status(503).json({ success: false, error: 'Price unavailable' });
+  }
+});
+app.get('/api/oracle/prices', async (req, res) => {
+  const symbols = typeof req.query.symbols === 'string' ? req.query.symbols.split(',').map((s) => s.trim().toUpperCase()) : [];
+  if (!symbols.length || symbols.length > 20 || symbols.some((s) => !/^[A-Z0-9]{2,12}$/.test(s))) {
+    return res.status(400).json({ success: false, error: 'Invalid symbols' });
+  }
+  try {
+    const prices = await oracleService.getMultiplePrices(symbols);
+    if (symbols.some((symbol) => !Number.isFinite(prices[symbol]) || prices[symbol] <= 0)) {
+      return res.status(503).json({ success: false, error: 'Prices unavailable' });
+    }
+    return res.json({ success: true, prices });
+  } catch (error) {
+    return res.status(503).json({ success: false, error: 'Prices unavailable' });
+  }
+});
+app.get('/api/oracle/trending', async (req, res) => {
+  try {
+    const coins = await oracleService.getTrendingCoins();
+    if (!coins.length) return res.status(503).json({ success: false, error: 'Trending data unavailable' });
+    return res.json({ success: true, coins });
+  } catch (error) {
+    return res.status(503).json({ success: false, error: 'Trending data unavailable' });
+  }
 });
 
 // Routes
