@@ -63,7 +63,7 @@ describe('Oracle Integration Tests', () => {
     test('should handle invalid symbol', async () => {
       const { default: app } = await import('../../test-app.js');
       const res = await request(app).get('/api/oracle/price/INVALID');
-      expect([200, 500]).toContain(res.status);
+      expect([400, 503]).toContain(res.status);
     });
   });
 
