@@ -56,7 +56,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Serve static files (CSS, JS, etc.)
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, { index: false }));
 
 // Rate limiting (simplified for tests)
 const rateLimiter = (req, res, next) => {
