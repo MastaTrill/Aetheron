@@ -11,8 +11,10 @@ describe('AetheronToken V2 security', function () {
 
   it('rejects unauthorized minting', async function () {
     const { token, outsider } = await deploy();
-    await expect(token.connect(outsider).mint(outsider.address, 1n))
-      .to.be.revertedWithCustomError(token, 'NotMinter');
+    await expect(token.connect(outsider).mint(outsider.address, 1n)).to.be.revertedWithCustomError(
+      token,
+      'NotMinter'
+    );
   });
 
   it('enforces the global supply cap', async function () {
@@ -20,8 +22,10 @@ describe('AetheronToken V2 security', function () {
     const cap = await token.MAX_SUPPLY();
     await token.mint(owner.address, cap);
     expect(await token.totalSupply()).to.equal(cap);
-    await expect(token.mint(owner.address, 1n))
-      .to.be.revertedWithCustomError(token, 'SupplyCapExceeded');
+    await expect(token.mint(owner.address, 1n)).to.be.revertedWithCustomError(
+      token,
+      'SupplyCapExceeded'
+    );
   });
 
   it('restricts minter grants to owner and permits revocation', async function () {
@@ -30,8 +34,10 @@ describe('AetheronToken V2 security', function () {
     await token.grantMinter(minter.address);
     await token.connect(minter).mint(minter.address, 1n);
     await token.revokeMinter(minter.address);
-    await expect(token.connect(minter).mint(minter.address, 1n))
-      .to.be.revertedWithCustomError(token, 'NotMinter');
+    await expect(token.connect(minter).mint(minter.address, 1n)).to.be.revertedWithCustomError(
+      token,
+      'NotMinter'
+    );
   });
 
   it('requires the pending owner to accept the handoff', async function () {

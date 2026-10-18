@@ -342,21 +342,21 @@ class AnalyticsEngine {
   // Real-time Metrics
   recordMetric(type, value) {
     switch (type) {
-    case 'gas':
-      this.metrics.gasUsage.push(value);
-      if (this.metrics.gasUsage.length > 100) {
-        this.metrics.gasUsage.shift();
-      }
-      break;
-    case 'blockTime':
-      this.metrics.blockTimes.push(value);
-      if (this.metrics.blockTimes.length > 50) {
-        this.metrics.blockTimes.shift();
-      }
-      break;
-    case 'address':
-      this.metrics.activeAddresses.add(value);
-      break;
+      case 'gas':
+        this.metrics.gasUsage.push(value);
+        if (this.metrics.gasUsage.length > 100) {
+          this.metrics.gasUsage.shift();
+        }
+        break;
+      case 'blockTime':
+        this.metrics.blockTimes.push(value);
+        if (this.metrics.blockTimes.length > 50) {
+          this.metrics.blockTimes.shift();
+        }
+        break;
+      case 'address':
+        this.metrics.activeAddresses.add(value);
+        break;
     }
   }
 

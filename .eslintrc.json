@@ -21,17 +21,35 @@
     "chrome": "readonly"
   },
   "rules": {
-    "indent": ["error", 2],
+    "indent": "off",
     "linebreak-style": "off",
-    "quotes": ["error", "single"],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
     "semi": ["error", "always"],
     "no-unused-vars": ["warn"],
     "no-console": "off",
     "no-trailing-spaces": ["error"],
     "eol-last": ["error", "always"],
     "comma-dangle": ["error", "never"],
-    "arrow-spacing": ["error", { "before": true, "after": true }],
+    "arrow-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true
+      }
+    ],
     "space-before-blocks": ["error", "always"],
-    "keyword-spacing": ["error", { "before": true, "after": true }]
+    "keyword-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true
+      }
+    ]
   }
 }

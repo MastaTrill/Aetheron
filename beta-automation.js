@@ -76,7 +76,7 @@ const BETA_CONFIG = {
   },
   communications: {
     reminders: {
-      daily: '⏰ Daily Reminder: Don\'t forget to test and submit your feedback today!',
+      daily: "⏰ Daily Reminder: Don't forget to test and submit your feedback today!",
       weekly: '📅 Weekly Update: New testing phase begins! Check your dashboard for tasks.',
       survey: '📊 Time for your weekly survey! Help us improve Aetheron.'
     },
@@ -145,7 +145,7 @@ class BetaAutomation {
       generated: new Date().toISOString(),
       summary: {
         totalTesters: this.betaData.testers.length,
-        activeTesters: this.betaData.testers.filter(t => t.status === 'active').length,
+        activeTesters: this.betaData.testers.filter((t) => t.status === 'active').length,
         totalFeedback: this.betaData.feedback.length,
         totalBugs: this.betaData.bugs.length,
         averageRating: this.calculateAverageRating()
@@ -167,10 +167,10 @@ class BetaAutomation {
 
   getTopPerformers(limit = 5) {
     return this.betaData.testers
-      .filter(t => t.status === 'active')
+      .filter((t) => t.status === 'active')
       .sort((a, b) => b.points - a.points)
       .slice(0, limit)
-      .map(t => ({
+      .map((t) => ({
         name: t.name,
         discord: t.discord,
         points: t.points,
@@ -180,21 +180,21 @@ class BetaAutomation {
 
   getCriticalIssues() {
     return this.betaData.bugs
-      .filter(bug => bug.severity === 'critical' && bug.status === 'open')
-      .map(bug => ({
+      .filter((bug) => bug.severity === 'critical' && bug.status === 'open')
+      .map((bug) => ({
         id: bug.id,
         description: bug.description,
-        reportedBy: this.betaData.testers.find(t => t.id == bug.testerId)?.name || 'Unknown',
+        reportedBy: this.betaData.testers.find((t) => t.id == bug.testerId)?.name || 'Unknown',
         week: bug.week
       }));
   }
 
   getPhaseProgress() {
-    const phase = BETA_CONFIG.program.phases.find(p => p.week === this.currentWeek);
+    const phase = BETA_CONFIG.program.phases.find((p) => p.week === this.currentWeek);
     if (!phase) return null;
 
-    const phaseFeedback = this.betaData.feedback.filter(f => f.week === this.currentWeek);
-    const phaseBugs = this.betaData.bugs.filter(b => b.week === this.currentWeek);
+    const phaseFeedback = this.betaData.feedback.filter((f) => f.week === this.currentWeek);
+    const phaseBugs = this.betaData.bugs.filter((b) => b.week === this.currentWeek);
 
     return {
       phase: phase.focus,
@@ -202,8 +202,10 @@ class BetaAutomation {
       tasks: phase.tasks,
       feedbackCount: phaseFeedback.length,
       bugCount: phaseBugs.length,
-      averageRating: phaseFeedback.length > 0 ?
-        (phaseFeedback.reduce((sum, f) => sum + f.rating, 0) / phaseFeedback.length).toFixed(1) : 0
+      averageRating:
+        phaseFeedback.length > 0
+          ? (phaseFeedback.reduce((sum, f) => sum + f.rating, 0) / phaseFeedback.length).toFixed(1)
+          : 0
     };
   }
 
@@ -212,15 +214,19 @@ class BetaAutomation {
 
     // Check feedback volume
     if (this.betaData.feedback.length < this.betaData.testers.length * 0.5) {
-      recommendations.push('Increase feedback collection - only ' +
-                Math.round((this.betaData.feedback.length / this.betaData.testers.length) * 100) +
-                '% of testers have submitted feedback');
+      recommendations.push(
+        'Increase feedback collection - only ' +
+          Math.round((this.betaData.feedback.length / this.betaData.testers.length) * 100) +
+          '% of testers have submitted feedback'
+      );
     }
 
     // Check rating trends
     const avgRating = parseFloat(this.calculateAverageRating());
     if (avgRating < 7) {
-      recommendations.push('Address user experience issues - average rating is ' + avgRating + '/10');
+      recommendations.push(
+        'Address user experience issues - average rating is ' + avgRating + '/10'
+      );
     }
 
     // Check bug volume
@@ -229,11 +235,13 @@ class BetaAutomation {
     }
 
     // Check tester engagement
-    const engagedTesters = this.betaData.testers.filter(t => t.feedbackCount > 0).length;
+    const engagedTesters = this.betaData.testers.filter((t) => t.feedbackCount > 0).length;
     if (engagedTesters < this.betaData.testers.length * 0.7) {
-      recommendations.push('Improve tester engagement - only ' +
-                Math.round((engagedTesters / this.betaData.testers.length) * 100) +
-                '% of testers are actively participating');
+      recommendations.push(
+        'Improve tester engagement - only ' +
+          Math.round((engagedTesters / this.betaData.testers.length) * 100) +
+          '% of testers are actively participating'
+      );
     }
 
     return recommendations;
@@ -263,29 +271,33 @@ class BetaAutomation {
       ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
     };
 
-    this.betaData.feedback.forEach(feedback => {
+    this.betaData.feedback.forEach((feedback) => {
       // Rating distribution
       insights.ratingDistribution[feedback.rating] =
-                (insights.ratingDistribution[feedback.rating] || 0) + 1;
+        (insights.ratingDistribution[feedback.rating] || 0) + 1;
 
       // Categorize feedback
-      if (feedback.feedback.toLowerCase().includes('bug') ||
-                feedback.feedback.toLowerCase().includes('error') ||
-                feedback.feedback.toLowerCase().includes('broken')) {
+      if (
+        feedback.feedback.toLowerCase().includes('bug') ||
+        feedback.feedback.toLowerCase().includes('error') ||
+        feedback.feedback.toLowerCase().includes('broken')
+      ) {
         insights.commonIssues[feedback.category] =
-                    (insights.commonIssues[feedback.category] || 0) + 1;
+          (insights.commonIssues[feedback.category] || 0) + 1;
       }
 
-      if (feedback.feedback.toLowerCase().includes('add') ||
-                feedback.feedback.toLowerCase().includes('feature') ||
-                feedback.feedback.toLowerCase().includes('would like')) {
+      if (
+        feedback.feedback.toLowerCase().includes('add') ||
+        feedback.feedback.toLowerCase().includes('feature') ||
+        feedback.feedback.toLowerCase().includes('would like')
+      ) {
         insights.featureRequests[feedback.category] =
-                    (insights.featureRequests[feedback.category] || 0) + 1;
+          (insights.featureRequests[feedback.category] || 0) + 1;
       }
 
       if (feedback.rating >= 4) {
         insights.positiveFeedback[feedback.category] =
-                    (insights.positiveFeedback[feedback.category] || 0) + 1;
+          (insights.positiveFeedback[feedback.category] || 0) + 1;
       }
     });
 
@@ -338,79 +350,83 @@ if (!command) {
 const automation = new BetaAutomation();
 
 switch (command) {
-case 'report': {
-  const report = automation.generateWeeklyReport();
-  console.log('📊 Weekly Beta Report - Week', report.week);
-  console.log('=====================================');
-  console.log('Summary:');
-  console.log(`  Total Testers: ${report.summary.totalTesters}`);
-  console.log(`  Active Testers: ${report.summary.activeTesters}`);
-  console.log(`  Total Feedback: ${report.summary.totalFeedback}`);
-  console.log(`  Average Rating: ${report.summary.averageRating}/10`);
-  console.log('');
-  console.log('Top Performers:');
-  report.topPerformers.forEach((performer, index) => {
-    console.log(`  ${index + 1}. ${performer.name} (${performer.discord}) - ${performer.points} points`);
-  });
-  console.log('');
-  if (report.criticalIssues.length > 0) {
-    console.log('Critical Issues:');
-    report.criticalIssues.forEach(issue => {
-      console.log(`  - ${issue.description} (Reported by: ${issue.reportedBy})`);
+  case 'report': {
+    const report = automation.generateWeeklyReport();
+    console.log('📊 Weekly Beta Report - Week', report.week);
+    console.log('=====================================');
+    console.log('Summary:');
+    console.log(`  Total Testers: ${report.summary.totalTesters}`);
+    console.log(`  Active Testers: ${report.summary.activeTesters}`);
+    console.log(`  Total Feedback: ${report.summary.totalFeedback}`);
+    console.log(`  Average Rating: ${report.summary.averageRating}/10`);
+    console.log('');
+    console.log('Top Performers:');
+    report.topPerformers.forEach((performer, index) => {
+      console.log(
+        `  ${index + 1}. ${performer.name} (${performer.discord}) - ${performer.points} points`
+      );
     });
     console.log('');
+    if (report.criticalIssues.length > 0) {
+      console.log('Critical Issues:');
+      report.criticalIssues.forEach((issue) => {
+        console.log(`  - ${issue.description} (Reported by: ${issue.reportedBy})`);
+      });
+      console.log('');
+    }
+    if (report.recommendations.length > 0) {
+      console.log('Recommendations:');
+      report.recommendations.forEach((rec) => {
+        console.log(`  - ${rec}`);
+      });
+    }
+    break;
   }
-  if (report.recommendations.length > 0) {
-    console.log('Recommendations:');
-    report.recommendations.forEach(rec => {
-      console.log(`  - ${rec}`);
+
+  case 'reminders': {
+    const reminderType = process.argv[3] || 'daily';
+    automation.sendReminders(reminderType);
+    break;
+  }
+
+  case 'insights': {
+    const insights = automation.processFeedbackInsights();
+    console.log('🔍 Feedback Insights');
+    console.log('===================');
+    console.log('Rating Distribution:');
+    Object.entries(insights.ratingDistribution).forEach(([rating, count]) => {
+      console.log(`  ${rating} stars: ${count}`);
     });
+    console.log('');
+    console.log('Common Issues by Category:');
+    Object.entries(insights.commonIssues).forEach(([category, count]) => {
+      console.log(`  ${category}: ${count}`);
+    });
+    break;
   }
-  break;
-}
 
-case 'reminders': {
-  const reminderType = process.argv[3] || 'daily';
-  automation.sendReminders(reminderType);
-  break;
-}
+  case 'export': {
+    const filepath = automation.exportData();
+    console.log(`✅ Data exported successfully to ${filepath}`);
+    break;
+  }
 
-case 'insights': {
-  const insights = automation.processFeedbackInsights();
-  console.log('🔍 Feedback Insights');
-  console.log('===================');
-  console.log('Rating Distribution:');
-  Object.entries(insights.ratingDistribution).forEach(([rating, count]) => {
-    console.log(`  ${rating} stars: ${count}`);
-  });
-  console.log('');
-  console.log('Common Issues by Category:');
-  Object.entries(insights.commonIssues).forEach(([category, count]) => {
-    console.log(`  ${category}: ${count}`);
-  });
-  break;
-}
+  case 'status':
+    console.log('📊 Beta Program Status');
+    console.log('======================');
+    console.log(`Current Week: ${automation.currentWeek}`);
+    console.log(`Total Testers: ${automation.betaData.testers.length}`);
+    console.log(
+      `Active Testers: ${automation.betaData.testers.filter((t) => t.status === 'active').length}`
+    );
+    console.log(`Total Feedback: ${automation.betaData.feedback.length}`);
+    console.log(`Total Bugs: ${automation.betaData.bugs.length}`);
+    console.log(`Average Rating: ${automation.calculateAverageRating()}/10`);
+    break;
 
-case 'export': {
-  const filepath = automation.exportData();
-  console.log(`✅ Data exported successfully to ${filepath}`);
-  break;
-}
-
-case 'status':
-  console.log('📊 Beta Program Status');
-  console.log('======================');
-  console.log(`Current Week: ${automation.currentWeek}`);
-  console.log(`Total Testers: ${automation.betaData.testers.length}`);
-  console.log(`Active Testers: ${automation.betaData.testers.filter(t => t.status === 'active').length}`);
-  console.log(`Total Feedback: ${automation.betaData.feedback.length}`);
-  console.log(`Total Bugs: ${automation.betaData.bugs.length}`);
-  console.log(`Average Rating: ${automation.calculateAverageRating()}/10`);
-  break;
-
-default:
-  console.log('Unknown command:', command);
-  break;
+  default:
+    console.log('Unknown command:', command);
+    break;
 }
 
 export default BetaAutomation;

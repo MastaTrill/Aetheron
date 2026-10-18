@@ -3,7 +3,9 @@ import request from 'supertest';
 import { app } from '../../test-app.js';
 
 describe('API Integration Tests', () => {
-  const authHeader = 'Basic ' + Buffer.from(`${process.env.ADMIN_USERNAME}:${process.env.ADMIN_PASSWORD}`).toString('base64');
+  const authHeader =
+    'Basic ' +
+    Buffer.from(`${process.env.ADMIN_USERNAME}:${process.env.ADMIN_PASSWORD}`).toString('base64');
 
   describe('Health & Status', () => {
     test('GET / should return dashboard HTML', async () => {

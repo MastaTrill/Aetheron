@@ -21,109 +21,109 @@ class RWATokenization extends EventEmitter {
    */
   async tokenizeAsset(assetType, metadata, valuation, tokensIssued, ownerAddress) {
     switch (assetType) {
-    case 'real-estate': {
-      const reAsset = await this.tokenizeRealEstate({
-        propertyAddress: metadata.address || metadata.name,
-        propertyType: metadata.type || 'residential',
-        valuation,
-        totalShares: tokensIssued,
-        owner: ownerAddress,
-        metadata
-      });
-      return {
-        success: true,
-        assetType: 'real-estate',
-        tokenId: reAsset.id,
-        contractAddress: reAsset.tokenAddress,
-        tokensIssued,
-        tokenPrice: valuation / tokensIssued
-      };
-    }
+      case 'real-estate': {
+        const reAsset = await this.tokenizeRealEstate({
+          propertyAddress: metadata.address || metadata.name,
+          propertyType: metadata.type || 'residential',
+          valuation,
+          totalShares: tokensIssued,
+          owner: ownerAddress,
+          metadata
+        });
+        return {
+          success: true,
+          assetType: 'real-estate',
+          tokenId: reAsset.id,
+          contractAddress: reAsset.tokenAddress,
+          tokensIssued,
+          tokenPrice: valuation / tokensIssued
+        };
+      }
 
-    case 'commodity': {
-      const comAsset = await this.tokenizeCommodity({
-        commodityType: metadata.type || 'gold',
-        quantity: tokensIssued,
-        unit: metadata.unit || 'oz',
-        currentPrice: valuation / tokensIssued,
-        custodian: metadata.custodian || 'Default Custodian',
-        owner: ownerAddress,
-        metadata
-      });
-      return {
-        success: true,
-        assetType: 'commodity',
-        tokenId: comAsset.id,
-        contractAddress: comAsset.tokenAddress,
-        tokensIssued,
-        tokenPrice: valuation / tokensIssued
-      };
-    }
+      case 'commodity': {
+        const comAsset = await this.tokenizeCommodity({
+          commodityType: metadata.type || 'gold',
+          quantity: tokensIssued,
+          unit: metadata.unit || 'oz',
+          currentPrice: valuation / tokensIssued,
+          custodian: metadata.custodian || 'Default Custodian',
+          owner: ownerAddress,
+          metadata
+        });
+        return {
+          success: true,
+          assetType: 'commodity',
+          tokenId: comAsset.id,
+          contractAddress: comAsset.tokenAddress,
+          tokensIssued,
+          tokenPrice: valuation / tokensIssued
+        };
+      }
 
-    case 'invoice': {
-      const invAsset = await this.tokenizeInvoice({
-        invoiceNumber: metadata.invoiceNumber || 'INV-' + Date.now(),
-        issuer: metadata.issuer || ownerAddress,
-        debtor: metadata.debtor || '0xDebtor',
-        amount: valuation,
-        dueDate: metadata.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        discountRate: metadata.discountRate || 0,
-        owner: ownerAddress,
-        metadata
-      });
-      return {
-        success: true,
-        assetType: 'invoice',
-        tokenId: invAsset.id,
-        contractAddress: invAsset.tokenAddress,
-        tokensIssued: 100,
-        tokenPrice: valuation / 100
-      };
-    }
+      case 'invoice': {
+        const invAsset = await this.tokenizeInvoice({
+          invoiceNumber: metadata.invoiceNumber || 'INV-' + Date.now(),
+          issuer: metadata.issuer || ownerAddress,
+          debtor: metadata.debtor || '0xDebtor',
+          amount: valuation,
+          dueDate: metadata.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          discountRate: metadata.discountRate || 0,
+          owner: ownerAddress,
+          metadata
+        });
+        return {
+          success: true,
+          assetType: 'invoice',
+          tokenId: invAsset.id,
+          contractAddress: invAsset.tokenAddress,
+          tokensIssued: 100,
+          tokenPrice: valuation / 100
+        };
+      }
 
-    case 'art': {
-      const artAsset = await this.tokenizeArt({
-        artworkName: metadata.name,
-        artist: metadata.artist || 'Unknown',
-        year: metadata.year || new Date().getFullYear(),
-        medium: metadata.medium || 'Mixed',
-        valuation,
-        totalShares: tokensIssued,
-        owner: ownerAddress,
-        metadata
-      });
-      return {
-        success: true,
-        assetType: 'art',
-        tokenId: artAsset.id,
-        contractAddress: artAsset.tokenAddress,
-        tokensIssued,
-        tokenPrice: valuation / tokensIssued
-      };
-    }
+      case 'art': {
+        const artAsset = await this.tokenizeArt({
+          artworkName: metadata.name,
+          artist: metadata.artist || 'Unknown',
+          year: metadata.year || new Date().getFullYear(),
+          medium: metadata.medium || 'Mixed',
+          valuation,
+          totalShares: tokensIssued,
+          owner: ownerAddress,
+          metadata
+        });
+        return {
+          success: true,
+          assetType: 'art',
+          tokenId: artAsset.id,
+          contractAddress: artAsset.tokenAddress,
+          tokensIssued,
+          tokenPrice: valuation / tokensIssued
+        };
+      }
 
-    case 'security': {
-      const secAsset = await this.tokenizeSecurity({
-        securityType: metadata.securityType || 'stock',
-        issuer: metadata.issuerName || metadata.issuer || 'Company',
-        symbol: metadata.symbol || 'SHR',
-        totalSupply: tokensIssued,
-        denomination: valuation / tokensIssued,
-        owner: ownerAddress,
-        metadata
-      });
-      return {
-        success: true,
-        assetType: 'security',
-        tokenId: secAsset.id,
-        contractAddress: secAsset.tokenAddress,
-        tokensIssued,
-        tokenPrice: valuation / tokensIssued
-      };
-    }
+      case 'security': {
+        const secAsset = await this.tokenizeSecurity({
+          securityType: metadata.securityType || 'stock',
+          issuer: metadata.issuerName || metadata.issuer || 'Company',
+          symbol: metadata.symbol || 'SHR',
+          totalSupply: tokensIssued,
+          denomination: valuation / tokensIssued,
+          owner: ownerAddress,
+          metadata
+        });
+        return {
+          success: true,
+          assetType: 'security',
+          tokenId: secAsset.id,
+          contractAddress: secAsset.tokenAddress,
+          tokensIssued,
+          tokenPrice: valuation / tokensIssued
+        };
+      }
 
-    default:
-      throw new Error(`Unknown asset type: ${assetType}`);
+      default:
+        throw new Error(`Unknown asset type: ${assetType}`);
     }
   }
 
@@ -933,7 +933,9 @@ class FractionalOwnershipSystem {
       name: subTokenConfig.name || `${asset.metadata.name || assetId} Fraction`,
       totalSupply: BigInt(subTokenConfig.totalSupply || 1000000),
       decimals: subTokenConfig.decimals || 18,
-      pricePerToken: subTokenConfig.pricePerToken || (Number(asset.valuation) / Number(subTokenConfig.totalSupply)),
+      pricePerToken:
+        subTokenConfig.pricePerToken ||
+        Number(asset.valuation) / Number(subTokenConfig.totalSupply),
       ownershipPercentage: subTokenConfig.ownershipPercentage || 100, // % of parent asset
       benefits: subTokenConfig.benefits || ['voting', 'dividends', 'trading'],
       lockPeriod: subTokenConfig.lockPeriod || 0, // Lock period in seconds
@@ -946,7 +948,10 @@ class FractionalOwnershipSystem {
     subToken.tokenAddress = await this._deploySubToken(subToken);
 
     this.subTokens.set(subTokenId, subToken);
-    this.fractionalAssets.set(assetId, (this.fractionalAssets.get(assetId) || []).concat(subTokenId));
+    this.fractionalAssets.set(
+      assetId,
+      (this.fractionalAssets.get(assetId) || []).concat(subTokenId)
+    );
 
     return subToken;
   }
@@ -962,7 +967,10 @@ class FractionalOwnershipSystem {
     const totalCost = Number(amountBigInt) * subToken.pricePerToken;
 
     // Check if enough supply available
-    const currentSupply = Array.from(subToken.holders.values()).reduce((sum, bal) => sum + bal, BigInt(0));
+    const currentSupply = Array.from(subToken.holders.values()).reduce(
+      (sum, bal) => sum + bal,
+      BigInt(0)
+    );
     if (currentSupply + amountBigInt > subToken.totalSupply) {
       throw new Error('Insufficient token supply');
     }
@@ -973,7 +981,7 @@ class FractionalOwnershipSystem {
 
     // Apply lock period if specified
     if (subToken.lockPeriod > 0) {
-      subToken.lockedUntil = Date.now() + (subToken.lockPeriod * 1000);
+      subToken.lockedUntil = Date.now() + subToken.lockPeriod * 1000;
     }
 
     return {
@@ -981,7 +989,8 @@ class FractionalOwnershipSystem {
       buyer,
       amount: amountBigInt,
       totalCost,
-      ownershipPercentage: (Number(amountBigInt) / Number(subToken.totalSupply)) * (subToken.ownershipPercentage / 100)
+      ownershipPercentage:
+        (Number(amountBigInt) / Number(subToken.totalSupply)) * (subToken.ownershipPercentage / 100)
     };
   }
 
@@ -1005,7 +1014,8 @@ class FractionalOwnershipSystem {
     }
 
     // Calculate equivalent parent asset shares
-    const parentAssetShare = (Number(amountBigInt) / Number(subToken.totalSupply)) * subToken.ownershipPercentage;
+    const parentAssetShare =
+      (Number(amountBigInt) / Number(subToken.totalSupply)) * subToken.ownershipPercentage;
     const parentAsset = this.rwaTokenization.assets.get(subToken.parentAssetId);
 
     // Transfer parent asset ownership
@@ -1032,7 +1042,7 @@ class FractionalOwnershipSystem {
    */
   getFractionalOwnership(assetId) {
     const subTokens = this.fractionalAssets.get(assetId) || [];
-    return subTokens.map(id => this.subTokens.get(id)).filter(Boolean);
+    return subTokens.map((id) => this.subTokens.get(id)).filter(Boolean);
   }
 }
 
@@ -1123,7 +1133,7 @@ class RevenueSharingSystem {
     const revenueStream = this.revenueStreams.get(revenueId);
     if (!revenueStream) throw new Error('Revenue stream not found');
 
-    const undistributed = revenueStream.distributions.filter(d => !d.distributed);
+    const undistributed = revenueStream.distributions.filter((d) => !d.distributed);
     const totalToDistribute = undistributed.reduce((sum, d) => sum + d.amount, 0);
 
     if (totalToDistribute < revenueStream.minimumDistribution) {
@@ -1163,7 +1173,7 @@ class RevenueSharingSystem {
     }
 
     // Mark as distributed
-    undistributed.forEach(d => d.distributed = true);
+    undistributed.forEach((d) => (d.distributed = true));
     revenueStream.distributedRevenue += totalToDistribute;
 
     return {
@@ -1191,11 +1201,11 @@ class RevenueSharingSystem {
     const revenueStream = this.getRevenueSharing(assetId);
     if (!revenueStream) throw new Error('No revenue sharing for this asset');
 
-    const participant = revenueStream.participants.find(p => p.address === holder);
+    const participant = revenueStream.participants.find((p) => p.address === holder);
     if (!participant) throw new Error('Holder not eligible for revenue sharing');
 
     // Calculate claimable amount
-    const undistributed = revenueStream.distributions.filter(d => !d.distributed);
+    const undistributed = revenueStream.distributions.filter((d) => !d.distributed);
     const totalUndistributed = undistributed.reduce((sum, d) => sum + d.amount, 0);
     const claimableAmount = (participant.percentage / 100) * totalUndistributed;
 
@@ -1210,7 +1220,7 @@ class RevenueSharingSystem {
     });
 
     // Mark distributions as claimed for this holder
-    undistributed.forEach(d => {
+    undistributed.forEach((d) => {
       d.claimedBy = d.claimedBy || new Map();
       d.claimedBy.set(holder, (participant.percentage / 100) * d.amount);
     });
@@ -1228,7 +1238,7 @@ class RevenueSharingSystem {
    */
   async _executeDistribution(distribution) {
     // Simulate blockchain transaction
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     return `0x${crypto.randomBytes(32).toString('hex')}`;
   }
 }
@@ -1391,7 +1401,7 @@ class AssetInsuranceSystem {
     riskMultiplier *= coverageMultipliers[policy.coverageType] || 1.0;
 
     // Adjust based on risk factors
-    riskMultiplier *= (1 + policy.riskFactors.length * 0.1);
+    riskMultiplier *= 1 + policy.riskFactors.length * 0.1;
 
     return basePremium * riskMultiplier;
   }
@@ -1400,10 +1410,11 @@ class AssetInsuranceSystem {
    * Get insurance coverage for asset
    */
   getInsuranceCoverage(assetId) {
-    const policies = Array.from(this.insurancePolicies.values())
-      .filter(policy => policy.assetId === assetId && policy.status === 'active');
+    const policies = Array.from(this.insurancePolicies.values()).filter(
+      (policy) => policy.assetId === assetId && policy.status === 'active'
+    );
 
-    return policies.map(policy => ({
+    return policies.map((policy) => ({
       policyId: policy.id,
       coverageAmount: policy.coverageAmount,
       coverageType: policy.coverageType,
@@ -1451,7 +1462,7 @@ class SecondaryMarketSystem {
       pricePerUnit: price / Number(amount),
       status: 'active',
       createdAt: Date.now(),
-      expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
+      expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
       asset
     };
 
@@ -1576,7 +1587,11 @@ class SecondaryMarketSystem {
       );
 
       // Record trade
-      this.recordTrade(auction.assetId, auction.currentBid / Number(auction.amount), Number(auction.amount));
+      this.recordTrade(
+        auction.assetId,
+        auction.currentBid / Number(auction.amount),
+        Number(auction.amount)
+      );
 
       this.marketStats.totalVolume += auction.currentBid;
       this.marketStats.totalTrades++;
@@ -1612,8 +1627,8 @@ class SecondaryMarketSystem {
       const history = this.priceHistory.get(assetId) || [];
       if (history.length === 0) return { assetId, noData: true };
 
-      const prices = history.map(h => h.price);
-      const volumes = history.map(h => h.volume);
+      const prices = history.map((h) => h.price);
+      const volumes = history.map((h) => h.volume);
 
       return {
         assetId,
@@ -1628,7 +1643,8 @@ class SecondaryMarketSystem {
 
     return {
       ...this.marketStats,
-      activeAuctions: Array.from(this.auctions.values()).filter(a => a.status === 'active').length,
+      activeAuctions: Array.from(this.auctions.values()).filter((a) => a.status === 'active')
+        .length,
       activeListings: this.marketStats.activeListings
     };
   }
@@ -1638,7 +1654,7 @@ class SecondaryMarketSystem {
    */
   calculatePriceChange(history, periodMs) {
     const cutoff = Date.now() - periodMs;
-    const recentPrices = history.filter(h => h.timestamp >= cutoff);
+    const recentPrices = history.filter((h) => h.timestamp >= cutoff);
 
     if (recentPrices.length < 2) return 0;
 
@@ -1652,13 +1668,13 @@ class SecondaryMarketSystem {
    * Get active listings
    */
   getActiveListings(assetId = null) {
-    let listings = Array.from(this.marketOrders.values()).filter(l => l.status === 'active');
+    let listings = Array.from(this.marketOrders.values()).filter((l) => l.status === 'active');
 
     if (assetId) {
-      listings = listings.filter(l => l.assetId === assetId);
+      listings = listings.filter((l) => l.assetId === assetId);
     }
 
-    return listings.map(listing => ({
+    return listings.map((listing) => ({
       ...listing,
       timeRemaining: Math.max(0, listing.expiresAt - Date.now())
     }));
@@ -1668,13 +1684,13 @@ class SecondaryMarketSystem {
    * Get active auctions
    */
   getActiveAuctions(assetId = null) {
-    let auctions = Array.from(this.auctions.values()).filter(a => a.status === 'active');
+    let auctions = Array.from(this.auctions.values()).filter((a) => a.status === 'active');
 
     if (assetId) {
-      auctions = auctions.filter(a => a.status === 'active');
+      auctions = auctions.filter((a) => a.status === 'active');
     }
 
-    return auctions.map(auction => ({
+    return auctions.map((auction) => ({
       ...auction,
       timeRemaining: Math.max(0, auction.endTime - Date.now()),
       bidCount: auction.bids.length
@@ -1682,4 +1698,10 @@ class SecondaryMarketSystem {
   }
 }
 
-export { RWATokenization, FractionalOwnershipSystem, RevenueSharingSystem, AssetInsuranceSystem, SecondaryMarketSystem };
+export {
+  RWATokenization,
+  FractionalOwnershipSystem,
+  RevenueSharingSystem,
+  AssetInsuranceSystem,
+  SecondaryMarketSystem
+};

@@ -44,7 +44,7 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
           noWrap
           component="div"
           sx={{
-            fontFamily: '\'Orbitron\', sans-serif',
+            fontFamily: "'Orbitron', sans-serif",
             fontWeight: 700,
             letterSpacing: '1px',
             background: 'linear-gradient(45deg, #00eaff, #4ecdc4)',

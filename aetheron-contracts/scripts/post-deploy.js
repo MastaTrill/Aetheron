@@ -135,8 +135,11 @@ async function verifyOwnership(hre, addresses, requestedPhase) {
   if (!['propose', 'verify'].includes(phase)) {
     throw new Error('OWNERSHIP_PHASE must be propose or verify');
   }
-  if (!addresses.timelock || !hre.ethers.isAddress(addresses.timelock) ||
-        addresses.timelock.toLowerCase() === hre.ethers.ZeroAddress.toLowerCase()) {
+  if (
+    !addresses.timelock ||
+    !hre.ethers.isAddress(addresses.timelock) ||
+    addresses.timelock.toLowerCase() === hre.ethers.ZeroAddress.toLowerCase()
+  ) {
     throw new Error('A valid timelock address is required');
   }
   const pending = [];

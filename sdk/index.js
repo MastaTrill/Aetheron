@@ -1,7 +1,8 @@
 // Official Developer SDK for Aetheron Protocol
 import WebSocketClient from 'ws';
 
-const WsImplementation = typeof globalThis.WebSocket !== 'undefined' ? globalThis.WebSocket : WebSocketClient;
+const WsImplementation =
+  typeof globalThis.WebSocket !== 'undefined' ? globalThis.WebSocket : WebSocketClient;
 
 export class AetheronSDK {
   constructor(config = {}) {

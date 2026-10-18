@@ -30,25 +30,25 @@ function initConnection(ws) {
 function handleMessage(ws, data) {
   const msg = JSON.parse(data);
   switch (msg.type) {
-  case 'CHAIN':
-    if (msg.data.length > chain.chain.length && chain.isChainValid(msg.data)) {
-      chain.chain = msg.data;
+    case 'CHAIN':
+      if (msg.data.length > chain.chain.length && chain.isChainValid(msg.data)) {
+        chain.chain = msg.data;
+      }
+      break;
+    case 'TX': {
+      // Accept new transaction
+      const tx = Object.assign(new Transaction(), msg.data);
+      chain.addTransaction(tx);
+      break;
     }
-    break;
-  case 'TX': {
-    // Accept new transaction
-    const tx = Object.assign(new Transaction(), msg.data);
-    chain.addTransaction(tx);
-    break;
-  }
-  case 'BLOCK':
-    // Accept new block
-    // (simple version, real implementation should check validity and fork)
-    if (msg.data.previousHash === chain.getLatestBlock().hash) {
-      chain.chain.push(msg.data);
-      chain.pendingTransactions = [];
-    }
-    break;
+    case 'BLOCK':
+      // Accept new block
+      // (simple version, real implementation should check validity and fork)
+      if (msg.data.previousHash === chain.getLatestBlock().hash) {
+        chain.chain.push(msg.data);
+        chain.pendingTransactions = [];
+      }
+      break;
   }
 }
 

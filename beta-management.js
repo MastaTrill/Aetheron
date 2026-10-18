@@ -68,12 +68,13 @@ app.get('/api/beta/stats', (req, res) => {
   betaData.program.currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 4);
 
   betaData.analytics.totalApplications = betaData.applications.length;
-  betaData.analytics.activeTesters = betaData.testers.filter(t => t.status === 'active').length;
+  betaData.analytics.activeTesters = betaData.testers.filter((t) => t.status === 'active').length;
   betaData.analytics.totalFeedback = betaData.feedback.length;
   betaData.analytics.totalBugs = betaData.bugs.length;
 
   if (betaData.feedback.length > 0) {
-    betaData.analytics.averageRating = betaData.feedback.reduce((sum, f) => sum + f.rating, 0) / betaData.feedback.length;
+    betaData.analytics.averageRating =
+      betaData.feedback.reduce((sum, f) => sum + f.rating, 0) / betaData.feedback.length;
   }
 
   res.json({
@@ -109,7 +110,8 @@ app.post('/api/beta/apply', (req, res) => {
   betaData.applications.push(application);
 
   // Auto-approve for now (in production, this would be manual)
-  if (betaData.testers.length < 200) { // Cap at 200 testers
+  if (betaData.testers.length < 200) {
+    // Cap at 200 testers
     const tester = {
       ...application,
       status: 'active',
@@ -127,9 +129,10 @@ app.post('/api/beta/apply', (req, res) => {
 
   res.json({
     success: true,
-    message: application.status === 'approved' ?
-      'Application approved! Welcome to the beta program!' :
-      'Application submitted. We\'ll review it shortly.',
+    message:
+      application.status === 'approved'
+        ? 'Application approved! Welcome to the beta program!'
+        : "Application submitted. We'll review it shortly.",
     id: application.id,
     status: application.status
   });
@@ -161,7 +164,7 @@ app.post('/api/beta/feedback', (req, res) => {
   betaData.feedback.push(feedbackItem);
 
   // Update tester stats
-  const tester = betaData.testers.find(t => t.id == testerId);
+  const tester = betaData.testers.find((t) => t.id == testerId);
   if (tester) {
     tester.feedbackCount++;
     tester.points += 10; // Daily feedback points
@@ -170,7 +173,7 @@ app.post('/api/beta/feedback', (req, res) => {
 
   // Process bugs
   if (issues && issues.length > 0) {
-    issues.forEach(issue => {
+    issues.forEach((issue) => {
       const bug = {
         id: Date.now() + Math.random(),
         timestamp: new Date().toISOString(),
@@ -199,7 +202,7 @@ app.post('/api/beta/feedback', (req, res) => {
 });
 
 app.get('/api/beta/testers', (req, res) => {
-  const testers = betaData.testers.map(t => ({
+  const testers = betaData.testers.map((t) => ({
     id: t.id,
     name: t.name,
     discord: t.discord,
@@ -219,7 +222,7 @@ app.get('/api/beta/testers', (req, res) => {
 
 app.get('/api/beta/leaderboard', (req, res) => {
   const leaderboard = betaData.testers
-    .filter(t => t.status === 'active')
+    .filter((t) => t.status === 'active')
     .sort((a, b) => b.points - a.points)
     .slice(0, 20)
     .map((t, index) => ({

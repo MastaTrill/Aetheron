@@ -72,8 +72,8 @@ function updateTransactionsList() {
         <span class="transaction-amount">${tx.type === 'send' ? '-' : '+'}${tx.amount} AETH</span>
       </div>
       <div class="transaction-address">${tx.type === 'send' ? 'To' : 'From'}: ${formatAddress(
-  tx.address
-)}</div>
+        tx.address
+      )}</div>
     </div>
   `
     )

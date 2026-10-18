@@ -46,32 +46,32 @@ window.addEventListener('message', async (event) => {
  */
 async function handleRequest(method, params) {
   switch (method) {
-  case 'eth_requestAccounts':
-    return await requestAccounts();
+    case 'eth_requestAccounts':
+      return await requestAccounts();
 
-  case 'eth_accounts':
-    return await getAccounts();
+    case 'eth_accounts':
+      return await getAccounts();
 
-  case 'eth_chainId':
-    return '0x1'; // Aetheron mainnet
+    case 'eth_chainId':
+      return '0x1'; // Aetheron mainnet
 
-  case 'eth_getBalance':
-    return await getBalance(params[0]);
+    case 'eth_getBalance':
+      return await getBalance(params[0]);
 
-  case 'eth_sendTransaction':
-    return await sendTransaction(params[0]);
+    case 'eth_sendTransaction':
+      return await sendTransaction(params[0]);
 
-  case 'eth_sign':
-    return await signMessage(params[1]);
+    case 'eth_sign':
+      return await signMessage(params[1]);
 
-  case 'personal_sign':
-    return await signMessage(params[0]);
+    case 'personal_sign':
+      return await signMessage(params[0]);
 
-  case 'eth_signTypedData_v4':
-    return await signTypedData(params[1]);
+    case 'eth_signTypedData_v4':
+      return await signTypedData(params[1]);
 
-  default:
-    throw new Error(`Unsupported method: ${method}`);
+    default:
+      throw new Error(`Unsupported method: ${method}`);
   }
 }
 

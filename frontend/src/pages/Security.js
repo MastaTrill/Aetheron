@@ -100,33 +100,33 @@ const Security = () => {
 
   const getSeverityColor = (severity) => {
     switch (severity.toLowerCase()) {
-    case 'critical':
-      return '#f44336';
-    case 'high':
-      return '#ff9800';
-    case 'medium':
-      return '#ff9800';
-    case 'low':
-      return '#4caf50';
-    default:
-      return '#9e9e9e';
+      case 'critical':
+        return '#f44336';
+      case 'high':
+        return '#ff9800';
+      case 'medium':
+        return '#ff9800';
+      case 'low':
+        return '#4caf50';
+      default:
+        return '#9e9e9e';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-    case 'active':
-      return '#f44336';
-    case 'resolved':
-      return '#4caf50';
-    case 'investigating':
-      return '#ff9800';
-    case 'passed':
-      return '#4caf50';
-    case 'failed':
-      return '#f44336';
-    default:
-      return '#9e9e9e';
+      case 'active':
+        return '#f44336';
+      case 'resolved':
+        return '#4caf50';
+      case 'investigating':
+        return '#ff9800';
+      case 'passed':
+        return '#4caf50';
+      case 'failed':
+        return '#f44336';
+      default:
+        return '#9e9e9e';
     }
   };
 

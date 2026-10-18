@@ -355,28 +355,28 @@ class DeFiLending {
       try {
         let result;
         switch (op.type) {
-        case 'swap': {
-          // Ensure pool exists for swap
-          const poolKey1 = `${op.from}-${op.to}`;
-          const poolKey2 = `${op.to}-${op.from}`;
-          if (!this.liquidityPools[poolKey1] && !this.liquidityPools[poolKey2]) {
-            // Create a default pool for testing
-            await this.addLiquidity(op.from, op.to, 100, 200000);
+          case 'swap': {
+            // Ensure pool exists for swap
+            const poolKey1 = `${op.from}-${op.to}`;
+            const poolKey2 = `${op.to}-${op.from}`;
+            if (!this.liquidityPools[poolKey1] && !this.liquidityPools[poolKey2]) {
+              // Create a default pool for testing
+              await this.addLiquidity(op.from, op.to, 100, 200000);
+            }
+            result = await this.swap(op.from, op.to, op.amount, 50); // Higher slippage for batch
+            gasUsed += 50000; // Simulated gas
+            break;
           }
-          result = await this.swap(op.from, op.to, op.amount, 50); // Higher slippage for batch
-          gasUsed += 50000; // Simulated gas
-          break;
-        }
-        case 'stake':
-          result = await this.stake(op.token, op.amount, op.days);
-          gasUsed += 30000;
-          break;
-        case 'addLiquidity':
-          result = await this.addLiquidity(op.token1, op.token2, op.amount1, op.amount2);
-          gasUsed += 60000;
-          break;
-        default:
-          throw new Error(`Unknown operation type: ${op.type}`);
+          case 'stake':
+            result = await this.stake(op.token, op.amount, op.days);
+            gasUsed += 30000;
+            break;
+          case 'addLiquidity':
+            result = await this.addLiquidity(op.token1, op.token2, op.amount1, op.amount2);
+            gasUsed += 60000;
+            break;
+          default:
+            throw new Error(`Unknown operation type: ${op.type}`);
         }
         results.push(result);
       } catch (error) {

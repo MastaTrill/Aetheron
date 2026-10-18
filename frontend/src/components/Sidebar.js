@@ -65,7 +65,7 @@ const Sidebar = ({ open, currentPage, setCurrentPage }) => {
           <Typography
             variant="h6"
             sx={{
-              fontFamily: '\'Orbitron\', sans-serif',
+              fontFamily: "'Orbitron', sans-serif",
               fontWeight: 700,
               background: 'linear-gradient(45deg, #00eaff, #4ecdc4)',
               backgroundClip: 'text',

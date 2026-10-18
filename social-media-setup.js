@@ -72,9 +72,9 @@ const setupSteps = [
 ];
 
 // Display setup guide
-setupSteps.forEach(platform => {
+setupSteps.forEach((platform) => {
   console.log(`📱 ${platform.platform} Setup:`);
-  platform.steps.forEach(step => {
+  platform.steps.forEach((step) => {
     console.log(`   ${step}`);
   });
   console.log('');

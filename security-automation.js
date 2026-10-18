@@ -63,16 +63,16 @@ class ContractFuzzer {
   generateRandomInputs(parameters) {
     return parameters.map((param) => {
       switch (param.type) {
-      case 'uint256':
-        return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-      case 'address':
-        return `0x${crypto.randomBytes(20).toString('hex')}`;
-      case 'bool':
-        return Math.random() > 0.5;
-      case 'string':
-        return crypto.randomBytes(16).toString('hex');
-      default:
-        return null;
+        case 'uint256':
+          return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+        case 'address':
+          return `0x${crypto.randomBytes(20).toString('hex')}`;
+        case 'bool':
+          return Math.random() > 0.5;
+        case 'string':
+          return crypto.randomBytes(16).toString('hex');
+        default:
+          return null;
       }
     });
   }
@@ -366,10 +366,7 @@ class SecurityMonitor {
 
 const program = new Command();
 
-program
-  .name('security')
-  .description('Aetheron Security Automation CLI')
-  .version('1.0.0');
+program.name('security').description('Aetheron Security Automation CLI').version('1.0.0');
 
 program
   .command('scan')
@@ -502,9 +499,4 @@ program
 
 program.parse();
 
-export {
-  ContractFuzzer,
-  PenetrationTester,
-  VulnerabilityScanner,
-  SecurityMonitor
-};
+export { ContractFuzzer, PenetrationTester, VulnerabilityScanner, SecurityMonitor };

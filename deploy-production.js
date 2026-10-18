@@ -35,7 +35,7 @@ try {
   ];
 
   let allFilesExist = true;
-  coreFiles.forEach(file => {
+  coreFiles.forEach((file) => {
     if (fs.existsSync(file)) {
       console.log(`   ✅ ${file}`);
     } else {
@@ -50,10 +50,10 @@ try {
 
   // Check syntax of core modules
   console.log('\n🔧 Checking module syntax...');
-  const modulesToCheck = coreFiles.filter(f => f.endsWith('.js'));
+  const modulesToCheck = coreFiles.filter((f) => f.endsWith('.js'));
   let syntaxOk = true;
 
-  modulesToCheck.forEach(file => {
+  modulesToCheck.forEach((file) => {
     try {
       require.resolve(`./${file}`);
       console.log(`   ✅ ${file} syntax OK`);
@@ -68,7 +68,6 @@ try {
   }
 
   console.log('✅ Pre-deployment checks passed\n');
-
 } catch (error) {
   console.log(`❌ Pre-deployment check failed: ${error.message}`);
   process.exit(1);
@@ -121,7 +120,7 @@ try {
     'developer-experience.js'
   ];
 
-  essentialFiles.forEach(file => {
+  essentialFiles.forEach((file) => {
     if (fs.existsSync(file)) {
       fs.copyFileSync(file, `dist/${file}`);
       console.log(`   📋 Copied ${file}`);
@@ -129,7 +128,6 @@ try {
   });
 
   console.log('✅ Build optimization complete\n');
-
 } catch (error) {
   console.log(`❌ Build optimization failed: ${error.message}`);
   process.exit(1);
@@ -165,7 +163,6 @@ INFURA_PROJECT_ID=your_infura_id
   fs.writeFileSync(`.env.${env}`, envContent);
   console.log(`   📝 Created .env.${env} file`);
   console.log('✅ Environment setup complete\n');
-
 } catch (error) {
   console.log(`❌ Environment setup failed: ${error.message}`);
   process.exit(1);
@@ -188,7 +185,6 @@ try {
   }
 
   console.log('✅ Deployment preparation complete\n');
-
 } catch (error) {
   console.log(`❌ Deployment failed: ${error.message}`);
   process.exit(1);

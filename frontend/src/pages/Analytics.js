@@ -68,15 +68,15 @@ const Analytics = () => {
   // Device data for pie chart (from real metrics if available)
   const deviceData = realtimeMetrics?.data?.users?.geographicDistribution
     ? Object.entries(realtimeMetrics.data.users.geographicDistribution).map(([name, value], i) => ({
-      name,
-      value: Math.round(value),
-      color: ['#00eaff', '#4ecdc4', '#ffd93d', '#ff6b6b'][i % 4]
-    }))
+        name,
+        value: Math.round(value),
+        color: ['#00eaff', '#4ecdc4', '#ffd93d', '#ff6b6b'][i % 4]
+      }))
     : [
-      { name: 'Desktop', value: 45, color: '#00eaff' },
-      { name: 'Mobile', value: 35, color: '#4ecdc4' },
-      { name: 'Tablet', value: 20, color: '#ffd93d' }
-    ];
+        { name: 'Desktop', value: 45, color: '#00eaff' },
+        { name: 'Mobile', value: 35, color: '#4ecdc4' },
+        { name: 'Tablet', value: 20, color: '#ffd93d' }
+      ];
 
   // Revenue mock data for bar chart
   const revenueDataMock = [
@@ -381,9 +381,9 @@ const Analytics = () => {
                   data={
                     crossChainMetrics?.chains
                       ? Object.entries(crossChainMetrics.chains).map(([name, d]) => ({
-                        name,
-                        tvl: d.tvl
-                      }))
+                          name,
+                          tvl: d.tvl
+                        }))
                       : []
                   }
                 >

@@ -13,20 +13,36 @@ module.exports = {
       url: process.env.BASE_RPC_URL || '',
       chainId: 8453,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: 'auto', timeout: 120000
+      gasPrice: 'auto',
+      timeout: 120000
     },
     base_sepolia: {
       url: process.env.BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org',
       chainId: 84532,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: 'auto', timeout: 60000
+      gasPrice: 'auto',
+      timeout: 60000
     }
   },
   etherscan: {
-    apiKey: { base: process.env.BASESCAN_API_KEY || '', baseSepolia: process.env.BASESCAN_API_KEY || '' },
+    apiKey: {
+      base: process.env.BASESCAN_API_KEY || '',
+      baseSepolia: process.env.BASESCAN_API_KEY || ''
+    },
     customChains: [
-      { network: 'base', chainId: 8453, urls: { apiURL: 'https://api.basescan.org/api', browserURL: 'https://basescan.org' } },
-      { network: 'baseSepolia', chainId: 84532, urls: { apiURL: 'https://api-sepolia.basescan.org/api', browserURL: 'https://sepolia.basescan.org' } }
+      {
+        network: 'base',
+        chainId: 8453,
+        urls: { apiURL: 'https://api.basescan.org/api', browserURL: 'https://basescan.org' }
+      },
+      {
+        network: 'baseSepolia',
+        chainId: 84532,
+        urls: {
+          apiURL: 'https://api-sepolia.basescan.org/api',
+          browserURL: 'https://sepolia.basescan.org'
+        }
+      }
     ]
   },
   gasReporter: { enabled: process.env.REPORT_GAS === 'true', currency: 'USD' },

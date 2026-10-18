@@ -82,7 +82,7 @@ Object.entries(announcements).forEach(([key, platform]) => {
   console.log(platform.content.substring(0, 200) + '...\n');
 
   console.log('Posting Instructions:');
-  platform.instructions.forEach(instruction => {
+  platform.instructions.forEach((instruction) => {
     console.log(`   ${instruction}`);
   });
   console.log('');

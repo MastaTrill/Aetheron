@@ -7,6 +7,7 @@
 Aetheron combines traditional DeFi yield farming with engaging gaming mechanics, powered by cutting-edge blockchain technology:
 
 ### 🎯 Key Features:
+
 - **Real-time TVL Simulation:** Grow virtual TVL from $100 to $1M+ through strategic gameplay
 - **Multi-Chain Support:** ETH, Base, Polygon, Solana with seamless bridging
 - **Account Abstraction:** Gasless transactions with social login (Google, Discord, email)
@@ -14,6 +15,7 @@ Aetheron combines traditional DeFi yield farming with engaging gaming mechanics,
 - **Enterprise Features:** RWA tokenization, DAO governance, institutional security
 
 ### 📊 Technical Specs:
+
 - ✅ 165/165 unit tests passing
 - ✅ Production deployment on Netlify
 - ✅ PostgreSQL database with real-time sync
@@ -25,6 +27,7 @@ Aetheron combines traditional DeFi yield farming with engaging gaming mechanics,
 **Live Demo:** https://aetheron.online
 
 Experience the platform firsthand:
+
 - Test TVL growth mechanics
 - Switch between blockchain networks
 - Use account abstraction for gasless transactions
@@ -41,6 +44,7 @@ We're actively looking for beta testers and community feedback!
 ## 🚀 Why Aetheron Matters
 
 This isn't just another DeFi platform—it's the first to successfully combine:
+
 1. **Gaming Mechanics** with real DeFi principles
 2. **Account Abstraction** for mainstream adoption
 3. **Multi-Chain Interoperability** for maximum flexibility

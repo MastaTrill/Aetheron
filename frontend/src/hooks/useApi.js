@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 
 const ApiContext = createContext();
 
-const API_BASE_URL =
-  process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
 
 const getToken = () => localStorage.getItem('aetheron_token');
 
@@ -37,9 +36,7 @@ const request = async (path, { method = 'GET', body, timeout = 10000 } = {}) => 
     });
 
     const contentType = response.headers.get('content-type') || '';
-    const payload = contentType.includes('application/json')
-      ? await response.json()
-      : null;
+    const payload = contentType.includes('application/json') ? await response.json() : null;
 
     if (response.status === 401) {
       redirectToLogin();

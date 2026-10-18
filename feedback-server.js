@@ -52,7 +52,16 @@ app.get('/api/feedback/stats', (req, res) => {
 });
 
 app.post('/api/feedback/submit', (req, res) => {
-  const { name, email, rating, category, platform, feedback: userFeedback, issues, suggestions } = req.body;
+  const {
+    name,
+    email,
+    rating,
+    category,
+    platform,
+    feedback: userFeedback,
+    issues,
+    suggestions
+  } = req.body;
 
   if (!rating || !category || !userFeedback) {
     return res.status(400).json({
@@ -92,10 +101,17 @@ app.post('/api/feedback/submit', (req, res) => {
 
   // Save to file
   try {
-    fs.writeFileSync(feedbackFile, JSON.stringify({
-      feedback,
-      stats: feedbackStats
-    }, null, 2));
+    fs.writeFileSync(
+      feedbackFile,
+      JSON.stringify(
+        {
+          feedback,
+          stats: feedbackStats
+        },
+        null,
+        2
+      )
+    );
   } catch (error) {
     console.log('Could not save feedback:', error.message);
   }

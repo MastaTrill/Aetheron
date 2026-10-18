@@ -26,12 +26,15 @@ require('dotenv').config();
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
   console.log('Deploying Aetheron contracts with account:', deployer.address);
-  console.log('Account balance:', (await hre.ethers.provider.getBalance(deployer.address)).toString());
+  console.log(
+    'Account balance:',
+    (await hre.ethers.provider.getBalance(deployer.address)).toString()
+  );
 
   const sovereignMultisig = process.env.SOVEREIGN_MULTISIG || deployer.address;
-  const guardianMultisig  = process.env.GUARDIAN_MULTISIG || deployer.address;
-  const initialSupply     = process.env.INITIAL_SUPPLY || '100000000000000000000000000'; // 100M AETH
-  const epochLength       = parseInt(process.env.EPOCH_LENGTH || '403200');
+  const guardianMultisig = process.env.GUARDIAN_MULTISIG || deployer.address;
+  const initialSupply = process.env.INITIAL_SUPPLY || '100000000000000000000000000'; // 100M AETH
+  const epochLength = parseInt(process.env.EPOCH_LENGTH || '403200');
 
   // ──────────────────────────────────────────────
   // 1. Deploy AetheronToken
@@ -68,7 +71,12 @@ async function main() {
   console.log('\n[4/8] Deploying Treasury...');
   const treasuryCap = hre.ethers.parseEther('200000000'); // 200M AETH cap
   const Treasury = await hre.ethers.getContractFactory('Treasury');
-  const treasury = await Treasury.deploy(sovereignMultisig, aethAddr, guardianMultisig, treasuryCap);
+  const treasury = await Treasury.deploy(
+    sovereignMultisig,
+    aethAddr,
+    guardianMultisig,
+    treasuryCap
+  );
   await treasury.waitForDeployment();
   const treasuryAddr = await treasury.getAddress();
   console.log('  Treasury deployed to:', treasuryAddr);
@@ -81,8 +89,13 @@ async function main() {
   const currentBlock = await hre.ethers.provider.getBlockNumber();
   const EpochManager = await hre.ethers.getContractFactory('EpochManager');
   const epochManager = await EpochManager.deploy(
-    sovereignMultisig, aethAddr, keeperAddr, treasuryAddr,
-    epochLength, emissionPerEpoch, currentBlock + 10
+    sovereignMultisig,
+    aethAddr,
+    keeperAddr,
+    treasuryAddr,
+    epochLength,
+    emissionPerEpoch,
+    currentBlock + 10
   );
   await epochManager.waitForDeployment();
   const epochAddr = await epochManager.getAddress();
@@ -105,7 +118,11 @@ async function main() {
   const rpcEndpoint = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
   const L3Relay = await hre.ethers.getContractFactory('L3Relay');
   const l3Relay = await L3Relay.deploy(
-    sovereignMultisig, keeperAddr, sentinelAddr, guardianMultisig, rpcEndpoint
+    sovereignMultisig,
+    keeperAddr,
+    sentinelAddr,
+    guardianMultisig,
+    rpcEndpoint
   );
   await l3Relay.waitForDeployment();
   const l3Addr = await l3Relay.getAddress();
@@ -121,19 +138,19 @@ async function main() {
     timelockDelay,
     [sovereignMultisig], // proposers
     [sovereignMultisig, hre.ethers.ZeroAddress], // executors (anyone can execute)
-    sovereignMultisig    // admin
+    sovereignMultisig // admin
   );
   await timelock.waitForDeployment();
   const timelockAddr = await timelock.getAddress();
 
   const AetherGovernor = await hre.ethers.getContractFactory('AetherGovernor');
   const governor = await AetherGovernor.deploy(
-    aethAddr,      // IVotes token
-    timelockAddr,  // TimelockController
-    7200,          // votingDelay (~1 day in blocks)
-    50400,         // votingPeriod (~1 week in blocks)
+    aethAddr, // IVotes token
+    timelockAddr, // TimelockController
+    7200, // votingDelay (~1 day in blocks)
+    50400, // votingPeriod (~1 week in blocks)
     hre.ethers.parseEther('100000'), // proposalThreshold (100K AETH)
-    4              // quorumNumerator (4%)
+    4 // quorumNumerator (4%)
   );
   await governor.waitForDeployment();
   const governorAddr = await governor.getAddress();
@@ -163,10 +180,7 @@ async function main() {
 
   const deploymentsDir = path.join(__dirname, '..', 'deployments');
   if (!fs.existsSync(deploymentsDir)) fs.mkdirSync(deploymentsDir, { recursive: true });
-  fs.writeFileSync(
-    path.join(deploymentsDir, 'addresses.json'),
-    JSON.stringify(addresses, null, 2)
-  );
+  fs.writeFileSync(path.join(deploymentsDir, 'addresses.json'), JSON.stringify(addresses, null, 2));
   console.log('\n✅ All contracts deployed. Addresses written to deployments/addresses.json');
   console.log('\n⚠️  Run post-deploy.js next to wire roles and transfer ownership.');
 }
