@@ -87,7 +87,7 @@ app.get('/health', (req, res) => {
 // Newsletter input validation. Subscription delivery requires a configured provider.
 app.post('/api/newsletter/subscribe', (req, res) => {
   const email = req.body?.email;
-  if (typeof email !== 'string' || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+  if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ success: false, error: 'Invalid email address' });
   }
   return res.status(503).json({ success: false, error: 'Newsletter service unavailable' });
