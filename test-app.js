@@ -92,6 +92,18 @@ app.post('/api/newsletter/subscribe', (req, res) => {
   return res.status(503).json({ success: false, error: 'Newsletter service unavailable' });
 });
 
+// AI query validation is available even when the AI provider is not configured.
+app.post('/api/ai/query', (req, res) => {
+  const query = req.body?.query;
+  if (typeof query !== 'string' || !query.trim()) {
+    return res.status(400).json({ success: false, error: 'Query is required' });
+  }
+  if (query.length > 1000) {
+    return res.status(400).json({ success: false, error: 'Query is too long' });
+  }
+  return res.status(503).json({ success: false, error: 'AI provider unavailable' });
+});
+
 // Routes
 app.get('/', (req, res) => {
   // Serve the actual admin dashboard HTML for E2E tests
