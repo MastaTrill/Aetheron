@@ -6,11 +6,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "node --watch server.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:unit": "jest --testPathPattern=tests/unit",
-    "test:integration": "jest --testPathPattern=tests/integration",
+    "test:unit": "jest --testPathPatterns=tests/unit",
+    "test:integration": "jest --testPathPatterns=tests/integration",
     "test:e2e": "playwright test",
     "db:migrate": "npx drizzle-kit migrate",
     "db:seed": "node database/seed.js",
@@ -52,9 +52,6 @@
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
     "@netlify/neon": "^0.1.0",
-    "@react-native-async-storage/async-storage": "^2.2.0",
-    "@react-navigation/native": "^7.1.10",
-    "@react-navigation/native-stack": "^7.3.14",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "bcryptjs": "^2.4.3",
@@ -79,18 +76,13 @@
     "qrcode-terminal": "^0.12.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-native-camera": "^4.2.1",
-    "react-native-permissions": "^5.4.1",
-    "react-native-qrcode-svg": "^6.3.15",
-    "react-native-safe-area-context": "^5.4.1",
-    "react-native-screens": "^4.11.1",
     "recharts": "^3.6.0",
-    "sequelize": "^6.35.2",
+    "sequelize": "^6.37.8",
     "helmet": "^7.1.0",
     "sanitize-html": "^2.13.0",
     "socket.io-client": "^4.8.3",
     "speakeasy": "^2.0.0",
-    "sqlite3": "^5.1.7",
+    "sqlite3": "^6.0.1",
     "stripe": "^14.25.0",
     "table": "^6.9.0"
   },
@@ -102,16 +94,14 @@
     "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
     "@nomicfoundation/hardhat-ethers": "^3.1.3",
     "@nomicfoundation/hardhat-network-helpers": "^1.1.2",
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@nomicfoundation/hardhat-verify": "^2.1.3",
     "@playwright/test": "^1.40.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.2.0",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.20",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.10",
     "@types/testing-library__react": "^10.0.1",
     "babel-loader": "^10.0.0",
@@ -122,11 +112,8 @@
     "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.37.5",
     "hardhat": "^2.19.4",
-    "hardhat-gas-reporter": "^1.0.10",
     "html-webpack-plugin": "^5.6.5",
-    "jest": "^29.7.0",
-    "nodemon": "^3.0.2",
-    "solidity-coverage": "^0.8.17",
+    "jest": "^30.5.2",
     "style-loader": "^4.0.0",
     "supertest": "^6.3.3",
     "ts-node": "^10.9.2",
@@ -134,7 +121,6 @@
     "typescript": "^5.9.3",
     "webpack": "^5.104.1",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2",
     "ws": "^8.19.0"
   },
   "keywords": [
@@ -150,5 +136,20 @@
     "multichain"
   ],
   "author": "Aetheron Team",
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "hardhat": {
+      "adm-zip": "^0.6.1",
+      "undici": "^6.29.1"
+    },
+    "@nomicfoundation/hardhat-verify": {
+      "undici": "^6.29.1"
+    },
+    "mocha": {
+      "serialize-javascript": "^7.1.2"
+    },
+    "solc": {
+      "tmp": "^0.2.7"
+    }
+  }
 }
