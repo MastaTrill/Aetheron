@@ -7,7 +7,9 @@ class SmartContract {
   execute(context) {
     // context: { sender, receiver, amount, blockchain }
     if (typeof this.code !== 'function') {
-      throw new Error('String-based smart contract execution is disabled. Provide a callable function instead.');
+      throw new Error(
+        'String-based smart contract execution is disabled. Provide a callable function instead.'
+      );
     }
 
     return this.code(context);

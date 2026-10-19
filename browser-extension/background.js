@@ -38,26 +38,26 @@ chrome.alarms.onAlarm.addListener((alarm) => {
  */
 async function handleMessage(request, sender) {
   switch (request.action) {
-  case 'createWallet':
-    return { wallet: await createWallet() };
+    case 'createWallet':
+      return { wallet: await createWallet() };
 
-  case 'importWallet':
-    return { wallet: await importWallet(request.data.privateKey) };
+    case 'importWallet':
+      return { wallet: await importWallet(request.data.privateKey) };
 
-  case 'exportPrivateKey':
-    return { privateKey: await exportPrivateKey() };
+    case 'exportPrivateKey':
+      return { privateKey: await exportPrivateKey() };
 
-  case 'sendTransaction':
-    return await sendTransaction(request.data);
+    case 'sendTransaction':
+      return await sendTransaction(request.data);
 
-  case 'getBalance':
-    return { balance: await getBalance(request.data.address) };
+    case 'getBalance':
+      return { balance: await getBalance(request.data.address) };
 
-  case 'signMessage':
-    return { signature: await signMessage(request.data.message) };
+    case 'signMessage':
+      return { signature: await signMessage(request.data.message) };
 
-  default:
-    throw new Error('Unknown action: ' + request.action);
+    default:
+      throw new Error('Unknown action: ' + request.action);
   }
 }
 

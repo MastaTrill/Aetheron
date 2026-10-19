@@ -12,7 +12,10 @@ const { EnhancedZKPrivacy, RegulatoryComplianceEngine } = require('./privacy-com
 const { FractionalOwnershipSystem, RevenueSharingSystem } = require('./rwa-tokenization.js');
 const { SocialTradingSystem, ReputationBasedLendingSystem } = require('./social-defi.js');
 const { WalletConnectSystem, BiometricAuthSystem } = require('./mobile-enhancements.js');
-const { RealTimeMonitoringSystem, PredictiveMaintenanceSystem } = require('./advanced-analytics.cjs');
+const {
+  RealTimeMonitoringSystem,
+  PredictiveMaintenanceSystem
+} = require('./advanced-analytics.cjs');
 const { PluginMarketplaceSystem, MultiLanguageSDKSystem } = require('./developer-experience.js');
 
 console.log('🚀 Aetheron 2026 - Advanced Blockchain Platform Demo\n');
@@ -50,7 +53,9 @@ try {
     strategy: 'balanced',
     riskTolerance: 'medium'
   });
-  console.log(`   ✅ AI Portfolio created: ${newPortfolio.name} (${newPortfolio.strategy} strategy)`);
+  console.log(
+    `   ✅ AI Portfolio created: ${newPortfolio.name} (${newPortfolio.strategy} strategy)`
+  );
 
   const riskEngine = new RiskAssessmentEngine();
   const risk = riskEngine.assessRisk({

@@ -109,9 +109,8 @@ input:focus, select:focus {
   header, main, section, #sidebar, #ai-chat, #widget-controls, #plugin-market, #activity-feed, #logs, #user-management {
     font-size: 0.98em;
   }
-  #sidebar {
-    display: none !important;
-  }
+  /* #sidebar is off-canvas on narrow screens and opened with #sidebar-toggle
+     (see admin-dashboard.html) */
   #widget-controls, #langBar, #emotionBar, #apiBtn, #backupBar {
     left: 0 !important;
     right: 0 !important;

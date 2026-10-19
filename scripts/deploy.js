@@ -22,7 +22,6 @@ async function main() {
     // For now, we'll proceed with warnings
   }
 
-
   const [deployer] = await hre.ethers.getSigners();
   const deployerAddress = await deployer.getAddress();
   const balance = await hre.ethers.provider.getBalance(deployerAddress);

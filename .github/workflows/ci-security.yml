@@ -10,6 +10,8 @@ jobs:
   ci:
     name: Build, Lint, Test, and Scan
     runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -29,13 +31,23 @@ jobs:
       - name: Run Unit Tests
         run: npm run test:unit
 
+      - name: Install isolated contract dependencies
+        run: npm install --prefix aetheron-contracts --ignore-scripts --no-audit --no-fund
+
       - name: Compile Contracts
         run: npm run contracts:compile
 
+      - name: Dependency security audit (high and critical)
+        run: npm audit --audit-level=high
+
+      - name: Explain skipped Snyk scan
+        if: ${{ env.SNYK_TOKEN == '' }}
+        run: echo "Snyk scan not executed - SNYK_TOKEN secret is not configured; npm audit above is the enforced gate"
+
+      # snyk/actions has no v0.4.0 tag; the published tag for that release is 0.4.0.
       - name: Snyk Security Scan
-        uses: snyk/actions/node@v0.4.0
+        if: ${{ env.SNYK_TOKEN != '' }}
+        uses: snyk/actions/node@0.4.0
         continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high

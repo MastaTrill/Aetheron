@@ -2,7 +2,9 @@
 import request from 'supertest';
 
 describe('Core API Integration Tests', () => {
-  const authHeader = 'Basic ' + Buffer.from('admin:admin123').toString('base64');
+  const authHeader =
+    'Basic ' +
+    Buffer.from(`${process.env.ADMIN_USERNAME}:${process.env.ADMIN_PASSWORD}`).toString('base64');
 
   describe('GET /api', () => {
     test('should return API status', async () => {

@@ -5,6 +5,7 @@
 **Subject:** Aetheron 2026 - Revolutionary DeFi Gaming Platform is LIVE!
 
 **Message:**
+
 ```
 🎉 Hey everyone! We're excited to share that Aetheron 2026 has officially launched!
 
@@ -80,6 +81,7 @@ Discord: https://discord.gg/aetheron
 ## Target Communities
 
 ### **Reddit:**
+
 - r/DeFi
 - r/CryptoGaming
 - r/Web3
@@ -88,6 +90,7 @@ Discord: https://discord.gg/aetheron
 - r/Blockchain
 
 ### **Discord Servers:**
+
 - Uniswap Community
 - Aave Community
 - Compound Finance
@@ -96,6 +99,7 @@ Discord: https://discord.gg/aetheron
 - Major DeFi aggregators
 
 ### **Twitter Influencers:**
+
 - @VitalikButerin
 - @brian_armstrong
 - @sandeepnailwal
@@ -104,6 +108,7 @@ Discord: https://discord.gg/aetheron
 - @TheBlock__
 
 ### **Telegram Groups:**
+
 - DeFi discussions
 - Crypto gaming communities
 - Blockchain developer groups
@@ -113,6 +118,7 @@ Discord: https://discord.gg/aetheron
 ## 📊 **Outreach Tracking**
 
 Create a spreadsheet to track:
+
 - Platform contacted
 - Date contacted
 - Response received

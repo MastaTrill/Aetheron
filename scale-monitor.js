@@ -72,7 +72,7 @@ function getNetworkStats() {
   const stats = {};
 
   for (const [name, addresses] of Object.entries(interfaces)) {
-    stats[name] = addresses.map(addr => ({
+    stats[name] = addresses.map((addr) => ({
       address: addr.address,
       family: addr.family,
       internal: addr.internal
@@ -145,7 +145,7 @@ async function testResponseTime() {
     }
   }
 
-  const validTimes = times.filter(t => t > 0);
+  const validTimes = times.filter((t) => t > 0);
   const avgTime = validTimes.reduce((a, b) => a + b, 0) / validTimes.length;
   const maxTime = Math.max(...validTimes);
   const minTime = Math.min(...validTimes);
@@ -173,7 +173,7 @@ async function testLoadHandling() {
   const results = await Promise.all(promises);
   const duration = Date.now() - start;
 
-  const successful = results.filter(r => r.ok).length;
+  const successful = results.filter((r) => r.ok).length;
 
   return {
     concurrent,

@@ -2,7 +2,18 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Admin Dashboard E2E', () => {
-  const credentials = { username: 'admin', password: 'admin123' };
+  // Use the same isolated credentials the test server is started with
+  // (CI generates them per run; see .github/workflows/ci-cd.yml).
+  const credentials = {
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD
+  };
+
+  test.beforeAll(() => {
+    if (!credentials.username || !credentials.password) {
+      throw new Error('ADMIN_USERNAME and ADMIN_PASSWORD must be set for E2E tests');
+    }
+  });
 
   test('should load homepage', async ({ page }) => {
     await page.goto('/');

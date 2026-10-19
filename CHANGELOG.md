@@ -8,8 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-07-12
 
 ### Security
+
 - Applied Snyk security upgrades across three dependency trees (Jun 2026)
-- - Removed `eval()` from smart contract layer  eliminates critical code injection vector
+- - Removed `eval()` from smart contract layer eliminates critical code injection vector
   - - Removed axios in favour of native fetch to reduce supply-chain attack surface
     - - Hardened block explorer interface against injection and XSS
       - - Applied Snyk Expo upgrade to mobile dependencies (Feb 2026)
@@ -17,12 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
           - - Smart contract: added `burn()`, `increaseAllowance()`, `decreaseAllowance()`, full NatSpec docs
             -
             - ### Added
-            - - AI Assistant integration  conversational AI layer wired into Aetheron platform
-              - - Oracle support  on-chain data feed integration for price and external data
-                - - Analytics engine  frontend analytics pipeline with PostgreSQL and SQLite backends
-                  - - Drizzle ORM  replaced legacy DB layer with type-safe Drizzle ORM
-                    - - Docker support  Dockerfile added for containerised deployment
-                      - - Website launch preparation  full pre-launch content, metadata, and SEO pass
+            - - AI Assistant integration conversational AI layer wired into Aetheron platform
+              - - Oracle support on-chain data feed integration for price and external data
+                - - Analytics engine frontend analytics pipeline with PostgreSQL and SQLite backends
+                  - - Drizzle ORM replaced legacy DB layer with type-safe Drizzle ORM
+                    - - Docker support Dockerfile added for containerised deployment
+                      - - Website launch preparation full pre-launch content, metadata, and SEO pass
                         -
                         - ### Fixed
                         - - Fixed PostgreSQL connection handling in analytics module

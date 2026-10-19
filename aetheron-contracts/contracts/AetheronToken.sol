@@ -15,6 +15,7 @@ contract AetheronToken is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable
     event MinterRevoked(address indexed account);
     error NotMinter();
     error SupplyCapExceeded();
+    error ZeroMintRecipient();
 
     constructor(uint256 initialSupply, address initialOwner)
         ERC20("Aetheron", "AETH")
@@ -39,7 +40,7 @@ contract AetheronToken is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable
 
     function mint(address to, uint256 amount) external {
         if (msg.sender != owner() && !isMinter[msg.sender]) revert NotMinter();
-        require(to != address(0), "AetheronToken: mint to zero address");
+        if (to == address(0)) revert ZeroMintRecipient();
         if (totalSupply() + amount > MAX_SUPPLY) revert SupplyCapExceeded();
         _mint(to, amount);
     }

@@ -87,7 +87,7 @@ class AetheronGameSimulator {
   }
 
   switchNetwork(networkId) {
-    const network = NETWORKS.find(n => n.id === networkId);
+    const network = NETWORKS.find((n) => n.id === networkId);
     if (network && network.id !== this.activeNetwork.id) {
       this.activeNetwork = network;
       this.networkSwitches++;
@@ -106,7 +106,10 @@ class AetheronGameSimulator {
     this.totalYield += baseEarn;
 
     // Check for liquidation
-    if (!this.activeLiquidation && Math.random() < (LIQUIDATION_CHANCE * this.activeNetwork.riskMod)) {
+    if (
+      !this.activeLiquidation &&
+      Math.random() < LIQUIDATION_CHANCE * this.activeNetwork.riskMod
+    ) {
       this.triggerLiquidation();
     }
 
@@ -160,11 +163,13 @@ class AetheronGameSimulator {
       // Progress updates
       if (tickCount % 100 === 0) {
         const progress = ((this.tvl / WIN_TARGET) * 100).toFixed(1);
-        console.log(`📊 Progress: $${this.tvl.toLocaleString()} (${progress}%) | Network: ${this.activeNetwork.name} | Mining: ${this.isMining ? 'Active' : 'Idle'}`);
+        console.log(
+          `📊 Progress: $${this.tvl.toLocaleString()} (${progress}%) | Network: ${this.activeNetwork.name} | Mining: ${this.isMining ? 'Active' : 'Idle'}`
+        );
       }
 
       // Small delay to simulate real-time gameplay
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
     this.printFinalStats();
@@ -187,7 +192,7 @@ class AetheronGameSimulator {
     console.log(`⚡ Mining Efficiency: $${efficiency} TVL per click`);
 
     console.log('\n📜 Final Log Entries:');
-    this.logs.slice(0, 5).forEach(log => {
+    this.logs.slice(0, 5).forEach((log) => {
       console.log(`  [${log.time}] ${log.msg}`);
     });
 

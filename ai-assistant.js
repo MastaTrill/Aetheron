@@ -7,9 +7,7 @@ import 'dotenv/config';
 
 const GPT_MODEL = process.env.AI_MODEL || 'gpt-4-turbo-preview';
 const USE_GPT = Boolean(process.env.OPENAI_API_KEY);
-const openai = USE_GPT
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+const openai = USE_GPT ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
 /**
  * Intent Classifier
@@ -70,7 +68,9 @@ class IntentClassifier {
       entities.blockNumber = parseInt(blockMatch[1]);
     }
 
-    const txMatch = query.match(/(?:tx|transaction|hash|id)[:\s]+(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})/i);
+    const txMatch = query.match(
+      /(?:tx|transaction|hash|id)[:\s]+(0x[a-fA-F0-9]{64}|[a-fA-F0-9]{64})/i
+    );
     if (txMatch) {
       entities.txHash = txMatch[1];
     }
@@ -106,10 +106,10 @@ class ResponseGenerator {
       block: 'Block #{index} contains {txCount} transactions and was mined at {timestamp}.',
       price: 'The current price of AETH is ${price} USD ({change}% 24h).',
       nft: 'NFT #{tokenId} is owned by {owner}.',
-      dao: 'Proposal \'{title}\' has {votesFor} votes for and {votesAgainst} against.',
-      error: 'I\'m sorry, I couldn\'t {action}. {reason}',
+      dao: "Proposal '{title}' has {votesFor} votes for and {votesAgainst} against.",
+      error: "I'm sorry, I couldn't {action}. {reason}",
       unknown:
-        'I\'m not sure what you\'re asking. Try asking about balances, transactions, blocks, or NFTs.'
+        "I'm not sure what you're asking. Try asking about balances, transactions, blocks, or NFTs."
     };
   }
 
@@ -131,26 +131,26 @@ class ResponseGenerator {
    */
   format(data, type) {
     switch (type) {
-    case 'balance':
-      return this.generate('balance', data);
+      case 'balance':
+        return this.generate('balance', data);
 
-    case 'transaction':
-      return this.generate('transaction', data);
+      case 'transaction':
+        return this.generate('transaction', data);
 
-    case 'block':
-      return this.generate('block', data);
+      case 'block':
+        return this.generate('block', data);
 
-    case 'price':
-      return this.generate('price', data);
+      case 'price':
+        return this.generate('price', data);
 
-    case 'nft':
-      return this.generate('nft', data);
+      case 'nft':
+        return this.generate('nft', data);
 
-    case 'dao':
-      return this.generate('dao', data);
+      case 'dao':
+        return this.generate('dao', data);
 
-    default:
-      return this.generate('unknown', {});
+      default:
+        return this.generate('unknown', {});
     }
   }
 }
@@ -208,7 +208,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
     try {
       const messages = [
         { role: 'system', content: this.systemPrompt },
-        ...this.conversationHistory.slice(-10).map(h => ({
+        ...this.conversationHistory.slice(-10).map((h) => ({
           role: h.role,
           content: h.content
         })),
@@ -222,8 +222,8 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
         max_tokens: 500
       });
 
-      const response = completion.choices[0]?.message?.content || 
-        this.responseGenerator.generate('unknown', {});
+      const response =
+        completion.choices[0]?.message?.content || this.responseGenerator.generate('unknown', {});
 
       this.conversationHistory.push(
         { role: 'user', content: userQuery, timestamp: Date.now() },
@@ -297,23 +297,23 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    */
   async handleIntent(intent, entities, query) {
     switch (intent) {
-    case 'balance':
-      return await this.handleBalance(entities);
+      case 'balance':
+        return await this.handleBalance(entities);
 
-    case 'transaction':
-      return await this.handleTransaction(entities, query);
+      case 'transaction':
+        return await this.handleTransaction(entities, query);
 
-    case 'block':
-      return await this.handleBlock(entities);
+      case 'block':
+        return await this.handleBlock(entities);
 
-    case 'price':
-      return await this.handlePrice(entities);
+      case 'price':
+        return await this.handlePrice(entities);
 
-    case 'nft':
-      return await this.handleNFT(entities, query);
+      case 'nft':
+        return await this.handleNFT(entities, query);
 
-    case 'dao':
-      return await this.handleDAO(entities);
+      case 'dao':
+        return await this.handleDAO(entities);
 
       case 'swap':
         return this.handleSwap(entities);
@@ -331,10 +331,10 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
         return this.handleStats(entities);
 
       case 'help':
-      return this.handleHelp(query);
+        return this.handleHelp(query);
 
-    default:
-      return this.responseGenerator.generate('unknown', {});
+      default:
+        return this.responseGenerator.generate('unknown', {});
     }
   }
 
@@ -445,7 +445,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    * Handle DAO query
    */
   async handleDAO(_entities) {
-    return `[SIMULATED] DAO proposal data is not yet connected to the governance contract.`;
+    return '[SIMULATED] DAO proposal data is not yet connected to the governance contract.';
   }
 
   /**
@@ -483,7 +483,7 @@ Always be helpful, concise, and accurate. If you don't know something, say so.`;
    */
   async handleAdmin(entities, query) {
     const lowerQuery = query.toLowerCase();
-    
+
     if (lowerQuery.includes('kyc')) {
       return 'KYC management: I can approve or reject KYC applications. You need admin permissions to perform this action.';
     }
@@ -671,9 +671,4 @@ class AdvancedQueryParser {
   }
 }
 
-export {
-  AIAssistant,
-  IntentClassifier,
-  ResponseGenerator,
-  AdvancedQueryParser
-};
+export { AIAssistant, IntentClassifier, ResponseGenerator, AdvancedQueryParser };

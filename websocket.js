@@ -1,5 +1,5 @@
 // Aetheron WebSocket Server for Real-Time Updates
-import { WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -28,7 +28,7 @@ class AetheronWebSocket {
       const url = new URL(req.url, 'http://localhost');
       const token = url.searchParams.get('token');
       const user = this.verifyToken(token);
-      
+
       if (token && !user) {
         ws.close(4001, 'Invalid token');
         return;
@@ -36,9 +36,12 @@ class AetheronWebSocket {
 
       ws.user = user;
       ws.isAuthenticated = !!user;
-      
-      console.log('[WebSocket] Client connected from:', req.socket.remoteAddress, 
-        user ? `(user: ${user.id})` : '(anonymous)');
+
+      console.log(
+        '[WebSocket] Client connected from:',
+        req.socket.remoteAddress,
+        user ? `(user: ${user.id})` : '(anonymous)'
+      );
       this.clients.add(ws);
 
       this.sendToClient(ws, {
@@ -73,49 +76,49 @@ class AetheronWebSocket {
     console.log('[WebSocket] Received:', data);
 
     switch (data.type) {
-    case 'ping':
-      this.sendToClient(ws, { type: 'pong', timestamp: new Date().toISOString() });
-      break;
+      case 'ping':
+        this.sendToClient(ws, { type: 'pong', timestamp: new Date().toISOString() });
+        break;
 
-    case 'subscribe':
-      // Handle subscription to specific channels
-      ws.subscriptions = ws.subscriptions || new Set();
-      ws.subscriptions.add(data.channel);
-      this.sendToClient(ws, {
-        type: 'subscribed',
-        channel: data.channel,
-        message: `Subscribed to ${data.channel}`
-      });
-      break;
-
-    case 'unsubscribe':
-      if (ws.subscriptions) {
-        ws.subscriptions.delete(data.channel);
+      case 'subscribe':
+        // Handle subscription to specific channels
+        ws.subscriptions = ws.subscriptions || new Set();
+        ws.subscriptions.add(data.channel);
         this.sendToClient(ws, {
-          type: 'unsubscribed',
-          channel: data.channel
+          type: 'subscribed',
+          channel: data.channel,
+          message: `Subscribed to ${data.channel}`
         });
-      }
-      break;
+        break;
 
-    case 'chat':
-      // Broadcast chat message to all clients
-      this.broadcast(
-        {
-          type: 'chat',
-          user: data.user || 'Anonymous',
-          message: data.message,
-          timestamp: new Date().toISOString()
-        },
-        'chat'
-      );
-      break;
+      case 'unsubscribe':
+        if (ws.subscriptions) {
+          ws.subscriptions.delete(data.channel);
+          this.sendToClient(ws, {
+            type: 'unsubscribed',
+            channel: data.channel
+          });
+        }
+        break;
 
-    default:
-      this.sendToClient(ws, {
-        type: 'error',
-        message: 'Unknown message type'
-      });
+      case 'chat':
+        // Broadcast chat message to all clients
+        this.broadcast(
+          {
+            type: 'chat',
+            user: data.user || 'Anonymous',
+            message: data.message,
+            timestamp: new Date().toISOString()
+          },
+          'chat'
+        );
+        break;
+
+      default:
+        this.sendToClient(ws, {
+          type: 'error',
+          message: 'Unknown message type'
+        });
     }
   }
 

@@ -8,7 +8,7 @@ export default defineConfig({
     headless: true
   },
   webServer: {
-    command: 'node test-app.js',
+    command: 'node scripts/start-playwright-server.js',
     port: 3001,
     reuseExistingServer: !process.env.CI
   },

@@ -4,11 +4,11 @@
 
 ## Canonical Repositories
 
-| Component | Canonical Location | Description |
-| :--- | :--- | :--- |
+| Component                          | Canonical Location                                                                      | Description                                                                   |
+| :--------------------------------- | :-------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- |
 | **Sentinel Guardrails & L3 Relay** | [`MastaTrill/Aetheron-Sentinel-L3`](https://github.com/MastaTrill/Aetheron-Sentinel-L3) | Production Sentinel nodes, anomaly detection, slashing, and L3 message relay. |
-| **Platform Token & Governance** | [`MastaTrill/Aetheron_platform`](https://github.com/MastaTrill/Aetheron_platform) | Commercial token, presale, staking, and treasury releases. |
-| **AI Agent Intelligence** | [`MastaTrill/JarvisAI`](https://github.com/MastaTrill/JarvisAI) | Agent runtime and autonomous execution models. |
+| **Platform Token & Governance**    | [`MastaTrill/Aetheron_platform`](https://github.com/MastaTrill/Aetheron_platform)       | Commercial token, presale, staking, and treasury releases.                    |
+| **AI Agent Intelligence**          | [`MastaTrill/JarvisAI`](https://github.com/MastaTrill/JarvisAI)                         | Agent runtime and autonomous execution models.                                |
 
 ## Local Contracts Overview
 

@@ -77,9 +77,11 @@ class PriceOracle {
 
   async getPrices(tokenIds) {
     const prices = {};
-    await Promise.all(tokenIds.map(async (id) => {
-      prices[id] = await this.getPrice(id);
-    }));
+    await Promise.all(
+      tokenIds.map(async (id) => {
+        prices[id] = await this.getPrice(id);
+      })
+    );
     return prices;
   }
 

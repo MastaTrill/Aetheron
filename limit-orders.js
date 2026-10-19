@@ -116,84 +116,84 @@ class LimitOrderManager extends EventEmitter {
     const baseParams = { pair, amount, userAddress };
 
     switch (type) {
-    case 'limit': {
-      const orderId = `limit_${this.orderIdCounter++}`;
-      const order = {
-        orderId,
-        type: 'limit',
-        side: 'buy',
-        pair,
-        amount,
-        price,
-        status: 'active',
-        createdAt: Date.now(),
-        expiresAt: expiresAt || Date.now() + 86400000,
-        userAddress
-      };
-      this.orders.set(orderId, order);
-      return { success: true, order };
-    }
+      case 'limit': {
+        const orderId = `limit_${this.orderIdCounter++}`;
+        const order = {
+          orderId,
+          type: 'limit',
+          side: 'buy',
+          pair,
+          amount,
+          price,
+          status: 'active',
+          createdAt: Date.now(),
+          expiresAt: expiresAt || Date.now() + 86400000,
+          userAddress
+        };
+        this.orders.set(orderId, order);
+        return { success: true, order };
+      }
 
-    case 'stop-loss': {
-      const orderId = `stop_${this.orderIdCounter++}`;
-      const order = {
-        orderId,
-        type: 'stop-loss',
-        side: 'sell',
-        pair,
-        amount,
-        price,
-        stopPrice,
-        status: 'active',
-        createdAt: Date.now(),
-        expiresAt: expiresAt || Date.now() + 86400000,
-        userAddress
-      };
-      this.orders.set(orderId, order);
-      return { success: true, order };
-    }
+      case 'stop-loss': {
+        const orderId = `stop_${this.orderIdCounter++}`;
+        const order = {
+          orderId,
+          type: 'stop-loss',
+          side: 'sell',
+          pair,
+          amount,
+          price,
+          stopPrice,
+          status: 'active',
+          createdAt: Date.now(),
+          expiresAt: expiresAt || Date.now() + 86400000,
+          userAddress
+        };
+        this.orders.set(orderId, order);
+        return { success: true, order };
+      }
 
-    case 'take-profit': {
-      const orderId = `tp_${this.orderIdCounter++}`;
-      const order = {
-        orderId,
-        type: 'take-profit',
-        side: 'sell',
-        pair,
-        amount,
-        price,
-        targetPrice: stopPrice || price,
-        status: 'active',
-        createdAt: Date.now(),
-        expiresAt: expiresAt || Date.now() + 86400000,
-        userAddress
-      };
-      this.orders.set(orderId, order);
-      return { success: true, order };
-    }
+      case 'take-profit': {
+        const orderId = `tp_${this.orderIdCounter++}`;
+        const order = {
+          orderId,
+          type: 'take-profit',
+          side: 'sell',
+          pair,
+          amount,
+          price,
+          targetPrice: stopPrice || price,
+          status: 'active',
+          createdAt: Date.now(),
+          expiresAt: expiresAt || Date.now() + 86400000,
+          userAddress
+        };
+        this.orders.set(orderId, order);
+        return { success: true, order };
+      }
 
-    case 'trailing-stop': {
-      const orderId = `trail_${this.orderIdCounter++}`;
-      const trailingAmount = stopPrice || price * 0.05;
-      const order = {
-        orderId,
-        type: 'trailing-stop',
-        side: 'sell',
-        pair,
-        amount,
-        price,
-        trailingAmount,
-        status: 'active',
-        createdAt: Date.now(),
-        expiresAt: expiresAt || Date.now() + 86400000,
-        userAddress
-      };
-      this.orders.set(orderId, order);
-      return { success: true, order };
-    }
+      case 'trailing-stop': {
+        const orderId = `trail_${this.orderIdCounter++}`;
+        const trailingAmount = stopPrice || price * 0.05;
+        const order = {
+          orderId,
+          type: 'trailing-stop',
+          side: 'sell',
+          pair,
+          amount,
+          price,
+          trailingAmount,
+          status: 'active',
+          createdAt: Date.now(),
+          expiresAt: expiresAt || Date.now() + 86400000,
+          userAddress
+        };
+        this.orders.set(orderId, order);
+        return { success: true, order };
+      }
 
-    default:
-      throw new Error(`Unknown order type: ${type}`);
+      default:
+        throw new Error(`Unknown order type: ${type}`);
     }
   }
 
@@ -307,8 +307,8 @@ class LimitOrderManager extends EventEmitter {
       spread:
         orderBook.asks.length && orderBook.bids.length
           ? Number(
-            ethers.formatUnits(orderBook.asks[0].limitPrice - orderBook.bids[0].limitPrice, 6)
-          )
+              ethers.formatUnits(orderBook.asks[0].limitPrice - orderBook.bids[0].limitPrice, 6)
+            )
           : 0
     };
   }

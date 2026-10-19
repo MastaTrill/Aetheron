@@ -81,18 +81,18 @@ class MetricsCollector {
    */
   recordWebSocket(event, _data = {}) {
     switch (event) {
-    case 'connect':
-      this.metrics.wsConnectionsActive++;
-      break;
-    case 'disconnect':
-      this.metrics.wsConnectionsActive--;
-      break;
-    case 'message':
-      this.metrics.wsMessagesTotal++;
-      break;
-    case 'error':
-      this.metrics.wsErrorsTotal++;
-      break;
+      case 'connect':
+        this.metrics.wsConnectionsActive++;
+        break;
+      case 'disconnect':
+        this.metrics.wsConnectionsActive--;
+        break;
+      case 'message':
+        this.metrics.wsMessagesTotal++;
+        break;
+      case 'error':
+        this.metrics.wsErrorsTotal++;
+        break;
     }
   }
 
@@ -101,21 +101,21 @@ class MetricsCollector {
    */
   recordBlockchain(event, data = {}) {
     switch (event) {
-    case 'block_mined':
-      this.metrics.blocksMinedTotal++;
-      break;
-    case 'transaction':
-      this.metrics.transactionsTotal++;
-      if (data.value) {
-        this.metrics.transactionValue += data.value;
-      }
-      break;
-    case 'gas_price':
-      this.metrics.gasPriceGwei = data.price;
-      break;
-    case 'congestion':
-      this.metrics.networkCongestion = data.level;
-      break;
+      case 'block_mined':
+        this.metrics.blocksMinedTotal++;
+        break;
+      case 'transaction':
+        this.metrics.transactionsTotal++;
+        if (data.value) {
+          this.metrics.transactionValue += data.value;
+        }
+        break;
+      case 'gas_price':
+        this.metrics.gasPriceGwei = data.price;
+        break;
+      case 'congestion':
+        this.metrics.networkCongestion = data.level;
+        break;
     }
   }
 

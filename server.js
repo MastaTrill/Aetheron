@@ -75,7 +75,8 @@ const analyticsMaintenance = new PredictiveMaintenanceSystem();
 
 // Start a default monitoring session (optional)
 let defaultMonitoringId;
-analyticsRealtime.startMonitoring()
+analyticsRealtime
+  .startMonitoring()
   .then((monitoring) => {
     defaultMonitoringId = monitoring?.id;
   })
@@ -165,17 +166,19 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:']
+      }
     },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
+    crossOriginEmbedderPolicy: false
+  })
+);
 
 const sanitizeInput = (req, res, next) => {
   const sanitize = (obj) => {
@@ -184,7 +187,7 @@ const sanitizeInput = (req, res, next) => {
       if (typeof obj[key] === 'string') {
         obj[key] = sanitizeHtml(obj[key], {
           allowedTags: [],
-          allowedAttributes: {},
+          allowedAttributes: {}
         });
       } else if (typeof obj[key] === 'object' && obj[key] !== null) {
         sanitize(obj[key]);
@@ -238,7 +241,10 @@ const rateLimiter = (req, res, next) => {
   }
 
   if (req.user?.id) {
-    const userRecord = userRequestCounts.get(req.user.id) || { count: 0, resetTime: now + USER_RATE_LIMIT_WINDOW };
+    const userRecord = userRequestCounts.get(req.user.id) || {
+      count: 0,
+      resetTime: now + USER_RATE_LIMIT_WINDOW
+    };
     if (now > userRecord.resetTime) {
       userRecord.count = 1;
       userRecord.resetTime = now + USER_RATE_LIMIT_WINDOW;
@@ -590,7 +596,9 @@ app.get('/api/oracle/prices', async (req, res) => {
 
   try {
     const symbols = (req.query.symbols || 'ETH,BTC,AETH').split(',');
-    const prices = await oracleService.getMultiplePrices(symbols.map(s => s.trim().toUpperCase()));
+    const prices = await oracleService.getMultiplePrices(
+      symbols.map((s) => s.trim().toUpperCase())
+    );
     res.json({ success: true, prices });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

@@ -1,0 +1,38 @@
+name: ESLint Autofix Candidate
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/eslint-autofix-candidate.yml'
+      - 'package.json'
+      - '.eslintrc*'
+permissions:
+  contents: write
+jobs:
+  fix-and-verify:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/v2-governance-handoff-20261017' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Apply ESLint autofixes
+        run: npm run lint:fix || true
+      - name: Show remaining diagnostics
+        run: npm run lint
+        continue-on-error: true
+      - name: Commit only automated lint fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git diff --name-only -z --diff-filter=M | xargs -0 -r git add --
+          if ! git diff --cached --quiet; then
+            git commit -m "style: apply ESLint automatic fixes"
+            git push origin HEAD:fix/v2-governance-handoff-20261017
+          fi

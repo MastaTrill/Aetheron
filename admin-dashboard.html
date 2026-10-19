@@ -65,7 +65,7 @@
       width: 100vw;
       height: 100vh;
       background: rgba(10, 20, 40, 0.95);
-      z-index: 1000;
+      z-index: 3000;
     }
     
     #login-form {
@@ -115,40 +115,66 @@
     body.demo-mode #login-modal {
       display: none !important;
     }
-      /* Sidebar styles */
+    /* Sidebar: always visible on wide screens; off-canvas with a toggle on narrow ones */
     #sidebar {
       position: fixed;
-      left: -180px;
+      left: 0;
       top: 0;
       height: 100vh;
       width: 180px;
+      box-sizing: border-box;
+      overflow-y: auto;
       background: rgba(15, 32, 39, 0.98);
       color: #b2ebf2;
       z-index: 1000;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 40px;
+      padding: 40px 0 20px;
       box-shadow: 2px 0 12px #111;
-      transition: left 0.3s ease-in-out;
+      transition: transform 0.3s ease-in-out;
     }
-    
-    #sidebar:hover,
-    #sidebar.show {
-      left: 0;
+
+    body {
+      padding-left: 180px;
     }
-    
-    /* Hover trigger area for sidebar */
-    #sidebar::before {
-      content: '';
-      position: absolute;
-      right: -20px;
-      top: 0;
-      width: 20px;
-      height: 100%;
-      background: transparent;
+
+    #sidebar-toggle {
+      display: none;
     }
-    
+
+    #sidebar a.active {
+      color: #00eaff;
+      font-weight: bold;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding-left: 0;
+      }
+
+      /* Above the floating widgets (AI chat is 2000), below the login modal (3000) */
+      #sidebar {
+        transform: translateX(-100%);
+        padding-top: 60px;
+        z-index: 2400;
+      }
+
+      #sidebar.show {
+        transform: translateX(0);
+      }
+
+      #sidebar-toggle {
+        display: inline-block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 2500;
+        margin: 0;
+        box-shadow: 0 2px 8px #111;
+      }
+    }
+
     #sidebar h3 {
       font-family: 'Orbitron', Arial, sans-serif;
       color: #00eaff;
@@ -356,8 +382,13 @@
       <button type="submit">Login</button>
       <div id="login-error"></div>
     </form>
-  </div>  <nav id="sidebar">
+  </div>
+  <!-- Outside the sticky header so it can stack above the floating widgets on mobile -->
+  <button id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">☰ Menu</button>
+  <nav id="sidebar" aria-label="Dashboard modules">
     <h3>Modules</h3>
+    <a href="#user-management">Users</a>
+    <a href="#logs">Logs</a>
     <a href="#dex">DEX</a>
     <a href="#dao">DAO</a>
     <a href="#social">Social</a>
@@ -371,6 +402,7 @@
     <button id="export-data">Export Data</button>
     <button id="export-data-2">Export Data</button>
     <button id="import-data">Import Data</button>
+    <button id="toggle-theme" type="button">Toggle Theme</button>
   </nav>  <nav id="widget-controls">
     <label><input type="checkbox" data-widget="user-management" checked> Users</label>
     <label><input type="checkbox" data-widget="logs" checked> Logs</label>
@@ -830,6 +862,7 @@
     class AetherLogManager {
       constructor() {
         this.logs = [];
+        this.serverLogs = [];
         this.maxLogs = 1000;
         this.logLevels = {
           DEBUG: { color: '#b2ebf2', icon: '🔍' },
@@ -847,7 +880,8 @@
           level,
           message,
           details,
-          id: Date.now()
+          id: Date.now(),
+          sortTime: Date.now()
         };
 
         // Add to internal logs
@@ -882,21 +916,62 @@
         const tbody = document.querySelector('#logs-table tbody');
         if (!tbody) return;
 
-        // Show last 50 logs in UI
-        const recentLogs = this.logs.slice(0, 50);
-        tbody.innerHTML = recentLogs.map(log => {
-          const style = this.logLevels[log.level];
-          return `
-            <tr style="border-bottom: 1px solid #333;">
-              <td style="padding: 8px;">${log.timestamp}</td>
-              <td style="padding: 8px; color: ${style.color};">${style.icon} ${log.level}</td>
-              <td style="padding: 8px;">
-                <div style="margin-bottom: 4px;">${log.message}</div>
-                ${log.details ? `<pre style="font-size: 0.8em; background: #0f1419; padding: 4px; border-radius: 3px;">${JSON.stringify(log.details, null, 2)}</pre>` : ''}
-              </td>
-            </tr>
-          `;
-        }).join('');
+        const levelFilter = document.getElementById('log-level-filter')?.value || '';
+        const entries = [...this.logs, ...this.serverLogs]
+          .filter((log) => !levelFilter || log.level === levelFilter)
+          .sort((a, b) => b.sortTime - a.sortTime)
+          .slice(0, 50);
+
+        tbody.replaceChildren(
+          ...entries.map((log) => {
+            const style = this.logLevels[log.level] || this.logLevels.INFO;
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #333';
+            tr.dataset.level = log.level;
+
+            const time = document.createElement('td');
+            time.style.padding = '8px';
+            time.textContent = log.timestamp;
+
+            const level = document.createElement('td');
+            level.style.padding = '8px';
+            level.style.color = style.color;
+            level.textContent = `${style.icon} ${log.level}${log.source === 'server' ? ' (server)' : ''}`;
+
+            const details = document.createElement('td');
+            details.style.padding = '8px';
+            const msg = document.createElement('div');
+            msg.style.marginBottom = '4px';
+            msg.textContent = log.message;
+            details.appendChild(msg);
+            if (log.details) {
+              const pre = document.createElement('pre');
+              pre.style.cssText = 'font-size: 0.8em; background: #0f1419; padding: 4px; border-radius: 3px;';
+              pre.textContent = JSON.stringify(log.details, null, 2);
+              details.appendChild(pre);
+            }
+
+            tr.append(time, level, details);
+            return tr;
+          })
+        );
+      }
+
+      // Server-side audit log (GET /logs, admin auth). Rows are {type, details, createdAt, user}.
+      setServerLogs(rows) {
+        this.serverLogs = (Array.isArray(rows) ? rows : []).map((row) => {
+          const created = row.createdAt ? new Date(row.createdAt) : new Date();
+          const level = String(row.level || '').toUpperCase();
+          return {
+            source: 'server',
+            level: this.logLevels[level] ? level : 'INFO',
+            message: row.message || row.type || 'Server log entry',
+            details: row.details || null,
+            timestamp: created.toLocaleString(),
+            sortTime: created.getTime()
+          };
+        });
+        this.updateUILogs();
       }
 
       async sendToServer(logEntry) {
@@ -931,6 +1006,24 @@
 
     // Initialize global logger
     const Logger = new AetherLogManager();
+
+    // Logs page: "Refresh Server Logs" button, sidebar "Logs" link and level filter
+    async function loadLogs() {
+      try {
+        const res = await fetch('/logs');
+        if (!res.ok) {
+          Logger.warn('Server logs unavailable', { status: res.status });
+          return;
+        }
+        Logger.setServerLogs(await res.json());
+      } catch (error) {
+        Logger.warn('Failed to load server logs', { error: error.message });
+      }
+    }
+
+    function filterLogs() {
+      Logger.updateUILogs();
+    }
 
     // ===== WebSocket Real-Time Connection =====
     class AetheronWebSocketClient {
@@ -1378,11 +1471,23 @@
     setInterval(loadStats, 10000);
     setInterval(loadChart, 20000);
     // Sidebar navigation
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    function setSidebarOpen(open) {
+      sidebar.classList.toggle('show', open);
+      sidebarToggle.setAttribute('aria-expanded', String(open));
+    }
+    sidebarToggle.onclick = () => setSidebarOpen(!sidebar.classList.contains('show'));
     document.querySelectorAll('#sidebar a').forEach(a => {
       a.onclick = e => {
         e.preventDefault();
         const id = a.getAttribute('href').substring(1);
+        document.querySelectorAll('#sidebar a.active').forEach((el) => el.classList.remove('active'));
+        a.classList.add('active');
+        if (id === 'logs') loadLogs();
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', '#' + id);
+        if (window.innerWidth <= 700) setSidebarOpen(false);
       };
     });
     // Theme toggle
@@ -1393,7 +1498,7 @@
       document.body.style.color = dark ? '#e0e0e0' : '#222';
     };
     // Export/Import data
-    document.getElementById('export-data').onclick = async () => {
+    async function exportStats() {
       const res = await fetch('/stats');
       const data = await res.json();
       const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
@@ -1402,7 +1507,9 @@
       a.href = url; a.download = 'aetheron-stats.json';
       a.click();
       URL.revokeObjectURL(url);
-    };
+    }
+    document.getElementById('export-data').onclick = exportStats;
+    document.getElementById('export-data-2').onclick = exportStats;
     document.getElementById('import-data').onclick = () => {
       const input = document.createElement('input');
       input.type = 'file';
@@ -1431,27 +1538,24 @@
       document.body.appendChild(toast);
       setTimeout(()=>toast.remove(), 3000);
     }
-    // Attach to all forms for feedback
-    document.querySelectorAll('form').forEach(f => {
-      f.onsubmit = (e) => {
+    // Generic feedback for module forms. Uses listeners so it never replaces a
+    // form's own submit handler (login and chat set their own).
+    document.querySelectorAll('form:not(#login-form)').forEach(f => {
+      f.addEventListener('submit', () => {
         setTimeout(()=>showToast('Action submitted!'), 500);
-      };
-    });
-    // Activity feed (demo: append on form submit)
-    document.querySelectorAll('form').forEach(f => {
-      f.onsubmit = (e) => {
+        const feed = document.getElementById('feed-list');
+        if (!feed) return;
         const section = f.closest('section');
         const label = section?.querySelector('h2')?.textContent || 'Action';
         const li = document.createElement('li');
         li.textContent = `${new Date().toLocaleTimeString()} - ${label}`;
-        document.getElementById('feed-list').prepend(li);
-        if (document.getElementById('feed-list').children.length > 10)
-          document.getElementById('feed-list').removeChild(document.getElementById('feed-list').lastChild);
-      };
+        feed.prepend(li);
+        if (feed.children.length > 10) feed.removeChild(feed.lastChild);
+      });
     });
     // Responsive sidebar
     function handleResize() {
-      document.getElementById('sidebar').style.display = window.innerWidth < 700 ? 'none' : 'flex';
+      if (window.innerWidth > 700) setSidebarOpen(false);
     }
     window.addEventListener('resize', handleResize);
     handleResize();

@@ -1,13 +1,17 @@
 import express from 'express';
 import cors from 'cors';
+import http from 'http';
 import path from 'path';
-import { fileURLToPath } from 'url';
+
 import authRoutes from './auth/routes.js';
+import { OracleService } from './oracle.js';
 import { basicAuth, jwtAuth, optionalAuth } from './auth/middleware.js';
+import { AIAssistant } from './ai-assistant.js';
+import { Blockchain } from './blockchain.js';
+import { AetheronWebSocket } from './websocket.js';
 
 // ES Module __dirname workaround
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = process.cwd();
 
 // Import new feature modules
 import { AccountAbstraction } from './account-abstraction.js';
@@ -56,7 +60,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Serve static files (CSS, JS, etc.)
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, { index: false }));
 
 // Rate limiting (simplified for tests)
 const rateLimiter = (req, res, next) => {
@@ -77,6 +81,120 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
     environment: NODE_ENV
   });
+});
+
+// Compatibility health endpoint for integration clients.
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
+
+// Newsletter subscription mirrors server.js (validation + per-IP rate limit),
+// but keeps subscribers in memory so tests never write to the data directory.
+const newsletterSubscribers = new Set();
+const newsletterRateLimit = new Map();
+const NEWSLETTER_RATE_LIMIT = 5;
+const NEWSLETTER_WINDOW = 60 * 60 * 1000;
+
+function checkNewsletterRateLimit(ip) {
+  const now = Date.now();
+  const record = newsletterRateLimit.get(ip);
+  if (!record || now > record.resetTime) {
+    newsletterRateLimit.set(ip, { count: 1, resetTime: now + NEWSLETTER_WINDOW });
+    return true;
+  }
+  if (record.count >= NEWSLETTER_RATE_LIMIT) return false;
+  record.count++;
+  return true;
+}
+
+app.post('/api/newsletter/subscribe', (req, res) => {
+  const email = req.body?.email;
+  if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, error: 'Invalid email address' });
+  }
+  if (!checkNewsletterRateLimit(req.ip)) {
+    return res.status(429).json({ success: false, error: 'Too many requests, try again later' });
+  }
+  const normalizedEmail = email.toLowerCase();
+  if (newsletterSubscribers.has(normalizedEmail)) {
+    return res.json({ success: true, message: 'Already subscribed!' });
+  }
+  newsletterSubscribers.add(normalizedEmail);
+  return res.json({ success: true, message: 'Successfully subscribed!' });
+});
+
+// AI assistant routes use the same AIAssistant as server.js. Without
+// OPENAI_API_KEY it answers through its built-in intent handlers (no external
+// provider is called); with a key it uses the configured provider.
+const aiAssistant = new AIAssistant(new Blockchain(), null);
+
+app.post('/api/ai/query', optionalAuth, async (req, res) => {
+  const query = req.body?.query;
+  if (typeof query !== 'string' || !query.trim()) {
+    return res.status(400).json({ success: false, error: 'Query is required' });
+  }
+  if (query.length > 1000) {
+    return res.status(400).json({ success: false, error: 'Query is too long' });
+  }
+  try {
+    const response = await aiAssistant.query(query);
+    return res.json({ success: true, response });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: 'AI assistant error' });
+  }
+});
+
+app.get('/api/ai/history', optionalAuth, (req, res) => {
+  res.json({ success: true, history: aiAssistant.getHistory(20) });
+});
+
+app.post('/api/ai/clear', optionalAuth, (req, res) => {
+  aiAssistant.clearHistory();
+  res.json({ success: true, message: 'History cleared' });
+});
+
+// Oracle routes use the existing CoinGecko-backed service; no synthetic prices.
+const oracleService = new OracleService();
+app.get('/api/oracle/price/:symbol', async (req, res) => {
+  const symbol = req.params.symbol.toUpperCase();
+  if (!/^[A-Z0-9]{2,12}$/.test(symbol))
+    return res.status(400).json({ success: false, error: 'Invalid symbol' });
+  try {
+    const price = await oracleService.getTokenPrice(symbol);
+    if (!Number.isFinite(price) || price <= 0)
+      return res.status(503).json({ success: false, error: 'Price unavailable' });
+    return res.json({ success: true, symbol, price });
+  } catch (error) {
+    return res.status(503).json({ success: false, error: 'Price unavailable' });
+  }
+});
+app.get('/api/oracle/prices', async (req, res) => {
+  const symbols =
+    typeof req.query.symbols === 'string'
+      ? req.query.symbols.split(',').map((s) => s.trim().toUpperCase())
+      : [];
+  if (!symbols.length || symbols.length > 20 || symbols.some((s) => !/^[A-Z0-9]{2,12}$/.test(s))) {
+    return res.status(400).json({ success: false, error: 'Invalid symbols' });
+  }
+  try {
+    const prices = await oracleService.getMultiplePrices(symbols);
+    if (symbols.some((symbol) => !Number.isFinite(prices[symbol]) || prices[symbol] <= 0)) {
+      return res.status(503).json({ success: false, error: 'Prices unavailable' });
+    }
+    return res.json({ success: true, prices });
+  } catch (error) {
+    return res.status(503).json({ success: false, error: 'Prices unavailable' });
+  }
+});
+app.get('/api/oracle/trending', async (req, res) => {
+  try {
+    const coins = await oracleService.getTrendingCoins();
+    if (!coins.length)
+      return res.status(503).json({ success: false, error: 'Trending data unavailable' });
+    return res.json({ success: true, coins });
+  } catch (error) {
+    return res.status(503).json({ success: false, error: 'Trending data unavailable' });
+  }
 });
 
 // Routes
@@ -255,4 +373,10 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-export { app };
+// WebSocket server attached to an HTTP server wrapping the app, as in server.js.
+// The HTTP server is not started here; callers may listen on it if needed.
+const httpServer = http.createServer(app);
+const wsServer = new AetheronWebSocket(httpServer);
+
+export { app, httpServer, wsServer };
+export default app;

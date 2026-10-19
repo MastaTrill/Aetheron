@@ -440,6 +440,7 @@ curl -X POST http://localhost:3001/api/ai/query \
 ```
 
 Response:
+
 ```json
 {
   "success": true,

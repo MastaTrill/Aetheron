@@ -35,22 +35,24 @@
 ## Component Inventory
 
 ### 1. Mobile Client (`mobile/`)
-* **Screens (`mobile/src/screens/`)**:
-  * `WelcomeScreen.js`: User onboarding, wallet generation and recovery entry point.
-  * `WalletScreen.js`: Main account dashboard, asset balance overview, quick action buttons.
-  * `SendScreen.js`: Token transfer interface with recipient validation and fee estimation.
-  * `ReceiveScreen.js`: Deposit screen with dynamic QR code generation.
-  * `ScanScreen.js`: Camera-based QR code scanner for wallet addresses and invoice payloads.
-  * `TransactionHistoryScreen.js`: Chronological transaction ledger with status filtering.
-  * `SettingsScreen.js`: Network switcher (Base / Sepolia / local), security, and RPC configuration.
-* **Services (`mobile/src/services/`)**:
-  * `WalletService.js`: Key management, mnemonic seed generation, and secure local keychain storage.
-  * `ApiService.js`: HTTP and WebSocket communication client for Aetheron node and backend endpoints.
+
+- **Screens (`mobile/src/screens/`)**:
+  - `WelcomeScreen.js`: User onboarding, wallet generation and recovery entry point.
+  - `WalletScreen.js`: Main account dashboard, asset balance overview, quick action buttons.
+  - `SendScreen.js`: Token transfer interface with recipient validation and fee estimation.
+  - `ReceiveScreen.js`: Deposit screen with dynamic QR code generation.
+  - `ScanScreen.js`: Camera-based QR code scanner for wallet addresses and invoice payloads.
+  - `TransactionHistoryScreen.js`: Chronological transaction ledger with status filtering.
+  - `SettingsScreen.js`: Network switcher (Base / Sepolia / local), security, and RPC configuration.
+- **Services (`mobile/src/services/`)**:
+  - `WalletService.js`: Key management, mnemonic seed generation, and secure local keychain storage.
+  - `ApiService.js`: HTTP and WebSocket communication client for Aetheron node and backend endpoints.
 
 ### 2. Developer SDK (`sdk.js`)
-* **Client Class**: `AetheronSDK`
-* **Features**:
-  * Blockchain query methods (`getBlockchain`, `getBlock`, `getTransaction`, `getBalance`).
-  * Wallet operations (`createWallet`, `importWallet`, `exportWallet`).
-  * Transaction dispatch & mining simulation (`createTransaction`, `mineBlock`).
-  * WebSocket real-time subscription client (`subscribe`, `on`, `emit`).
+
+- **Client Class**: `AetheronSDK`
+- **Features**:
+  - Blockchain query methods (`getBlockchain`, `getBlock`, `getTransaction`, `getBalance`).
+  - Wallet operations (`createWallet`, `importWallet`, `exportWallet`).
+  - Transaction dispatch & mining simulation (`createTransaction`, `mineBlock`).
+  - WebSocket real-time subscription client (`subscribe`, `on`, `emit`).

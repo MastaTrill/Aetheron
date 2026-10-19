@@ -1,5 +1,12 @@
 import 'dotenv/config';
-import '@nomicfoundation/hardhat-toolbox';
+// Load only the plugins this root config and scripts/ use (hre.ethers, the
+// etherscan verify config, chai matchers). The full toolbox pulled in
+// solidity-coverage and hardhat-gas-reporter, whose dependency trees carry
+// unpatched high/critical advisories. The canonical contracts project in
+// aetheron-contracts/ keeps its own toolbox install.
+import '@nomicfoundation/hardhat-ethers';
+import '@nomicfoundation/hardhat-chai-matchers';
+import '@nomicfoundation/hardhat-verify';
 
 const getAccounts = () => {
   const privateKey = process.env.DEPLOYER_PRIVATE_KEY;

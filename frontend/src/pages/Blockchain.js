@@ -105,14 +105,14 @@ const Blockchain = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-    case 'confirmed':
-      return 'success';
-    case 'pending':
-      return 'warning';
-    case 'failed':
-      return 'error';
-    default:
-      return 'default';
+      case 'confirmed':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'failed':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 

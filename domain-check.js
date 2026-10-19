@@ -14,7 +14,7 @@ const NETLIFY_URL = 'gregarious-strudel-850a21.netlify.app';
 
 async function checkDNS() {
   console.log('🔍 Checking DNS propagation for', DOMAIN);
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
 
   try {
     // Check A record
@@ -28,7 +28,6 @@ async function checkDNS() {
     } catch (error) {
       console.log('⚠️  No CNAME record for www subdomain');
     }
-
   } catch (error) {
     console.log('❌ DNS Resolution Failed:', error.message);
     console.log('💡 DNS may still be propagating (24-48 hours)');
@@ -82,26 +81,28 @@ async function checkWebsite() {
   console.log('\n🌐 Checking Website Accessibility');
 
   return new Promise((resolve) => {
-    https.get(`https://${DOMAIN}`, (res) => {
-      console.log('✅ Website Accessible');
-      console.log('   Status Code:', res.statusCode);
-      console.log('   Response Time: OK');
+    https
+      .get(`https://${DOMAIN}`, (res) => {
+        console.log('✅ Website Accessible');
+        console.log('   Status Code:', res.statusCode);
+        console.log('   Response Time: OK');
 
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        if (data.includes('Aetheron') || data.includes('DeFi')) {
-          console.log('✅ Content Loading Correctly');
-        } else {
-          console.log('⚠️  Content May Not Be Loading (check Netlify deployment)');
-        }
-        resolve(true);
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => {
+          if (data.includes('Aetheron') || data.includes('DeFi')) {
+            console.log('✅ Content Loading Correctly');
+          } else {
+            console.log('⚠️  Content May Not Be Loading (check Netlify deployment)');
+          }
+          resolve(true);
+        });
+      })
+      .on('error', (error) => {
+        console.log('❌ Website Check Failed:', error.message);
+        console.log('💡 Try accessing directly:', `https://${NETLIFY_URL}`);
+        resolve(false);
       });
-    }).on('error', (error) => {
-      console.log('❌ Website Check Failed:', error.message);
-      console.log('💡 Try accessing directly:', `https://${NETLIFY_URL}`);
-      resolve(false);
-    });
   });
 }
 

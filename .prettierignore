@@ -1,0 +1,14 @@
+# Generated / build output and tool state - not hand-edited source
+node_modules/
+coverage/
+playwright-report/
+test-results/
+frontend/dist/
+cache/
+artifacts/
+typechain-types/
+.netlify/
+# Recorded deployment data (written by deploy scripts)
+aetheron-contracts/deployments/
+deployments/
+package-lock.json

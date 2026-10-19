@@ -3,7 +3,9 @@
 ## Pre-Deployment
 
 ### 1. Environment Variables
+
 Update `.env` file with production values:
+
 ```bash
 # Required
 NODE_ENV=production
@@ -24,6 +26,7 @@ REDIS_URL=redis://...
 ```
 
 ### 2. Generate Secure Secrets
+
 ```bash
 # Generate JWT_SECRET
 openssl rand -hex 32
@@ -33,6 +36,7 @@ openssl rand -base64 32
 ```
 
 ### 3. Database Setup
+
 ```bash
 # If using PostgreSQL
 createdb aetheron
@@ -45,6 +49,7 @@ npm run db:seed
 ```
 
 ### 4. Test Everything
+
 ```bash
 # Run all tests
 npm test
@@ -57,6 +62,7 @@ npm run test:e2e
 ```
 
 ### 5. Build & Lint
+
 ```bash
 npm run build
 ```
@@ -64,21 +70,25 @@ npm run build
 ## Deployment Options
 
 ### Railway
+
 ```bash
 npm run deploy:railway
 ```
 
 ### Vercel
+
 ```bash
 npm run deploy:vercel
 ```
 
 ### Docker
+
 ```bash
 npm run deploy:docker
 ```
 
 ### Manual
+
 ```bash
 npm install --production
 node server.js

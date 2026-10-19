@@ -581,15 +581,32 @@ beta@aetheron.online
       campaign: CAMPAIGN_CONFIG.name,
       launched: this.campaignData.launched,
       launchDate: this.campaignData.launchDate,
-      duration: Math.floor((new Date() - new Date(this.campaignData.launchDate || Date.now())) / (1000 * 60 * 60 * 24)),
+      duration: Math.floor(
+        (new Date() - new Date(this.campaignData.launchDate || Date.now())) / (1000 * 60 * 60 * 24)
+      ),
       metrics: this.campaignData.metrics,
       performance: {
-        applicationRate: this.campaignData.metrics.applications ?
-          Math.round(this.campaignData.metrics.applications / Math.max(this.campaignData.metrics.impressions || 1, 1) * 100) : 0,
-        conversionRate: this.campaignData.metrics.applications ?
-          Math.round(this.campaignData.metrics.conversions / Math.max(this.campaignData.metrics.applications, 1) * 100) : 0,
-        engagementRate: this.campaignData.metrics.clicks ?
-          Math.round(this.campaignData.metrics.clicks / Math.max(this.campaignData.metrics.impressions, 1) * 100) : 0
+        applicationRate: this.campaignData.metrics.applications
+          ? Math.round(
+              (this.campaignData.metrics.applications /
+                Math.max(this.campaignData.metrics.impressions || 1, 1)) *
+                100
+            )
+          : 0,
+        conversionRate: this.campaignData.metrics.applications
+          ? Math.round(
+              (this.campaignData.metrics.conversions /
+                Math.max(this.campaignData.metrics.applications, 1)) *
+                100
+            )
+          : 0,
+        engagementRate: this.campaignData.metrics.clicks
+          ? Math.round(
+              (this.campaignData.metrics.clicks /
+                Math.max(this.campaignData.metrics.impressions, 1)) *
+                100
+            )
+          : 0
       },
       announcements: this.announcements.length,
       recommendations: this.generateRecommendations()
@@ -606,7 +623,9 @@ beta@aetheron.online
     }
 
     if (this.campaignData.metrics.conversions < this.campaignData.metrics.applications * 0.5) {
-      recommendations.push('Improve application-to-tester conversion - many applicants not becoming active testers');
+      recommendations.push(
+        'Improve application-to-tester conversion - many applicants not becoming active testers'
+      );
     }
 
     if (this.announcements.length < 5) {
@@ -663,63 +682,63 @@ if (!command) {
 const campaign = new BetaLaunchCampaign();
 
 switch (command) {
-case 'launch':
-  campaign.launchCampaign();
-  break;
+  case 'launch':
+    campaign.launchCampaign();
+    break;
 
-case 'materials':
-  campaign.generatePromotionalMaterials();
-  break;
+  case 'materials':
+    campaign.generatePromotionalMaterials();
+    break;
 
-case 'reminders': {
-  const type = process.argv[3] || 'daily';
-  campaign.sendReminders(type);
-  break;
-}
-
-case 'report': {
-  const report = campaign.generateCampaignReport();
-  console.log('📊 Campaign Performance Report');
-  console.log('==============================');
-  console.log(`Launched: ${report.launched ? 'Yes' : 'No'}`);
-  console.log(`Duration: ${report.duration} days`);
-  console.log(`Applications: ${report.metrics.applications}`);
-  console.log(`Conversions: ${report.metrics.conversions}`);
-  console.log(`Announcements: ${report.announcements}`);
-  console.log('');
-  console.log('Performance Rates:');
-  console.log(`Application Rate: ${report.performance.applicationRate}%`);
-  console.log(`Conversion Rate: ${report.performance.conversionRate}%`);
-  console.log(`Engagement Rate: ${report.performance.engagementRate}%`);
-  console.log('');
-  if (report.recommendations.length > 0) {
-    console.log('Recommendations:');
-    report.recommendations.forEach(rec => {
-      console.log(`• ${rec}`);
-    });
+  case 'reminders': {
+    const type = process.argv[3] || 'daily';
+    campaign.sendReminders(type);
+    break;
   }
-  break;
-}
 
-case 'export': {
-  const filepath = campaign.exportCampaignData();
-  console.log(`✅ Campaign data exported successfully to ${filepath}`);
-  break;
-}
+  case 'report': {
+    const report = campaign.generateCampaignReport();
+    console.log('📊 Campaign Performance Report');
+    console.log('==============================');
+    console.log(`Launched: ${report.launched ? 'Yes' : 'No'}`);
+    console.log(`Duration: ${report.duration} days`);
+    console.log(`Applications: ${report.metrics.applications}`);
+    console.log(`Conversions: ${report.metrics.conversions}`);
+    console.log(`Announcements: ${report.announcements}`);
+    console.log('');
+    console.log('Performance Rates:');
+    console.log(`Application Rate: ${report.performance.applicationRate}%`);
+    console.log(`Conversion Rate: ${report.performance.conversionRate}%`);
+    console.log(`Engagement Rate: ${report.performance.engagementRate}%`);
+    console.log('');
+    if (report.recommendations.length > 0) {
+      console.log('Recommendations:');
+      report.recommendations.forEach((rec) => {
+        console.log(`• ${rec}`);
+      });
+    }
+    break;
+  }
 
-case 'status':
-  console.log('📊 Campaign Status');
-  console.log('==================');
-  console.log(`Launched: ${campaign.campaignData.launched ? 'Yes' : 'No'}`);
-  console.log(`Launch Date: ${campaign.campaignData.launchDate || 'Not launched'}`);
-  console.log(`Applications: ${campaign.campaignData.metrics.applications}`);
-  console.log(`Active Testers: ${campaign.campaignData.metrics.conversions}`);
-  console.log(`Announcements: ${campaign.announcements.length}`);
-  break;
+  case 'export': {
+    const filepath = campaign.exportCampaignData();
+    console.log(`✅ Campaign data exported successfully to ${filepath}`);
+    break;
+  }
 
-default:
-  console.log('Unknown command:', command);
-  break;
+  case 'status':
+    console.log('📊 Campaign Status');
+    console.log('==================');
+    console.log(`Launched: ${campaign.campaignData.launched ? 'Yes' : 'No'}`);
+    console.log(`Launch Date: ${campaign.campaignData.launchDate || 'Not launched'}`);
+    console.log(`Applications: ${campaign.campaignData.metrics.applications}`);
+    console.log(`Active Testers: ${campaign.campaignData.metrics.conversions}`);
+    console.log(`Announcements: ${campaign.announcements.length}`);
+    break;
+
+  default:
+    console.log('Unknown command:', command);
+    break;
 }
 
 export default BetaLaunchCampaign;

@@ -12,16 +12,16 @@ const MAX_ATTEMPTS = 5;
 function checkRateLimit(key) {
   const now = Date.now();
   const record = rateLimit.get(key) || { count: 0, firstAttempt: now };
-  
+
   if (now - record.firstAttempt > RATE_LIMIT_WINDOW) {
     rateLimit.set(key, { count: 1, firstAttempt: now });
     return true;
   }
-  
+
   if (record.count >= MAX_ATTEMPTS) {
     return false;
   }
-  
+
   record.count++;
   rateLimit.set(key, record);
   return true;
@@ -98,11 +98,7 @@ router.post('/register', async (req, res) => {
 
     const existing = await User.findOne({
       where: {
-        [Op.or]: [
-          { address },
-          ...(email ? [{ email }] : []),
-          { username }
-        ]
+        [Op.or]: [{ address }, ...(email ? [{ email }] : []), { username }]
       }
     });
 
@@ -125,11 +121,15 @@ router.post('/register', async (req, res) => {
       isActive: true
     });
 
-    await safeLog('SUCCESS', {
-      action: 'user_registered',
-      username,
-      address
-    }, user.id);
+    await safeLog(
+      'SUCCESS',
+      {
+        action: 'user_registered',
+        username,
+        address
+      },
+      user.id
+    );
 
     const token = authService.generateToken({
       id: user.id,
@@ -210,10 +210,14 @@ router.post('/login', async (req, res) => {
 
     await user.update({ lastLogin: new Date() });
 
-    await safeLog('INFO', {
-      action: 'user_login',
-      username
-    }, user.id);
+    await safeLog(
+      'INFO',
+      {
+        action: 'user_login',
+        username
+      },
+      user.id
+    );
 
     // Generate tokens
     const token = authService.generateToken({

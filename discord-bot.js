@@ -12,8 +12,8 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+    GatewayIntentBits.MessageContent
+  ]
 });
 
 // Initialize Core Modules
@@ -36,7 +36,9 @@ client.on('messageCreate', async (message) => {
 
   const userQuery = message.content.slice(prefix.length).trim();
   if (!userQuery) {
-    return message.reply('How can I help you with Aetheron? Try asking "!aeth what is my balance?"');
+    return message.reply(
+      'How can I help you with Aetheron? Try asking "!aeth what is my balance?"'
+    );
   }
 
   try {
@@ -46,17 +48,22 @@ client.on('messageCreate', async (message) => {
     const aiResponse = await aiAssistant.query(userQuery);
 
     const responseEmbed = new EmbedBuilder()
-      .setColor(0x0099FF) // Aetheron Blue
+      .setColor(0x0099ff) // Aetheron Blue
       .setTitle('Aetheron AI Assistant')
       .setDescription(aiResponse)
       .setThumbnail('https://aetheron.online/logo.png') // Replace with your actual logo URL
       .setTimestamp()
-      .setFooter({ text: 'Aetheron Protocol 2026', iconURL: 'https://aetheron.online/favicon.ico' });
+      .setFooter({
+        text: 'Aetheron Protocol 2026',
+        iconURL: 'https://aetheron.online/favicon.ico'
+      });
 
     await message.reply({ embeds: [responseEmbed] });
   } catch (error) {
     console.error('[Discord] Error:', error.message);
-    const errorEmbed = new EmbedBuilder().setColor(0xFF0000).setDescription('⚠️ I encountered an error processing that request.');
+    const errorEmbed = new EmbedBuilder()
+      .setColor(0xff0000)
+      .setDescription('⚠️ I encountered an error processing that request.');
     await message.reply({ embeds: [errorEmbed] });
   }
 });

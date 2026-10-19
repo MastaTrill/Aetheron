@@ -508,11 +508,11 @@ class NotificationManager {
       },
       sms: phone
         ? {
-          to: phone,
-          message: `Transaction of ${
-            transaction.amount
-          } AETH confirmed. Hash: ${transaction.hash.substring(0, 10)}...`
-        }
+            to: phone,
+            message: `Transaction of ${
+              transaction.amount
+            } AETH confirmed. Hash: ${transaction.hash.substring(0, 10)}...`
+          }
         : null,
       push: {
         title: 'Transaction Confirmed',
@@ -531,9 +531,9 @@ class NotificationManager {
       },
       sms: phone
         ? {
-          to: phone,
-          message: `Aetheron Security: ${eventType}. Contact support if not you.`
-        }
+            to: phone,
+            message: `Aetheron Security: ${eventType}. Contact support if not you.`
+          }
         : null,
       push: {
         title: 'Security Alert',

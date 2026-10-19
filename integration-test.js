@@ -37,7 +37,11 @@ try {
 
 // Test Layer 3 Scaling
 try {
-  const { MetaTransactionSystem, BatchTransactionProcessor, IntentBasedSystem } = require('./layer3-scaling.js');
+  const {
+    MetaTransactionSystem,
+    BatchTransactionProcessor,
+    IntentBasedSystem
+  } = require('./layer3-scaling.js');
   console.log('✅ Layer 3 Scaling modules loaded successfully');
 
   const metaTx = new MetaTransactionSystem();
