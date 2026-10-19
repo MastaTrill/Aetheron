@@ -29,6 +29,9 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     name: Build and Deploy Production
+    env:
+      # Secrets can't be read in a step `if`, so expose whether the token is set.
+      HAS_AZURE_SWA_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN != '' }}
     strategy:
       matrix:
         node-version: [18.x]
@@ -57,7 +60,14 @@ jobs:
       - name: Build static assets (if any)
         run: |
           if [ -f package.json ] && npm run | grep -q "build"; then npm run build; fi
+      - name: Explain skipped production deployment
+        if: env.HAS_AZURE_SWA_TOKEN != 'true'
+        run: |
+          echo "::notice title=Azure production deploy skipped::AZURE_STATIC_WEB_APPS_API_TOKEN secret is not configured - tests and build ran, deployment was skipped."
+          echo "## Production Deployment Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "AZURE_STATIC_WEB_APPS_API_TOKEN is not configured; tests and build ran, nothing was deployed." >> $GITHUB_STEP_SUMMARY
       - name: Build And Deploy Static Site
+        if: env.HAS_AZURE_SWA_TOKEN == 'true'
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -69,6 +79,7 @@ jobs:
           output_location: ""
       # Job summary for production
       - name: Job Summary
+        if: env.HAS_AZURE_SWA_TOKEN == 'true'
         run: |
           echo "## Production Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "Branch: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
@@ -143,8 +154,15 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
+    env:
+      # Secrets can't be read in a step `if`, so expose whether the token is set.
+      HAS_AZURE_SWA_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN != '' }}
     steps:
+      - name: Explain skipped preview environment cleanup
+        if: env.HAS_AZURE_SWA_TOKEN != 'true'
+        run: echo "::notice title=Azure close skipped::AZURE_STATIC_WEB_APPS_API_TOKEN secret is not configured - no preview environment to close."
       - name: Close Pull Request
+        if: env.HAS_AZURE_SWA_TOKEN == 'true'
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
