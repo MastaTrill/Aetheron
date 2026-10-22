@@ -145,7 +145,18 @@ jobs:
       DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
 
     steps:
+      - name: Check deploy secrets
+        id: deploy-secrets
+        run: |
+          if [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] && [ -n "$DEPLOY_KEY" ]; then
+            echo "has_deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Server deploy skipped::DEPLOY_HOST, DEPLOY_USER and/or DEPLOY_KEY secrets are not configured - deployment was skipped."
+          fi
+
       - name: Deploy to server
+        if: steps.deploy-secrets.outputs.has_deploy == 'true'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.DEPLOY_HOST }}
