@@ -12,26 +12,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check Railway secret
+      id: railway-secret
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      run: |
+        if [ -n "$RAILWAY_TOKEN" ]; then
+          echo "has_railway=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has_railway=false" >> "$GITHUB_OUTPUT"
+          echo "::notice title=Railway deploy skipped::RAILWAY_TOKEN secret is not configured - deployment was skipped."
+        fi
+
     - uses: actions/checkout@v4
+      if: steps.railway-secret.outputs.has_railway == 'true'
 
     - name: Use Node.js
+      if: steps.railway-secret.outputs.has_railway == 'true'
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
         cache: 'npm'
 
     - name: Install dependencies
+      if: steps.railway-secret.outputs.has_railway == 'true'
       run: npm ci --production
 
     - name: Install Railway CLI
+      if: steps.railway-secret.outputs.has_railway == 'true'
       run: npm install -g @railway/cli
 
     - name: Deploy to Railway
+      if: steps.railway-secret.outputs.has_railway == 'true'
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       run: railway up
 
     - name: Run database migrations
+      if: steps.railway-secret.outputs.has_railway == 'true'
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       run: railway run npm run db:migrate || echo 'Migration skipped (no database configured yet)'
