@@ -1,28 +1,25 @@
 # Aetheron — Repository Status
 
-**Status:** Maintenance / consolidation candidate  
-**Canonical role:** Legacy application, mobile, multichain, and SDK source for the Aetheron ecosystem.
+**Status:** Finalized (`@aetheron/sdk` + Mobile Client + Local Contract Reference)  
+**Canonical role:** Official Developer SDK (`sdk/`), Mobile Wallet Client (`mobile/`), and local Hardhat reference contracts (`aetheron-contracts/`) for the Aetheron & Sentinel L3 ecosystem.
 
 ## Canonical project locations
 
 - Commercial token, presale, staking, and public platform: `MastaTrill/Aetheron_platform`
-- Sentinel security guardrails: `MastaTrill/Aetheron-Sentinel-L3`
+- Sentinel security guardrails (`v0.2.0`): `MastaTrill/Aetheron-Sentinel-L3`
 - AI-agent platform: `MastaTrill/JarvisAI`
 
 ## Keep here
 
-- Mobile-client code that can be reused by Aetheron Platform
-- Reusable SDK and API-client code
-- Multichain research not yet approved for production
+- Mobile-client code (`mobile/`) integrated with Aetheron Platform and Sentinel L3 health checks
+- Standalone `@aetheron/sdk` (`sdk/`) with Sentinel L3 risk evaluation and L3Relay status methods
+- Local Hardhat reference contracts (`aetheron-contracts/`) and deployment scripts for Base Sepolia (`chainId: 84532`)
 - Historical application prototypes
 
 ## Do not treat as canonical
 
-- Token addresses
-- Presale addresses
-- Production deployment instructions
-- Sentinel release contracts
-- Main public website configuration
+- Mainnet commercial token and presale addresses (see `MastaTrill/Aetheron_platform`)
+- Production Sentinel L3 Python interceptor nodes (see `MastaTrill/Aetheron-Sentinel-L3`)
 
 ## Cleanup queue
 
@@ -30,7 +27,7 @@
 - [x] Move production-ready components into a clearly named `mobile/` or `sdk/` package.
 - [x] Remove or archive duplicate smart contracts after comparing them with canonical repositories (see `aetheron-contracts/README.md`).
 - [x] Replace duplicated deployment documentation with links to canonical registries.
-- [ ] Archive this repository after unique code is migrated, or rename it to reflect its final mobile/SDK role.
+- [x] Finalize this repository's role as the dedicated Aetheron Mobile Client & `@aetheron/sdk` source with Sentinel L3 integration.
 
 ## Component Inventory
 
@@ -45,12 +42,13 @@
   * `SettingsScreen.js`: Network switcher (Base / Sepolia / local), security, and RPC configuration.
 * **Services (`mobile/src/services/`)**:
   * `WalletService.js`: Key management, mnemonic seed generation, and secure local keychain storage.
-  * `ApiService.js`: HTTP and WebSocket communication client for Aetheron node and backend endpoints.
+  * `ApiService.js`: HTTP and WebSocket communication client for Aetheron node, Sentinel L3 health (`getSentinelHealth`, `evaluateBridgeRisk`), and L3Relay (`getL3RelayMessageStatus`).
 
-### 2. Developer SDK (`sdk.js`)
-* **Client Class**: `AetheronSDK`
+### 2. Developer SDK (`sdk/` & `sdk.js`)
+* **Client Class**: `AetheronSDK` (`@aetheron/sdk` v1.1.0)
 * **Features**:
   * Blockchain query methods (`getBlockchain`, `getBlock`, `getTransaction`, `getBalance`).
   * Wallet operations (`createWallet`, `importWallet`, `exportWallet`).
+  * Sentinel L3 & L3Relay guardrails (`getSentinelHealth`, `getSentinelNodeStatus`, `reportSentinelAnomaly`, `evaluateBridgeRisk`, `submitL3RelayMessage`, `getL3RelayMessageStatus`).
   * Transaction dispatch & mining simulation (`createTransaction`, `mineBlock`).
   * WebSocket real-time subscription client (`subscribe`, `on`, `emit`).

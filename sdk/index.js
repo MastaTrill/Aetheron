@@ -8,7 +8,7 @@ export class AetheronSDK {
     this.apiUrl = config.apiUrl || 'http://localhost:3001';
     this.wsUrl = config.wsUrl || 'ws://localhost:3001';
     this.apiKey = config.apiKey;
-    this.version = '1.0.0';
+    this.version = '1.1.0';
     this.ws = null;
     this.eventHandlers = new Map();
   }
@@ -104,6 +104,53 @@ export class AetheronSDK {
 
   async getContractEvents(contractAddress, eventName) {
     return this.request('GET', `/api/contract/${contractAddress}/events/${eventName}`);
+  }
+
+  // Sentinel L3 & Bridge Guardrail Operations
+  async getSentinelHealth() {
+    try {
+      const response = await this.request('GET', '/api/sentinel/health');
+      return {
+        systemHealthy: Boolean(response.systemHealthy ?? response.healthy ?? true),
+        killSwitchActive: Boolean(response.killSwitchActive ?? false),
+        activePolicyPack: response.activePolicyPack || null,
+        chainId: response.chainId || 84532,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      const fallback = await this.healthCheck();
+      return {
+        systemHealthy: fallback.healthy,
+        killSwitchActive: false,
+        activePolicyPack: null,
+        chainId: 84532,
+        error: error.message,
+        timestamp: fallback.timestamp
+      };
+    }
+  }
+
+  async getSentinelNodeStatus(nodeAddress) {
+    return this.request('GET', `/api/sentinel/nodes/${nodeAddress}`);
+  }
+
+  async reportSentinelAnomaly(anomalyHash, description) {
+    return this.request('POST', '/api/sentinel/anomalies', {
+      anomalyHash,
+      description
+    });
+  }
+
+  async evaluateBridgeRisk(riskInput) {
+    return this.request('POST', '/api/sentinel/evaluate', riskInput);
+  }
+
+  async submitL3RelayMessage(payload) {
+    return this.request('POST', '/api/l3relay/messages', { payload });
+  }
+
+  async getL3RelayMessageStatus(messageHash) {
+    return this.request('GET', `/api/l3relay/messages/${messageHash}`);
   }
 
   // NFT Operations

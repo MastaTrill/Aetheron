@@ -121,6 +121,30 @@ class ApiService {
   }
 
   /**
+   * Get Sentinel L3 guardrail health status
+   */
+  async getSentinelHealth() {
+    return this.fetch('/api/sentinel/health');
+  }
+
+  /**
+   * Evaluate bridge transfer risk via Sentinel L3 interceptor
+   */
+  async evaluateBridgeRisk(riskInput) {
+    return this.fetch('/api/sentinel/evaluate', {
+      method: 'POST',
+      body: JSON.stringify(riskInput)
+    });
+  }
+
+  /**
+   * Get L3Relay cross-chain message status
+   */
+  async getL3RelayMessageStatus(messageHash) {
+    return this.fetch(`/api/l3relay/messages/${messageHash}`);
+  }
+
+  /**
    * WebSocket connection for real-time updates
    */
   connectWebSocket(onMessage) {
@@ -128,7 +152,6 @@ class ApiService {
 
     ws.onopen = () => {
       console.log('WebSocket connected');
-      // Subscribe to channels
       ws.send(
         JSON.stringify({
           type: 'subscribe',
@@ -154,7 +177,6 @@ class ApiService {
 
     ws.onclose = () => {
       console.log('WebSocket disconnected');
-      // Attempt to reconnect after 5 seconds
       setTimeout(() => this.connectWebSocket(onMessage), 5000);
     };
 
@@ -167,10 +189,9 @@ class ApiService {
   async estimateFee(chain, from, to, value) {
     try {
       const gasPrice = await this.getGasPrice(chain);
-      const gasLimit = 21000; // Standard gas limit for simple transfers
+      const gasLimit = 21000;
 
       if (chain === 'solana') {
-        // Solana uses lamports, typical fee is ~5000 lamports
         return {
           gasPrice: 0.000005,
           gasLimit: 1,
@@ -178,7 +199,6 @@ class ApiService {
           currency: 'SOL'
         };
       } else {
-        // EVM chains
         const totalFee = (gasPrice.gasPrice * gasLimit) / 1e18;
         return {
           gasPrice: gasPrice.gasPrice,
@@ -189,7 +209,6 @@ class ApiService {
       }
     } catch (error) {
       console.error('Error estimating fee:', error);
-      // Return default estimate
       return {
         gasPrice: 0,
         gasLimit: 21000,

@@ -3,16 +3,35 @@ import PropTypes from 'prop-types';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
+import ApiService from '../services/ApiService';
 
 export default function SettingsScreen({ navigation }) {
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const [sentinelStatus, setSentinelStatus] = useState({
+    systemHealthy: true,
+    killSwitchActive: false,
+    activePolicyPack: 'v0.2.0-conservative (pq-ext)',
+    chainId: 84532
+  });
 
   useEffect(() => {
     checkBiometric();
     loadSettings();
+    refreshSentinelHealth();
   }, []);
+
+  const refreshSentinelHealth = async () => {
+    try {
+      const status = await ApiService.getSentinelHealth();
+      if (status) {
+        setSentinelStatus(status);
+      }
+    } catch (_err) {
+      // Keep cached/default status when offline
+    }
+  };
 
   const checkBiometric = async () => {
     const compatible = await LocalAuthentication.hasHardwareAsync();
@@ -114,6 +133,22 @@ export default function SettingsScreen({ navigation }) {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Sentinel L3 Guardrails</Text>
+
+        <TouchableOpacity style={styles.settingRow} onPress={refreshSentinelHealth}>
+          <View style={styles.settingInfo}>
+            <Text style={styles.settingLabel}>
+              System Health: {sentinelStatus.systemHealthy ? 'Healthy' : 'Paused / Alert'}
+            </Text>
+            <Text style={styles.settingDescription}>
+              Policy: {sentinelStatus.activePolicyPack || 'v0.2.0-conservative'} | Chain ID: {sentinelStatus.chainId || 84532}
+            </Text>
+          </View>
+          <Text style={styles.arrow}>↻</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Notifications</Text>
 
         <View style={styles.settingRow}>
@@ -136,14 +171,14 @@ export default function SettingsScreen({ navigation }) {
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingLabel}>Version</Text>
-            <Text style={styles.settingDescription}>1.0.0</Text>
+            <Text style={styles.settingDescription}>1.1.0 (Sentinel L3 v0.2.0)</Text>
           </View>
         </View>
 
         <View style={styles.settingRow}>
           <View style={styles.settingInfo}>
             <Text style={styles.settingLabel}>Supported Networks</Text>
-            <Text style={styles.settingDescription}>Ethereum, Base, Polygon, Solana</Text>
+            <Text style={styles.settingDescription}>Ethereum, Base (Sepolia/Mainnet), Polygon, Solana</Text>
           </View>
         </View>
       </View>

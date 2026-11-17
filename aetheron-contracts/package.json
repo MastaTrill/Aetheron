@@ -1,7 +1,7 @@
 {
   "name": "aetheron-contracts",
   "version": "1.0.0",
-  "description": "Aetheron / Sentinel / L3 smart contracts — Base Mainnet",
+  "description": "Aetheron / Sentinel / L3 smart contracts — Base Sepolia & Base Mainnet",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
@@ -10,6 +10,8 @@
     "deploy:local": "hardhat run scripts/deploy.js --network localhost",
     "deploy:sepolia": "hardhat run scripts/deploy.js --network base_sepolia",
     "deploy:mainnet": "hardhat run scripts/deploy.js --network base_mainnet",
+    "deploy:verify": "hardhat run scripts/deploy-and-verify.js",
+    "verify:contracts": "hardhat run scripts/verify.js",
     "post-deploy:mainnet": "hardhat run scripts/post-deploy.js --network base_mainnet",
     "node": "hardhat node",
     "clean": "hardhat clean"

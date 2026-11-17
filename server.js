@@ -491,7 +491,7 @@ app.get('/education/:address', jwtAuth, (req, res) => {
 app.get('/api', (req, res) => {
   res.json({
     status: 'online',
-    version: '1.0.0',
+    version: '1.1.0',
     timestamp: new Date().toISOString()
   });
 });
@@ -863,6 +863,132 @@ app.get('/api/l2/withdrawal/:id', jwtAuth, (req, res) => {
   res.json(result);
 });
 
+// ===== Sentinel L3 & L3Relay Guardrail Endpoints =====
+const sentinelState = {
+  systemHealthy: true,
+  killSwitchActive: false,
+  activePolicyPack: 'v0.2.0-conservative (hmac-sha256 + pq-ext Dilithium2)',
+  chainId: 84532,
+  anomalies: [],
+  relayMessages: new Map()
+};
+
+app.get('/api/sentinel/health', (req, res) => {
+  res.json({
+    systemHealthy: sentinelState.systemHealthy && !sentinelState.killSwitchActive,
+    killSwitchActive: sentinelState.killSwitchActive,
+    activePolicyPack: sentinelState.activePolicyPack,
+    chainId: sentinelState.chainId,
+    timestamp: Date.now()
+  });
+});
+
+app.get('/api/sentinel/nodes/:nodeAddress', (req, res) => {
+  res.json({
+    node: req.params.nodeAddress,
+    status: sentinelState.systemHealthy ? 'ACTIVE' : 'SUSPENDED',
+    endpoint: process.env.BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org',
+    lastHealthCheck: Math.floor(Date.now() / 1000)
+  });
+});
+
+app.post('/api/sentinel/anomalies', optionalAuth, (req, res) => {
+  const { anomalyHash, description } = req.body || {};
+  const entry = {
+    anomalyHash: anomalyHash || '0x' + crypto.randomBytes(32).toString('hex'),
+    description: description || 'Anomaly reported via API',
+    status: 'OPEN',
+    reportedAt: Math.floor(Date.now() / 1000)
+  };
+  sentinelState.anomalies.push(entry);
+  sentinelState.systemHealthy = false;
+  wsServer.notifySystemAlert('warning', 'Sentinel L3 anomaly reported', entry);
+  res.status(201).json(entry);
+});
+
+app.post('/api/sentinel/evaluate', optionalAuth, (req, res) => {
+  const body = req.body || {};
+  const amount = Number(body.amount || 0);
+  const liquidity = Math.max(Number(body.available_liquidity || 50000), 1e-9);
+  const velocity1h = Number(body.velocity_1h || 0);
+  const velocity24h = Number(body.velocity_24h || 1000);
+  const anomaly = Math.min(Math.max(Number(body.anomaly_score || 0), 0), 1);
+  const quorum = Math.min(Math.max(Number(body.signer_quorum_ratio ?? 1.0), 0), 1);
+
+  if (sentinelState.killSwitchActive) {
+    return res.json({
+      action: 'BLOCK',
+      risk_score: 1.0,
+      reasons: ['kill_switch_engaged'],
+      controls: ['activate_network_guard', 'pause_bridge'],
+      escalate: true
+    });
+  }
+
+  const drainRatio = Math.min(amount / liquidity, 1.5);
+  const velocityRatio = Math.min(velocity1h / Math.max(velocity24h / 24, 1e-6), 10);
+  const quorumPenalty = 1 - quorum;
+  const reasons = [];
+
+  if (drainRatio > 0.2) reasons.push('high_drain_ratio');
+  if (velocityRatio > 3) reasons.push('abnormal_withdrawal_velocity');
+  if (anomaly > 0.65) reasons.push('high_anomaly_score');
+  if (quorumPenalty > 0.25) reasons.push('low_signer_quorum');
+  if (drainRatio >= 0.9) reasons.push('invariant_large_drain_block');
+  if (quorum < 0.5) reasons.push('invariant_low_quorum_block');
+
+  const riskScore = Math.min(
+    1.0,
+    0.25 * Math.min(drainRatio, 1) +
+      0.2 * Math.min(velocityRatio / 5, 1) +
+      0.2 * anomaly +
+      0.1 * quorumPenalty
+  );
+
+  let action = 'ALLOW';
+  if (drainRatio >= 0.9 || quorum < 0.5 || anomaly > 0.95 || riskScore >= 0.6) {
+    action = 'BLOCK';
+  } else if (riskScore >= 0.35) {
+    action = 'THROTTLE';
+  }
+
+  const controls = action === 'ALLOW' ? ['monitor'] : ['enable_withdrawal_caps', 'pause_bridge'];
+  res.json({
+    action,
+    risk_score: Number(riskScore.toFixed(4)),
+    reasons,
+    controls,
+    escalate: action === 'BLOCK'
+  });
+});
+
+app.post('/api/l3relay/messages', optionalAuth, (req, res) => {
+  if (!sentinelState.systemHealthy || sentinelState.killSwitchActive) {
+    return res.status(503).json({ error: 'SystemUnhealthy: L3Relay paused by Sentinel' });
+  }
+  const { payload } = req.body || {};
+  const messageHash = '0x' + crypto.createHash('sha256').update(String(payload || Date.now())).digest('hex');
+  const record = {
+    messageHash,
+    sender: req.user?.address || '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+    payload: payload || '0x',
+    status: 'ACKNOWLEDGED',
+    submittedAt: Math.floor(Date.now() / 1000),
+    acknowledgedAt: Math.floor(Date.now() / 1000),
+    retryCount: 0
+  };
+  sentinelState.relayMessages.set(messageHash, record);
+  res.status(201).json(record);
+});
+
+app.get('/api/l3relay/messages/:messageHash', (req, res) => {
+  const record = sentinelState.relayMessages.get(req.params.messageHash);
+  if (!record) {
+    return res.status(404).json({ error: 'MessageNotFound' });
+  }
+  res.json(record);
+});
+
 // Blockchain endpoint
 app.get('/chain', jwtAuth, (req, res) => {
   res.json({
@@ -952,7 +1078,7 @@ server.listen(PORT, () => {
   console.log('   • Fiat On-Ramp Integration');
   console.log('   • Advanced Trading (Limit Orders)');
   console.log('   • RWA Tokenization');
-  console.log('   • Layer 2 Integration');
+  console.log('   • Layer 2 & Sentinel L3 Guardrails');
   console.log('='.repeat(60));
 
   wsServer.notifySystemAlert('success', 'Server started successfully', { port: PORT });

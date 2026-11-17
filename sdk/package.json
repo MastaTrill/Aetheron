@@ -1,7 +1,7 @@
 {
   "name": "@aetheron/sdk",
-  "version": "1.0.0",
-  "description": "Official JavaScript & TypeScript SDK for Aetheron Protocol",
+  "version": "1.1.0",
+  "description": "Official JavaScript & TypeScript SDK for Aetheron Protocol & Sentinel L3",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
