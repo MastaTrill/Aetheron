@@ -79,6 +79,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Root health check (mirrors server.js)
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    environment: NODE_ENV
+  });
+});
+
 // Routes
 app.get('/', (req, res) => {
   // Serve the actual admin dashboard HTML for E2E tests
@@ -244,6 +254,95 @@ app.get('/api/fiat/transaction/:id', jwtAuth, (req, res) => {
   res.json(transaction);
 });
 
+// Newsletter endpoints (in-memory mirror of server.js)
+const subscribers = new Set();
+
+app.post('/api/newsletter/subscribe', (req, res) => {
+  const { email } = req.body || {};
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ success: false, error: 'Email is required' });
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ success: false, error: 'Invalid email format' });
+  }
+  const normalizedEmail = email.toLowerCase();
+  if (subscribers.has(normalizedEmail)) {
+    return res.json({ success: true, message: 'Already subscribed!' });
+  }
+  subscribers.add(normalizedEmail);
+  res.json({ success: true, message: 'Successfully subscribed!' });
+});
+
+// AI assistant endpoints (deterministic test double of server.js)
+const aiHistory = [];
+
+app.post('/api/ai/query', optionalAuth, (req, res) => {
+  const { query } = req.body || {};
+  if (!query || typeof query !== 'string') {
+    return res.status(400).json({ success: false, error: 'Query is required' });
+  }
+  if (query.length > 1000) {
+    return res.status(400).json({ success: false, error: 'Query too long (max 1000 chars)' });
+  }
+  const response = 'Mock AI response for query: ' + query;
+  aiHistory.push({ query, response, timestamp: new Date().toISOString() });
+  res.json({ success: true, response });
+});
+
+app.get('/api/ai/history', optionalAuth, (req, res) => {
+  res.json({ success: true, history: aiHistory.slice(-20) });
+});
+
+app.post('/api/ai/clear', optionalAuth, (req, res) => {
+  aiHistory.length = 0;
+  res.json({ success: true, message: 'History cleared' });
+});
+
+// Oracle/price feed endpoints (deterministic test double of server.js)
+const ORACLE_PRICES = {
+  ETH: 3245.67,
+  BTC: 97412.3,
+  AETH: 1.25,
+  SOL: 214.55,
+  MATIC: 0.92
+};
+
+app.get('/api/oracle/price/:symbol', (req, res) => {
+  const symbol = req.params.symbol.toUpperCase();
+  if (!(symbol in ORACLE_PRICES)) {
+    return res.status(500).json({ success: false, error: 'Price not available for ' + symbol });
+  }
+  res.json({ success: true, symbol, price: ORACLE_PRICES[symbol], currency: 'USD' });
+});
+
+app.get('/api/oracle/prices', (req, res) => {
+  const symbols = (req.query.symbols || 'ETH,BTC,AETH').split(',');
+  const prices = {};
+  for (const raw of symbols) {
+    const symbol = raw.trim().toUpperCase();
+    prices[symbol] = symbol in ORACLE_PRICES ? ORACLE_PRICES[symbol] : null;
+  }
+  res.json({ success: true, prices });
+});
+
+app.get('/api/oracle/trending', (req, res) => {
+  const coins = Object.keys(ORACLE_PRICES).map((symbol) => ({
+    symbol,
+    price: ORACLE_PRICES[symbol],
+    currency: 'USD'
+  }));
+  res.json({ success: true, coins });
+});
+
+// WebSocket server test double (mirrors the wsServer export in server.js)
+const wsServer = {
+  connections: new Set(),
+  getConnectionCount() {
+    return this.connections.size;
+  }
+};
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -255,4 +354,4 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-export { app };
+export { app, wsServer };
