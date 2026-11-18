@@ -71,6 +71,7 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: ""
+          skip_deploy_on_missing_secrets: true
       # Job summary for production
       - name: Job Summary
         run: |
@@ -129,6 +130,7 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: ""
+          skip_deploy_on_missing_secrets: true
       # Job summary for preview/staging
       - name: Job Summary
         run: |
@@ -151,3 +153,4 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: ""
+          skip_deploy_on_missing_secrets: true
