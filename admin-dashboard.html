@@ -358,6 +358,7 @@
     </form>
   </div>  <nav id="sidebar">
     <h3>Modules</h3>
+    <a href="#sentinel-l3">Sentinel L3</a>
     <a href="#dex">DEX</a>
     <a href="#dao">DAO</a>
     <a href="#social">Social</a>
@@ -387,6 +388,18 @@
     <label><input type="checkbox" data-widget="crowd" checked> Crowdfunding</label>
   </nav>
   <main>
+    <section id="sentinel-l3">
+      <h2>🛡️ Sentinel L3 Zero-Trust Guardrail &amp; Post-Quantum Policy</h2>
+      <div id="sentinel-health-box" class="result">System Healthy: <strong>YES</strong> | Policy Pack: <strong>v0.2.1-conservative (hmac-sha256 + pq-ext Dilithium2)</strong> | Base Sepolia (84532) | Sentinel: <code>0x5FC8d32690cc91D4c39d9d3abcBD16989F875707</code></div>
+      <form id="sentinel-eval-form">
+        <label>Transfer Amount (AETH) <input name="amount" type="number" value="250" required></label>
+        <label>Available Pool Liquidity <input name="liquidity" type="number" value="50000" required></label>
+        <label>Anomaly Score (0..1) <input name="anomaly" type="number" step="0.01" value="0.02" required></label>
+        <label>Signer Quorum Ratio (0..1) <input name="quorum" type="number" step="0.01" value="1.0" required></label>
+        <button type="submit">Evaluate Bridge Risk</button>
+      </form>
+      <div id="sentinel-eval-result" class="result">Ready to evaluate bridge transfer risk.</div>
+    </section>
     <section id="dex">
       <h2>DEX: Add Liquidity / Swap</h2>
       <form id="dex-liquidity-form">

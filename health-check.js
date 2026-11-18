@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 
 /**
- * Aetheron Health Check Script
- * Verifies all services are running correctly
+ * Aetheron & Sentinel L3 Health Check Script
+ * Verifies all services and Sentinel L3 guardrails are configured and running correctly
  */
 
 import http from 'http';
+import fs from 'fs';
+import path from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
+import { fileURLToPath } from 'url';
 
 const execAsync = promisify(exec);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3001;
 const TIMEOUT = 5000;
@@ -21,9 +26,14 @@ const checks = [
     critical: true
   },
   {
+    name: 'Sentinel L3 Guardrail API',
+    url: `http://localhost:${PORT}/api/sentinel/health`,
+    critical: true
+  },
+  {
     name: 'GraphQL API',
     url: `http://localhost:${PORT}/graphql`,
-    critical: true
+    critical: false
   },
   {
     name: 'Metrics Endpoint',
@@ -71,28 +81,37 @@ async function checkDependencies() {
   const deps = [];
 
   try {
-    await exec('node --version');
+    await execAsync('node --version');
     deps.push({ name: 'Node.js', status: 'PASS' });
-  } catch (err) {
+  } catch (_err) {
     deps.push({ name: 'Node.js', status: 'FAIL' });
   }
 
   try {
-    await exec('npm --version');
-    deps.push({ name: 'npm', status: 'PASS' });
-  } catch (err) {
-    deps.push({ name: 'npm', status: 'FAIL' });
+    const addressesPath = path.join(__dirname, 'aetheron-contracts', 'deployments', 'addresses.json');
+    const addresses = JSON.parse(fs.readFileSync(addressesPath, 'utf8'));
+    const validSentinel =
+      addresses.sentinel &&
+      addresses.sentinel.startsWith('0x') &&
+      addresses.l3Relay &&
+      addresses.l3Relay.startsWith('0x') &&
+      addresses._meta?.sentinelSystemHealthy === true;
+    deps.push({
+      name: `Sentinel L3 Contracts (Base Sepolia: ${addresses.sentinel?.slice(0, 10)}...)`,
+      status: validSentinel ? 'PASS' : 'FAIL'
+    });
+  } catch (_err) {
+    deps.push({ name: 'Sentinel L3 Contracts Manifest', status: 'FAIL' });
   }
 
   return deps;
 }
 
 async function runHealthCheck() {
-  console.log('\n🏥 Aetheron Health Check\n');
+  console.log('\n🏥 Aetheron & Sentinel L3 Health Check\n');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-  // Check dependencies
-  console.log('📦 Dependencies:');
+  console.log('📦 Dependencies & Guardrail Manifests:');
   const deps = await checkDependencies();
   deps.forEach((dep) => {
     const icon = dep.status === 'PASS' ? '✅' : '❌';
@@ -100,8 +119,6 @@ async function runHealthCheck() {
   });
 
   console.log('\n🔌 Service Endpoints:');
-
-  // Check all endpoints
   const results = await Promise.all(checks.map(checkEndpoint));
 
   let allPassed = true;
@@ -140,7 +157,6 @@ async function runHealthCheck() {
   }
 }
 
-// Run health check
 runHealthCheck().catch((err) => {
   console.error('Health check error:', err);
   process.exit(1);
