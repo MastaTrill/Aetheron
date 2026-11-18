@@ -1,5 +1,6 @@
 // Jest setup file - runs before all tests
 process.env.NODE_ENV = 'test';
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret-key';
 
 // Mock database models
 jest.mock('./database/models', () => {
