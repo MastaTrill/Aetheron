@@ -54,8 +54,8 @@ jobs:
       - name: Run tests
         env:
           JWT_SECRET: test-secret-key
-          ADMIN_USERNAME: test-admin
-          ADMIN_PASSWORD: test-password
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD: admin123
         run: |
           if [ -f package.json ]; then npm test || (echo "Tests failed" && exit 1); fi
       - name: Build static assets (if any)
@@ -107,8 +107,8 @@ jobs:
       - name: Run tests
         env:
           JWT_SECRET: test-secret-key
-          ADMIN_USERNAME: test-admin
-          ADMIN_PASSWORD: test-password
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD: admin123
         run: |
           if [ -f package.json ]; then npm test || (echo "Tests failed" && exit 1); fi
       - name: Build static assets (if any)
