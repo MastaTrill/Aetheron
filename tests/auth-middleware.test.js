@@ -1,5 +1,5 @@
 const { jwtAuth, requireRole, optionalAuth } = require('../auth/middleware');
-const authService = require('../auth/jwt-service');
+const authService = require('../auth/jwt-service').default;
 
 describe('Auth Middleware', () => {
   let req, res, next;
