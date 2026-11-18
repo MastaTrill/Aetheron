@@ -1,4 +1,4 @@
-const authService = require('../auth/jwt-service');
+const authService = require('../auth/jwt-service').default;
 // const bcrypt = require('bcryptjs'); // removed unused import
 
 describe('AuthService', () => {
