@@ -12,16 +12,16 @@ const MAX_ATTEMPTS = 5;
 function checkRateLimit(key) {
   const now = Date.now();
   const record = rateLimit.get(key) || { count: 0, firstAttempt: now };
-  
+
   if (now - record.firstAttempt > RATE_LIMIT_WINDOW) {
     rateLimit.set(key, { count: 1, firstAttempt: now });
     return true;
   }
-  
+
   if (record.count >= MAX_ATTEMPTS) {
     return false;
   }
-  
+
   record.count++;
   rateLimit.set(key, record);
   return true;

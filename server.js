@@ -168,13 +168,13 @@ const corsOptions = {
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-    },
+      defaultSrc: ['\'self\''],
+      scriptSrc: ['\'self\'', '\'unsafe-inline\''],
+      styleSrc: ['\'self\'', '\'unsafe-inline\''],
+      imgSrc: ['\'self\'', 'data:', 'https:']
+    }
   },
-  crossOriginEmbedderPolicy: false,
+  crossOriginEmbedderPolicy: false
 }));
 
 const sanitizeInput = (req, res, next) => {
@@ -184,7 +184,7 @@ const sanitizeInput = (req, res, next) => {
       if (typeof obj[key] === 'string') {
         obj[key] = sanitizeHtml(obj[key], {
           allowedTags: [],
-          allowedAttributes: {},
+          allowedAttributes: {}
         });
       } else if (typeof obj[key] === 'object' && obj[key] !== null) {
         sanitize(obj[key]);

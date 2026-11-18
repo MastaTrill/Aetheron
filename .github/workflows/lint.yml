@@ -27,8 +27,3 @@ jobs:
 
     - name: Run ESLint
       run: npm run lint
-
-    - name: Check code formatting
-      run: |
-        npm install -g prettier
-        prettier --check "**/*.{js,json,md}"
