@@ -9,6 +9,8 @@ module.exports = {
     '!tests/**',
     '!mobile/**',
     '!scripts/**',
+    '!sdk/**',
+    '!aetheron-contracts/**',
     '!*.config.js'
   ],
   testMatch: [
@@ -36,6 +38,8 @@ module.exports = {
     '<rootDir>/node_modules/',
     '<rootDir>/tests/e2e/',
     '<rootDir>/mobile/',
+    '<rootDir>/sdk/',
+    '<rootDir>/aetheron-contracts/',
     '<rootDir>/integration-test.js',
     '<rootDir>/test-admin-password.js',
     '<rootDir>/test-game-simulation.js',

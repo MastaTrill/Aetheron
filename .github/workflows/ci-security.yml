@@ -29,8 +29,11 @@ jobs:
       - name: Run Unit Tests
         run: npm run test:unit
 
+      - name: Run SDK Sentinel L3 Tests
+        run: node --test sdk/index.test.js
+
       - name: Compile Contracts
-        run: npm run contracts:compile
+        run: npm --prefix aetheron-contracts install --legacy-peer-deps && npm run contracts:compile
 
       - name: Security Scan
         run: npm run security:scan
