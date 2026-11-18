@@ -6,7 +6,7 @@ describe('Core API Integration Tests', () => {
 
   describe('GET /api', () => {
     test('should return API status', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/api');
       expect(res.status).toBe(200);
       expect(res.body.status).toBe('online');
@@ -16,7 +16,7 @@ describe('Core API Integration Tests', () => {
 
   describe('GET /api/health', () => {
     test('should return health status', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/api/health');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -26,7 +26,7 @@ describe('Core API Integration Tests', () => {
 
   describe('GET /health', () => {
     test('should return health check', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/health');
       expect(res.status).toBe(200);
       expect(res.body.status).toBe('healthy');
@@ -35,13 +35,13 @@ describe('Core API Integration Tests', () => {
 
   describe('Authentication', () => {
     test('should reject unauthenticated stats request', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/stats');
       expect(res.status).toBe(401);
     });
 
     test('should accept valid credentials', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/stats').set('Authorization', authHeader);
       expect([200, 503]).toContain(res.status);
     });
@@ -49,7 +49,7 @@ describe('Core API Integration Tests', () => {
 
   describe('GET /multichain/chains', () => {
     test('should return supported chains', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/multichain/chains');
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
@@ -58,14 +58,14 @@ describe('Core API Integration Tests', () => {
 
   describe('GET /multichain/config/:chain', () => {
     test('should return ethereum config', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/multichain/config/ethereum');
       expect(res.status).toBe(200);
       expect(res.body.chainId).toBe(1);
     });
 
     test('should return 404 for invalid chain', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app).get('/multichain/config/invalid');
       expect(res.status).toBe(404);
     });
@@ -73,7 +73,7 @@ describe('Core API Integration Tests', () => {
 
   describe('Newsletter', () => {
     test('should subscribe with valid email', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app)
         .post('/api/newsletter/subscribe')
         .send({ email: 'test@example.com' });
@@ -81,7 +81,7 @@ describe('Core API Integration Tests', () => {
     });
 
     test('should reject invalid email', async () => {
-      const { default: app } = await import('../../test-app.js');
+      const { app } = await import('../../test-app.js');
       const res = await request(app)
         .post('/api/newsletter/subscribe')
         .send({ email: 'invalid-email' });
