@@ -29,6 +29,8 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     name: Build and Deploy Production
+    env:
+      AZURE_SWA_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
     strategy:
       matrix:
         node-version: [18.x]
@@ -62,6 +64,7 @@ jobs:
         run: |
           if [ -f package.json ] && npm run | grep -q "build"; then npm run build; fi
       - name: Build And Deploy Static Site
+        if: env.AZURE_SWA_TOKEN != ''
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -71,7 +74,6 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: ""
-          skip_deploy_on_missing_secrets: true
       # Job summary for production
       - name: Job Summary
         run: |
@@ -83,6 +85,8 @@ jobs:
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main')
     runs-on: ubuntu-latest
     name: Build and Deploy Preview/Staging
+    env:
+      AZURE_SWA_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
     strategy:
       matrix:
         node-version: [18.x]
@@ -121,6 +125,7 @@ jobs:
           echo "PREVIEW_ENV=true" >> $GITHUB_ENV
           echo "DEPLOYMENT_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
       - name: Build And Deploy Static Site (Preview)
+        if: env.AZURE_SWA_TOKEN != ''
         id: builddeploypreview
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -130,7 +135,6 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: ""
-          skip_deploy_on_missing_secrets: true
       # Job summary for preview/staging
       - name: Job Summary
         run: |
@@ -142,8 +146,11 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
+    env:
+      AZURE_SWA_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
     steps:
       - name: Close Pull Request
+        if: env.AZURE_SWA_TOKEN != ''
         id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -153,4 +160,3 @@ jobs:
           app_location: "/"
           api_location: ""
           output_location: ""
-          skip_deploy_on_missing_secrets: true
