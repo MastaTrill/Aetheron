@@ -1,4 +1,8 @@
-require("@nomicfoundation/hardhat-toolbox");
+try {
+  require("@nomicfoundation/hardhat-toolbox");
+} catch {
+  // Optional toolbox plugins not required for core compilation
+}
 require("dotenv").config();
 
 module.exports = {

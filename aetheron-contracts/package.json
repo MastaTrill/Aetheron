@@ -17,6 +17,7 @@
     "clean": "hardhat clean"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.0",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "hardhat": "^2.22.0",
     "dotenv": "^16.4.5"
