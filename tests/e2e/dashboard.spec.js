@@ -4,36 +4,31 @@ import { test, expect } from '@playwright/test';
 test.describe('Admin Dashboard E2E', () => {
   const credentials = { username: 'admin', password: 'admin123' };
 
+  async function openModulesSidebar(page) {
+    await page.locator('#sidebar').evaluate((el) => el.classList.add('show'));
+  }
+
+  async function loginAsAdmin(page) {
+    await page.goto('/admin-dashboard.html');
+    await page.fill('#login-form input[name="user"]', credentials.username);
+    await page.fill('#login-form input[name="pass"]', credentials.password);
+    await page.click('#login-form button[type="submit"]');
+    await expect(page.locator('#login-modal')).toBeHidden();
+  }
+
+
   test('should load homepage', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/admin-dashboard.html');
     await expect(page).toHaveTitle(/Aetheron Admin Dashboard/);
   });
 
   test('should login successfully', async ({ page }) => {
-    await page.goto('/');
-
-    // Wait for login modal
-    await page.waitForSelector('#login-modal');
-
-    // Fill credentials
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-
-    // Submit
-    await page.click('button[type="submit"]');
-
-    // Wait for dashboard to load
-    await page.waitForSelector('#login-modal', { state: 'hidden' });
+    await loginAsAdmin(page);
     await expect(page.locator('h1')).toContainText('Aetheron');
   });
 
   test('should display WebSocket connection status', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Wait for WebSocket connection
     await page.waitForSelector('#ws-status', { timeout: 10000 });
@@ -42,12 +37,7 @@ test.describe('Admin Dashboard E2E', () => {
   });
 
   test('should show stats on dashboard', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Wait for stats
     await page.waitForSelector('#stats');
@@ -56,14 +46,10 @@ test.describe('Admin Dashboard E2E', () => {
   });
 
   test('should navigate to different sections', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Click sidebar links
+    await openModulesSidebar(page);
     await page.click('#sidebar a[href="#logs"]');
     await page.waitForTimeout(500);
 
@@ -73,14 +59,10 @@ test.describe('Admin Dashboard E2E', () => {
   });
 
   test('should display logs table', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Navigate to logs
+    await openModulesSidebar(page);
     await page.click('#sidebar a[href="#logs"]');
 
     // Check table exists
@@ -88,14 +70,10 @@ test.describe('Admin Dashboard E2E', () => {
   });
 
   test('should filter logs by level', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Navigate to logs
+    await openModulesSidebar(page);
     await page.click('#sidebar a[href="#logs"]');
 
     // Select filter
@@ -107,24 +85,14 @@ test.describe('Admin Dashboard E2E', () => {
   });
 
   test('should open AI chat', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // AI chat should be visible
     await expect(page.locator('#ai-chat')).toBeVisible();
   });
 
   test('should handle chat message', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Send chat message
     await page.fill('#chat-input', 'Test message');
@@ -136,17 +104,13 @@ test.describe('Admin Dashboard E2E', () => {
   });
 
   test('should export data', async ({ page }) => {
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Setup download handler
     const downloadPromise = page.waitForEvent('download');
 
     // Click export
+    await openModulesSidebar(page);
     await page.click('#export-data');
 
     // Wait for download
@@ -156,12 +120,7 @@ test.describe('Admin Dashboard E2E', () => {
 
   test('should be responsive on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/');
-
-    // Login
-    await page.fill('input[name="user"]', credentials.username);
-    await page.fill('input[name="pass"]', credentials.password);
-    await page.click('button[type="submit"]');
+    await loginAsAdmin(page);
 
     // Dashboard should still be visible
     await expect(page.locator('h1')).toBeVisible();

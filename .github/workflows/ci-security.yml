@@ -32,6 +32,14 @@ jobs:
           NODE_ENV: test
         run: npm run test:unit
 
+      - name: Run Integration Tests
+        env:
+          JWT_SECRET: test-secret-key
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD: admin123
+          NODE_ENV: test
+        run: npm run test:integration
+
       - name: Run SDK Sentinel L3 Tests
         run: node --test sdk/index.test.js
 
