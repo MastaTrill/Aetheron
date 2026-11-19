@@ -65,7 +65,7 @@
       width: 100vw;
       height: 100vh;
       background: rgba(10, 20, 40, 0.95);
-      z-index: 1000;
+      z-index: 3000;
     }
     
     #login-form {
@@ -118,7 +118,7 @@
       /* Sidebar styles */
     #sidebar {
       position: fixed;
-      left: -180px;
+      left: -160px;
       top: 0;
       height: 100vh;
       width: 180px;
@@ -349,7 +349,7 @@
       </span>
     </div>
   </header>  <div id="login-modal">
-    <form id="login-form">
+    <form id="login-form" method="dialog">
       <h2>Admin Login</h2>
       <label>Username <input name="user" required></label>
       <label>Password <input name="pass" type="password" required></label>
@@ -369,6 +369,7 @@
     <a href="#game">Gaming</a>
     <a href="#crowd">Crowdfunding</a>
     <a href="#analytics">Analytics</a>
+    <a href="#logs">Logs</a>
     <button id="export-data">Export Data</button>
     <button id="export-data-2">Export Data</button>
     <button id="import-data">Import Data</button>
@@ -806,7 +807,7 @@
       <div id="chat-messages" style="background:#181c2a;border-radius:6px;padding:12px;height:250px;overflow-y:auto;margin-bottom:10px;">
         <!-- Chat messages will appear here -->
       </div>
-      <form id="chat-form" style="display:flex;gap:8px;">
+      <form id="chat-form" method="dialog" style="display:flex;gap:8px;">
         <input id="chat-input" placeholder="Type a message..." style="flex:1;" autocomplete="off">
         <button type="submit">Send</button>
       </form>
@@ -1340,7 +1341,7 @@
 
     // Login modal logic
     let authHeader = '';
-    document.getElementById('login-form').onsubmit = async function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const user = this.user.value;
       const pass = this.pass.value;
@@ -1369,7 +1370,7 @@
         };
         Logger.warn('Backend unreachable, demo mode available', { error: error.message });
       }
-    };
+    });
     // Attach auth to all fetches — with demo mode interceptor
     const origFetch = window.fetch;
     window.fetch = function(url, opts={}) {
@@ -1392,30 +1393,35 @@
     setInterval(loadChart, 20000);
     // Sidebar navigation
     document.querySelectorAll('#sidebar a').forEach(a => {
-      a.onclick = e => {
+      a.addEventListener('click', e => {
         e.preventDefault();
         const id = a.getAttribute('href').substring(1);
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      };
+      });
     });
-    // Theme toggle
+    // Theme toggle (button is optional; do not block later handlers if it is absent)
     let dark = true;
-    document.getElementById('toggle-theme').onclick = () => {
-      dark = !dark;
-      document.body.style.background = dark ? 'linear-gradient(120deg,#232526,#0f2027 80%)' : '#f4f4f4';
-      document.body.style.color = dark ? '#e0e0e0' : '#222';
-    };
+    const themeToggle = document.getElementById('toggle-theme');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        dark = !dark;
+        document.body.style.background = dark ? 'linear-gradient(120deg,#232526,#0f2027 80%)' : '#f4f4f4';
+        document.body.style.color = dark ? '#e0e0e0' : '#222';
+      });
+    }
     // Export/Import data
-    document.getElementById('export-data').onclick = async () => {
+    document.getElementById('export-data').addEventListener('click', async () => {
       const res = await fetch('/stats');
       const data = await res.json();
       const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = 'aetheron-stats.json';
+      document.body.appendChild(a);
       a.click();
+      a.remove();
       URL.revokeObjectURL(url);
-    };
+    });
     document.getElementById('import-data').onclick = () => {
       const input = document.createElement('input');
       input.type = 'file';
@@ -1920,167 +1926,169 @@
     // Show chat on load
     document.getElementById('ai-chat').style.display = 'flex';
     // 3D Hologram Avatar (Cortana-inspired with Aetheron logo)
-    const holoCanvas = document.getElementById('ai-holo');
-    const renderer = new THREE.WebGLRenderer({ canvas: holoCanvas, alpha: true });
-    renderer.setClearColor(0x000000, 0);
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 300/220, 0.1, 1000);
-    camera.position.z = 5;
-    // Glowing sphere (head)
-    const glowMaterial = new THREE.MeshPhongMaterial({ color: 0x00eaff, emissive: 0x00eaff, shininess: 100, transparent: true, opacity: 0.7 });
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 32), glowMaterial);
-    scene.add(head);
-    // Aetheron logo (floating disc)
-    const loader = new THREE.TextureLoader();
-    loader.load('LOGO.PNG', function(texture) {
-      const logoMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-      const logo = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), logoMat);
-      logo.position.y = 1.3;
-      scene.add(logo);
-    });
-    // Hologram effect: animated rings
-    const rings = [];
-    for (let i=0; i<3; i++) {
-      const ringMat = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.25 });
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(1.1+i*0.2, 0.03, 16, 100), ringMat);
-      ring.rotation.x = Math.PI/2;
-      scene.add(ring);
-      rings.push(ring);
-    }
-    // Lighting
-    const light = new THREE.PointLight(0x00eaff, 1, 100);
-    light.position.set(0,2,5);
-    scene.add(light);
-    // Add more 3D features: animated vertical beams, floating particles, and logo pulse
-    // Animated vertical beams
-    const beamMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.18 });
-    const beams = [];
-    for (let i = 0; i < 3; i++) {
-      const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.07 + i*0.04, 0.07 + i*0.04, 2.5 + i*0.5, 32), beamMaterial);
-      beam.position.y = 0.2;
-      scene.add(beam);
-      beams.push(beam);
-    }
-    // Floating particles
-    const particleGeometry = new THREE.SphereGeometry(0.06, 8, 8);
-    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.5 });
-    const particles = [];
-    for (let i = 0; i < 18; i++) {
-      const p = new THREE.Mesh(particleGeometry, particleMaterial.clone());
-      p.position.set(Math.sin(i)*1.5, Math.random()*2-1, Math.cos(i)*1.5);
-      scene.add(p);
-      particles.push(p);
-    }
-    // Animate logo pulse
-    let logoMesh = null;
-    loader.load('LOGO.PNG', function(texture) {
-      const logoMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-      logoMesh = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), logoMat);
-      logoMesh.position.y = 1.3;
-      scene.add(logoMesh);
-    });
-    // Advanced: facial expression (morph target), sound effect, and AI-driven idle animation
-    // Facial expression: mouth morph (simulate talking)
-    const mouthGeometry = new THREE.TorusGeometry(0.25, 0.06, 8, 32, Math.PI);
-    const mouthMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.7 });
-    const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
-    mouth.position.set(0, -0.45, 0.75);
-    mouth.rotation.x = Math.PI / 2;
-    head.add(mouth);
-    // Animate mouth on chat
-    document.getElementById('ai-chat-form').onsubmit = function(e) {
-      setTimeout(()=>{
-        head.material.emissive.setHex(0x4CAF50);
-        head.scale.set(1.15,1.15,1.15);
-        if (logoMesh) logoMesh.material.color.setHex(0x4CAF50);
-        // Mouth open/close
-        let t = 0;
-        const mouthAnim = setInterval(()=>{
-          mouth.scale.y = 1 + 0.5*Math.abs(Math.sin(t));
-          t += 0.3;
-        }, 60);
-        setTimeout(()=>{
-          head.material.emissive.setHex(0x00eaff);
-          head.scale.set(1,1,1);
-          if (logoMesh) logoMesh.material.color.setHex(0xffffff);
-          mouth.scale.y = 1;
-          clearInterval(mouthAnim);
-        }, 700);
-      }, 400);
-    };
-    // Sound effect on chat (browser beep)
-    function playBeep() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        o.type = 'sine';
-        o.frequency.value = 660;
-        o.connect(ctx.destination);
-        o.start();
-        setTimeout(()=>o.stop(), 120);
-      } catch {}
-    }
-    document.getElementById('ai-chat-form').addEventListener('submit', playBeep);
-    // AI-driven idle animation: head tilts and logo bobs
-    let idleT = 0;
-    function animateHolo() {
-      idleT += 0.01;
-      head.rotation.y += 0.01 + 0.01*Math.sin(idleT/2);
-      head.rotation.x = 0.08*Math.sin(idleT);
-      rings.forEach((r,i) => r.rotation.z += 0.01 + i*0.005);
-      beams.forEach((b,i) => b.scale.y = 1 + 0.2*Math.sin(Date.now()/500 + i));
-      particles.forEach((p,i) => {
-        p.position.x = Math.sin(Date.now()/900 + i)*1.5;
-        p.position.z = Math.cos(Date.now()/900 + i)*1.5;
-        p.material.opacity = 0.3 + 0.2*Math.sin(Date.now()/700 + i);
+    if (typeof THREE !== 'undefined') {
+      const holoCanvas = document.getElementById('ai-holo');
+      const renderer = new THREE.WebGLRenderer({ canvas: holoCanvas, alpha: true });
+      renderer.setClearColor(0x000000, 0);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, 300/220, 0.1, 1000);
+      camera.position.z = 5;
+      // Glowing sphere (head)
+      const glowMaterial = new THREE.MeshPhongMaterial({ color: 0x00eaff, emissive: 0x00eaff, shininess: 100, transparent: true, opacity: 0.7 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.8, 32, 32), glowMaterial);
+      scene.add(head);
+      // Aetheron logo (floating disc)
+      const loader = new THREE.TextureLoader();
+      loader.load('LOGO.PNG', function(texture) {
+        const logoMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+        const logo = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), logoMat);
+        logo.position.y = 1.3;
+        scene.add(logo);
       });
-      if (logoMesh) {
-        logoMesh.scale.setScalar(1 + 0.08*Math.sin(Date.now()/400));
-        logoMesh.position.y = 1.3 + 0.08*Math.sin(idleT*2);
+      // Hologram effect: animated rings
+      const rings = [];
+      for (let i=0; i<3; i++) {
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.25 });
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(1.1+i*0.2, 0.03, 16, 100), ringMat);
+        ring.rotation.x = Math.PI/2;
+        scene.add(ring);
+        rings.push(ring);
       }
-      renderer.render(scene, camera);
-      requestAnimationFrame(animateHolo);
-    }
-    animateHolo();
-    // Interactivity: avatar reacts to chat, mouse, and voice (if available)
-    // React to chat: pulse color and scale
-    document.getElementById('ai-chat-form').onsubmit = function(e) {
-      setTimeout(()=>{
-        head.material.emissive.setHex(0x4CAF50);
-        head.scale.set(1.15,1.15,1.15);
-        if (logoMesh) logoMesh.material.color.setHex(0x4CAF50);
-        setTimeout(()=>{
-          head.material.emissive.setHex(0x00eaff);
-          head.scale.set(1,1,1);
-          if (logoMesh) logoMesh.material.color.setHex(0xffffff);
-        }, 700);
-      }, 400);
-    };
-    // Mouse interactivity: rotate avatar with mouse
-    let isDragging = false, lastX = 0;
-    holoCanvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; });
-    window.addEventListener('mouseup', () => isDragging = false);
-    window.addEventListener('mousemove', e => {
-      if (isDragging) {
-        const dx = e.clientX - lastX;
-        head.rotation.y += dx * 0.01;
-        lastX = e.clientX;
+      // Lighting
+      const light = new THREE.PointLight(0x00eaff, 1, 100);
+      light.position.set(0,2,5);
+      scene.add(light);
+      // Add more 3D features: animated vertical beams, floating particles, and logo pulse
+      // Animated vertical beams
+      const beamMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.18 });
+      const beams = [];
+      for (let i = 0; i < 3; i++) {
+        const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.07 + i*0.04, 0.07 + i*0.04, 2.5 + i*0.5, 32), beamMaterial);
+        beam.position.y = 0.2;
+        scene.add(beam);
+        beams.push(beam);
       }
-    });
-    // Voice interactivity (if supported)
-    if (window.SpeechRecognition || window.webkitSpeechRecognition) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      document.getElementById('ai-holo').addEventListener('dblclick', () => {
-        recognition.start();
+      // Floating particles
+      const particleGeometry = new THREE.SphereGeometry(0.06, 8, 8);
+      const particleMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.5 });
+      const particles = [];
+      for (let i = 0; i < 18; i++) {
+        const p = new THREE.Mesh(particleGeometry, particleMaterial.clone());
+        p.position.set(Math.sin(i)*1.5, Math.random()*2-1, Math.cos(i)*1.5);
+        scene.add(p);
+        particles.push(p);
+      }
+      // Animate logo pulse
+      let logoMesh = null;
+      loader.load('LOGO.PNG', function(texture) {
+        const logoMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+        logoMesh = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), logoMat);
+        logoMesh.position.y = 1.3;
+        scene.add(logoMesh);
       });
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('ai-chat-input').value = transcript;
-        document.getElementById('ai-chat-form').dispatchEvent(new Event('submit'));
+      // Advanced: facial expression (morph target), sound effect, and AI-driven idle animation
+      // Facial expression: mouth morph (simulate talking)
+      const mouthGeometry = new THREE.TorusGeometry(0.25, 0.06, 8, 32, Math.PI);
+      const mouthMaterial = new THREE.MeshBasicMaterial({ color: 0x00eaff, transparent: true, opacity: 0.7 });
+      const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+      mouth.position.set(0, -0.45, 0.75);
+      mouth.rotation.x = Math.PI / 2;
+      head.add(mouth);
+      // Animate mouth on chat
+      document.getElementById('ai-chat-form').onsubmit = function(e) {
+        setTimeout(()=>{
+          head.material.emissive.setHex(0x4CAF50);
+          head.scale.set(1.15,1.15,1.15);
+          if (logoMesh) logoMesh.material.color.setHex(0x4CAF50);
+          // Mouth open/close
+          let t = 0;
+          const mouthAnim = setInterval(()=>{
+            mouth.scale.y = 1 + 0.5*Math.abs(Math.sin(t));
+            t += 0.3;
+          }, 60);
+          setTimeout(()=>{
+            head.material.emissive.setHex(0x00eaff);
+            head.scale.set(1,1,1);
+            if (logoMesh) logoMesh.material.color.setHex(0xffffff);
+            mouth.scale.y = 1;
+            clearInterval(mouthAnim);
+          }, 700);
+        }, 400);
       };
+      // Sound effect on chat (browser beep)
+      function playBeep() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const o = ctx.createOscillator();
+          o.type = 'sine';
+          o.frequency.value = 660;
+          o.connect(ctx.destination);
+          o.start();
+          setTimeout(()=>o.stop(), 120);
+        } catch {}
+      }
+      document.getElementById('ai-chat-form').addEventListener('submit', playBeep);
+      // AI-driven idle animation: head tilts and logo bobs
+      let idleT = 0;
+      function animateHolo() {
+        idleT += 0.01;
+        head.rotation.y += 0.01 + 0.01*Math.sin(idleT/2);
+        head.rotation.x = 0.08*Math.sin(idleT);
+        rings.forEach((r,i) => r.rotation.z += 0.01 + i*0.005);
+        beams.forEach((b,i) => b.scale.y = 1 + 0.2*Math.sin(Date.now()/500 + i));
+        particles.forEach((p,i) => {
+          p.position.x = Math.sin(Date.now()/900 + i)*1.5;
+          p.position.z = Math.cos(Date.now()/900 + i)*1.5;
+          p.material.opacity = 0.3 + 0.2*Math.sin(Date.now()/700 + i);
+        });
+        if (logoMesh) {
+          logoMesh.scale.setScalar(1 + 0.08*Math.sin(Date.now()/400));
+          logoMesh.position.y = 1.3 + 0.08*Math.sin(idleT*2);
+        }
+        renderer.render(scene, camera);
+        requestAnimationFrame(animateHolo);
+      }
+      animateHolo();
+      // Interactivity: avatar reacts to chat, mouse, and voice (if available)
+      // React to chat: pulse color and scale
+      document.getElementById('ai-chat-form').onsubmit = function(e) {
+        setTimeout(()=>{
+          head.material.emissive.setHex(0x4CAF50);
+          head.scale.set(1.15,1.15,1.15);
+          if (logoMesh) logoMesh.material.color.setHex(0x4CAF50);
+          setTimeout(()=>{
+            head.material.emissive.setHex(0x00eaff);
+            head.scale.set(1,1,1);
+            if (logoMesh) logoMesh.material.color.setHex(0xffffff);
+          }, 700);
+        }, 400);
+      };
+      // Mouse interactivity: rotate avatar with mouse
+      let isDragging = false, lastX = 0;
+      holoCanvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; });
+      window.addEventListener('mouseup', () => isDragging = false);
+      window.addEventListener('mousemove', e => {
+        if (isDragging) {
+          const dx = e.clientX - lastX;
+          head.rotation.y += dx * 0.01;
+          lastX = e.clientX;
+        }
+      });
+      // Voice interactivity (if supported)
+      if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        document.getElementById('ai-holo').addEventListener('dblclick', () => {
+          recognition.start();
+        });
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById('ai-chat-input').value = transcript;
+          document.getElementById('ai-chat-form').dispatchEvent(new Event('submit'));
+        };
+      }
     }
     // === AI Chat: Real Backend Integration ===
     // Set your OpenAI API key or endpoint here (for demo, leave blank)
@@ -2323,7 +2331,7 @@
     };
 
     // ===== Chat Form Handler =====
-    document.getElementById('chat-form').onsubmit = function(e) {
+    document.getElementById('chat-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const input = document.getElementById('chat-input');
       const message = input.value.trim();
@@ -2332,7 +2340,7 @@
         wsClient.sendChat(message);
         input.value = '';
       }
-    };
+    });
 
     // ===== Load Users Function =====
     async function loadUsers() {

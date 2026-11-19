@@ -39,5 +39,49 @@ jobs:
           NODE_ENV: test
         run: npm run test:unit
 
+      - name: Run integration tests
+        env:
+          JWT_SECRET: test-secret-key
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD: admin123
+          NODE_ENV: test
+        run: npm run test:integration
+
       - name: Run SDK Sentinel L3 tests
         run: node --test sdk/index.test.js
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        env:
+          CI: true
+          JWT_SECRET: test-secret-key
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD: admin123
+          NODE_ENV: test
+        run: npm run test:e2e
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

@@ -416,3 +416,8 @@ coverage/
 
 # Kilo CLI / local cache
 .kilo/
+
+# Playwright output
+test-results/
+playwright-report/
+blob-report/
